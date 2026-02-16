@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hazmat Tactical Tool - Professional Training Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff6b35;
+            --secondary: #00d9ff;
+            --danger: #ff3838;
+            --success: #00ff88;
+            --warning: #ffd23f;
+            --bg-dark: #0a0e1a;
+            --bg-card: #141824;
+            --bg-elevated: #1a1f2e;
+            --border: #2a3144;
+            --text: #e8eaed;
+            --text-muted: #8b95a8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 107, 53, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 217, 255, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* NAVIGATION */
+        nav {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+            background: rgba(10, 14, 26, 0.95);
+            backdrop-filter: blur(20px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        /* HERO SECTION */
+        .hero {
+            text-align: center;
+            padding: 100px 20px;
+        }
+        
+        .hero h1 {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+            line-height: 1.2;
+        }
+        
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 16px 32px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #ff8c5a 100%);
+            color: white;
+            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(255, 107, 53, 0.6);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(0, 217, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        /* FEATURES SECTION */
+        .features {
+            padding: 80px 20px;
+        }
+        
+        .section-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 60px;
+            color: var(--primary);
+            letter-spacing: 2px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 40px 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        
+        .feature-card h3 {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--secondary);
+        }
+        
+        .feature-card p {
+            color: var(--text-muted);
+            line-height: 1.8;
+        }
+        
+        /* DOWNLOADS SECTION */
+        .downloads {
+            padding: 80px 20px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
+        .downloads-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+        
+        .download-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .download-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+        }
+        
+        .download-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .download-card h3 {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .download-card p {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+        
+        .download-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--primary) 0%, #ff8c5a 100%);
+            color: white;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .download-btn:hover {
+            transform: translateX(5px);
+        }
+        
+        /* ABOUT SECTION */
+        .about {
+            padding: 80px 20px;
+            text-align: center;
+        }
+        
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .about-content p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+        
+        /* FOOTER */
+        footer {
+            padding: 40px 20px;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.1rem;
+            }
+            
+            .nav-links {
+                gap: 15px;
+                font-size: 0.9rem;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="logo">🔥 HAZMAT TACTICAL TOOL</div>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#downloads">Downloads</a></li>
+                <li><a href="#about">About</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <h1>PROFESSIONAL<br>HAZMAT TRAINING</h1>
+            <p>Complete training platform with chemical database, SCBA timer, radiation calculators, and downloadable resources</p>
+            <div class="cta-buttons">
+                <a href="app.html" class="btn btn-primary">🚀 LAUNCH APP</a>
+                <a href="#downloads" class="btn btn-secondary">📥 VIEW DOWNLOADS</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">CORE FEATURES</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔬</div>
+                    <h3>Chemical Database</h3>
+                    <p>Search 100+ chemicals with NIOSH data, ERG isolation distances, vapor density, specific gravity, and PPE recommendations</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">⏱️</div>
+                    <h3>SCBA Timer</h3>
+                    <p>Built-in entry timer with automatic alerts at 10, 20, and 25 minutes to manage air supply during training drills</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">☢️</div>
+                    <h3>Radiation Calculators</h3>
+                    <p>Inverse square law calculations for dose management, safe distance, and source strength estimation</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">⚗️</div>
+                    <h3>Reactivity Matrix</h3>
+                    <p>Check chemical compatibility and reaction hazards between different product types</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🌡️</div>
+                    <h3>Meter Alarm Reference</h3>
+                    <p>Quick lookup for MultiRAE, Altair, PID, radiation meters, and specialty gas detectors</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🛢️</div>
+                    <h3>Containment Guide</h3>
+                    <p>Product-specific compatibility for overpacks, plugs, patches, and field mitigation</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="downloads" class="downloads">
+        <div class="container">
+            <h2 class="section-title">TRAINING RESOURCES</h2>
+            <div class="downloads-grid">
+                <a href="downloads/Hazmat_Training_Schedule_2026.pdf" download class="download-card">
+                    <div class="download-icon">📅</div>
+                    <h3>2026 Training Schedule</h3>
+                    <p>Complete annual rotation with monthly objectives, documentation checklists, and regulatory compliance summary. Ready to print and post.</p>
+                    <span class="download-btn">DOWNLOAD PDF →</span>
+                </a>
+                
+                <a href="downloads/Hazmat_Quick_Reference_Card.pdf" download class="download-card">
+                    <div class="download-icon">📋</div>
+                    <h3>Quick Reference Card</h3>
+                    <p>One-page field guide with PPE levels, SCBA timings, meter alarms, radiation limits, and emergency contacts. Perfect for lamination.</p>
+                    <span class="download-btn">DOWNLOAD PDF →</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title">ABOUT THIS TOOL</h2>
+            <div class="about-content">
+                <p>Hazmat Tactical Tool is a comprehensive training platform designed by hazmat technicians, for hazmat technicians. Built on NIOSH Pocket Guide data and ERG 2024 standards.</p>
+                
+                <p><strong>Training Tool Only</strong> - Not intended for field use during actual emergencies. Always consult official ERG, NIOSH guidelines, and department SOPs for emergency response.</p>
+                
+                <p>Interested in custom training resources or department-specific versions? Contact us to discuss your needs.</p>
+                
+                <div style="margin-top: 40px;">
+                    <a href="/cdn-cgi/l/email-protection#0b6864657f6a687f4b6e736a667b676e25686466" class="btn btn-primary">📧 Contact for Custom Training</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="app.html">Launch App</a>
+                <a href="#downloads">Downloads</a>
+                <a href="/cdn-cgi/l/email-protection#71121e1f05101205311409101c011d145f121e1c">Contact</a>
+            </div>
+            <p>Hazmat Tactical Tool v1.0 | Training Platform</p>
+            <p>Data: NIOSH Pocket Guide & ERG
