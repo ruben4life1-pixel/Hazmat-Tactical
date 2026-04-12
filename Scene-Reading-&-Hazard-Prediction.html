@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scene Reading &amp; Hazard Prediction | Hazmat Tactical</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Barlow+Condensed:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary:    #f5a623;
+  --accent:     #ff6b35;
+  --danger:     #e53030;
+  --success:    #00cc66;
+  --info:       #00d9ff;
+  --bg-dark:    #080c18;
+  --bg-card:    #111622;
+  --bg-elev:    #181e2e;
+  --bg-input:   #1e2538;
+  --border:     #252d44;
+  --border-hi:  #3a4464;
+  --text:       #e8eaed;
+  --text-muted: #8b95a8;
+  --text-dim:   #4e5870;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg-dark);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── NOISE TEXTURE OVERLAY ── */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;
+}
+
+/* ── LAYOUT ── */
+.page-wrap{
+  max-width:780px;
+  margin:0 auto;
+  padding:20px 16px 60px;
+  position:relative;z-index:1;
+}
+
+/* ── HEADER ── */
+.site-header{
+  text-align:center;
+  padding:28px 0 24px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:28px;
+}
+.site-header .kicker{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.72rem;font-weight:600;
+  letter-spacing:.24em;
+  color:var(--accent);
+  text-transform:uppercase;
+  margin-bottom:8px;
+}
+.site-header h1{
+  font-family:'Rajdhani',sans-serif;
+  font-size:clamp(1.7rem,5vw,2.6rem);
+  font-weight:700;
+  letter-spacing:.06em;
+  line-height:1.1;
+  background:linear-gradient(135deg,var(--primary) 0%,var(--accent) 60%,#ff3838 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  text-transform:uppercase;
+}
+.site-header .tagline{
+  margin-top:8px;
+  font-size:.82rem;
+  color:var(--text-muted);
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+/* ── CARD ── */
+.card{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:24px;
+  margin-bottom:20px;
+  position:relative;
+  overflow:hidden;
+}
+.card::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--primary),transparent);
+  opacity:.4;
+}
+
+/* ── START SCREEN ── */
+#startScreen{}
+.start-intro{
+  font-size:.92rem;line-height:1.75;
+  color:var(--text-muted);
+  margin-bottom:24px;
+}
+.start-intro strong{color:var(--primary);}
+
+.objective-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:12px;
+  margin:20px 0 28px;
+}
+.obj-item{
+  background:var(--bg-elev);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:14px 16px;
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+}
+.obj-icon{font-size:1.3rem;flex-shrink:0;margin-top:1px;}
+.obj-text{font-size:.8rem;color:var(--text-muted);line-height:1.5;}
+.obj-text strong{color:var(--text);display:block;margin-bottom:2px;font-size:.82rem;}
+
+.section-label{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.75rem;font-weight:700;
+  letter-spacing:.2em;
+  color:var(--text-dim);
+  text-transform:uppercase;
+  margin-bottom:12px;
+}
+
+/* ── DIFFICULTY SELECTOR ── */
+.diff-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-bottom:24px;
+}
+.diff-btn{
+  background:var(--bg-elev);
+  border:2px solid var(--border);
+  border-radius:10px;
+  padding:14px 10px;
+  cursor:pointer;
+  text-align:center;
+  transition:all .2s ease;
+  font-family:'Barlow Condensed',sans-serif;
+}
+.diff-btn .diff-name{
+  font-size:1rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.06em;
+  color:var(--text);
+  display:block;
+}
+.diff-btn .diff-desc{
+  font-size:.73rem;color:var(--text-muted);
+  margin-top:4px;display:block;line-height:1.4;
+}
+.diff-btn.active-basic{border-color:#00cc66;background:rgba(0,204,102,.08);}
+.diff-btn.active-basic .diff-name{color:#00cc66;}
+.diff-btn.active-intermediate{border-color:var(--primary);background:rgba(245,166,35,.08);}
+.diff-btn.active-intermediate .diff-name{color:var(--primary);}
+.diff-btn.active-advanced{border-color:var(--danger);background:rgba(229,48,48,.08);}
+.diff-btn.active-advanced .diff-name{color:var(--danger);}
+
+/* ── BUTTONS ── */
+.btn{
+  display:inline-block;
+  padding:13px 28px;
+  border:none;
+  border-radius:9px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:1rem;font-weight:700;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:all .2s ease;
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--accent),#e05000);
+  color:#fff;
+  box-shadow:0 4px 18px rgba(255,107,53,.35);
+  width:100%;
+  font-size:1.05rem;
+  padding:15px;
+}
+.btn-primary:hover{
+  transform:translateY(-2px);
+  box-shadow:0 6px 24px rgba(255,107,53,.45);
+}
+.btn-secondary{
+  background:var(--bg-elev);
+  border:1px solid var(--border-hi);
+  color:var(--text-muted);
+}
+.btn-secondary:hover{
+  border-color:var(--primary);
+  color:var(--primary);
+}
+.btn-generate{
+  background:linear-gradient(135deg,#1e2538,#252d44);
+  border:1px solid var(--border-hi);
+  color:var(--primary);
+  box-shadow:0 0 0 1px rgba(245,166,35,.2) inset;
+}
+.btn-generate:hover{
+  border-color:var(--primary);
+  box-shadow:0 0 0 1px var(--primary) inset,0 4px 16px rgba(245,166,35,.2);
+  transform:translateY(-1px);
+}
+.btn-row{
+  display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;
+}
+.btn-row .btn{flex:1;min-width:130px;}
+
+/* ── DRILL SCREEN ── */
+#drillScreen{display:none;}
+
+/* ── PROGRESS BAR ── */
+.progress-wrap{
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:20px;
+}
+.progress-label{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.8rem;font-weight:700;
+  letter-spacing:.15em;
+  color:var(--text-dim);
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+.progress-bar{
+  flex:1;height:3px;
+  background:var(--border);
+  border-radius:3px;
+  overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--accent),var(--primary));
+  border-radius:3px;
+  transition:width .4s ease;
+}
+.diff-badge{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.72rem;font-weight:700;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  padding:4px 10px;
+  border-radius:20px;
+  white-space:nowrap;
+}
+.badge-basic{background:rgba(0,204,102,.15);color:#00cc66;border:1px solid rgba(0,204,102,.3);}
+.badge-intermediate{background:rgba(245,166,35,.15);color:var(--primary);border:1px solid rgba(245,166,35,.3);}
+.badge-advanced{background:rgba(229,48,48,.15);color:var(--danger);border:1px solid rgba(229,48,48,.3);}
+
+/* ── SCENARIO BLOCK ── */
+.scenario-meta{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.78rem;font-weight:600;
+  letter-spacing:.15em;
+  color:var(--accent);
+  text-transform:uppercase;
+  margin-bottom:8px;
+}
+.scenario-title{
+  font-family:'Rajdhani',sans-serif;
+  font-size:1.4rem;font-weight:700;
+  letter-spacing:.04em;
+  color:var(--text);
+  margin-bottom:16px;
+  line-height:1.2;
+  text-transform:uppercase;
+}
+.scenario-desc{
+  font-size:.9rem;
+  line-height:1.8;
+  color:var(--text-muted);
+  padding:16px;
+  background:var(--bg-elev);
+  border-left:3px solid var(--accent);
+  border-radius:0 8px 8px 0;
+}
+.scenario-desc strong{color:var(--text);}
+
+/* ── VISUAL CLUES ── */
+.clues-block{
+  margin-top:20px;
+  background:var(--bg-elev);
+  border:1px solid var(--border);
+  border-radius:10px;
+  overflow:hidden;
+}
+.clues-header{
+  padding:12px 16px;
+  background:rgba(0,217,255,.06);
+  border-bottom:1px solid var(--border);
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.8rem;font-weight:700;
+  letter-spacing:.18em;
+  color:var(--info);
+  text-transform:uppercase;
+  display:flex;align-items:center;gap:8px;
+}
+.clues-list{
+  list-style:none;
+  padding:12px 16px;
+  display:flex;flex-direction:column;gap:8px;
+}
+.clues-list li{
+  font-size:.875rem;
+  color:var(--text-muted);
+  line-height:1.5;
+  display:flex;align-items:flex-start;gap:10px;
+}
+.clues-list li::before{
+  content:'▸';
+  color:var(--info);
+  flex-shrink:0;
+  margin-top:1px;
+}
+
+/* ── QUESTIONS ── */
+.questions-wrap{margin-top:24px;}
+.question-block{
+  margin-bottom:20px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+  transition:border-color .2s ease;
+}
+.question-block.answered-correct{border-color:rgba(0,204,102,.4);}
+.question-block.answered-wrong{border-color:rgba(229,48,48,.3);}
+
+.q-header{
+  padding:14px 16px;
+  background:rgba(255,255,255,.025);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:flex-start;gap:12px;
+}
+.q-num{
+  font-family:'Rajdhani',sans-serif;
+  font-size:.75rem;font-weight:700;
+  background:var(--accent);
+  color:#fff;
+  width:22px;height:22px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:1px;
+}
+.q-text{
+  font-size:.9rem;
+  color:var(--text);
+  line-height:1.5;
+  font-weight:500;
+}
+.q-tactical-tip{
+  font-size:.78rem;
+  color:var(--primary);
+  margin-top:6px;
+  display:flex;align-items:center;gap:6px;
+}
+.q-tactical-tip::before{content:'💡';}
+
+.options-list{
+  padding:12px;
+  display:flex;flex-direction:column;gap:8px;
+}
+.option-btn{
+  width:100%;
+  text-align:left;
+  padding:12px 16px;
+  background:var(--bg-elev);
+  border:1px solid var(--border);
+  border-radius:8px;
+  cursor:pointer;
+  display:flex;align-items:flex-start;gap:12px;
+  transition:all .18s ease;
+  font-family:'Inter',sans-serif;
+}
+.option-btn:hover:not(:disabled){
+  border-color:var(--primary);
+  background:rgba(245,166,35,.07);
+}
+.option-btn:disabled{cursor:default;}
+
+.option-letter{
+  font-family:'Rajdhani',sans-serif;
+  font-size:.8rem;font-weight:700;
+  background:var(--border);
+  color:var(--text-muted);
+  width:22px;height:22px;
+  border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:1px;
+  transition:all .18s ease;
+}
+.option-text{
+  font-size:.855rem;
+  color:var(--text-muted);
+  line-height:1.5;
+  transition:color .18s ease;
+}
+
+.option-btn.correct{
+  background:rgba(0,204,102,.1);
+  border-color:rgba(0,204,102,.5);
+}
+.option-btn.correct .option-letter{background:var(--success);color:#000;}
+.option-btn.correct .option-text{color:var(--success);}
+
+.option-btn.wrong{
+  background:rgba(229,48,48,.08);
+  border-color:rgba(229,48,48,.3);
+}
+.option-btn.wrong .option-letter{background:var(--danger);color:#fff;}
+.option-btn.wrong .option-text{color:#ff8080;}
+
+.option-btn.missed{
+  background:rgba(0,204,102,.06);
+  border-color:rgba(0,204,102,.25);
+}
+.option-btn.missed .option-text{color:rgba(0,204,102,.7);}
+
+/* ── FEEDBACK PANEL ── */
+.feedback-panel{
+  margin:0 12px 12px;
+  padding:12px 14px;
+  border-radius:8px;
+  font-size:.84rem;
+  line-height:1.65;
+  display:none;
+}
+.feedback-panel.show-correct{
+  display:block;
+  background:rgba(0,204,102,.08);
+  border:1px solid rgba(0,204,102,.25);
+  color:rgba(200,255,220,.85);
+}
+.feedback-panel.show-wrong{
+  display:block;
+  background:rgba(229,48,48,.07);
+  border:1px solid rgba(229,48,48,.2);
+  color:#ff9090;
+}
+.feedback-panel strong{color:var(--text);}
+
+/* ── ANALYSIS BLOCK ── */
+#analysisBlock{
+  display:none;
+  margin-top:24px;
+}
+.analysis-card{
+  background:var(--bg-elev);
+  border:1px solid var(--border-hi);
+  border-radius:12px;
+  overflow:hidden;
+}
+.analysis-header{
+  padding:14px 18px;
+  background:rgba(245,166,35,.07);
+  border-bottom:1px solid var(--border);
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.85rem;font-weight:700;
+  letter-spacing:.2em;
+  color:var(--primary);
+  text-transform:uppercase;
+  display:flex;align-items:center;gap:10px;
+}
+.analysis-body{padding:18px;}
+
+.analysis-rule{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:1.05rem;font-weight:700;
+  color:var(--text);
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  margin-bottom:14px;
+  line-height:1.3;
+}
+.analysis-text{
+  font-size:.875rem;
+  color:var(--text-muted);
+  line-height:1.75;
+  margin-bottom:16px;
+}
+.analysis-text strong{color:var(--primary);}
+
+.key-principle{
+  background:rgba(0,217,255,.06);
+  border-left:3px solid var(--info);
+  padding:12px 14px;
+  border-radius:0 8px 8px 0;
+  margin-top:16px;
+}
+.key-principle .kp-label{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.72rem;font-weight:700;
+  letter-spacing:.2em;
+  color:var(--info);
+  text-transform:uppercase;
+  margin-bottom:5px;
+}
+.key-principle p{
+  font-size:.845rem;
+  color:var(--text-muted);
+  line-height:1.65;
+}
+.key-principle p strong{color:var(--info);}
+
+.tactical-callout{
+  background:rgba(245,166,35,.06);
+  border:1px solid rgba(245,166,35,.25);
+  border-radius:10px;
+  padding:14px 16px;
+  margin-top:16px;
+  display:flex;align-items:flex-start;gap:12px;
+}
+.tactical-callout .tc-icon{font-size:1.3rem;flex-shrink:0;}
+.tactical-callout .tc-body{}
+.tactical-callout .tc-label{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:.75rem;font-weight:700;
+  letter-spacing:.18em;
+  color:var(--primary);
+  text-transform:uppercase;
+  margin-bottom:4px;
+}
+.tactical-callout .tc-text{
+  font-size:.84rem;
+  color:var(--text-muted);
+  line-height:1.6;
+}
+
+/* ── DIVIDER ── */
+.section-divider{
+  height:1px;
+  background:var(--border);
+  margin:20px 0;
+}
+
+/* ── FOOTER AREA ── */
+.module-footer{
+  text-align:center;
+  margin-top:40px;
+  padding-top:20px;
+  border-top:1px solid var(--border);
+  font-size:.75rem;
+  color:var(--text-dim);
+  line-height:1.8;
+}
+
+/* ── SCREEN STATES ── */
+.hidden{display:none!important;}
+
+/* ── MOBILE ── */
+@media(max-width:520px){
+  .diff-grid{grid-template-columns:1fr;gap:8px;}
+  .btn-row{flex-direction:column;}
+  .q-header{gap:10px;}
+}
+@media(max-width:400px){
+  .card{padding:16px 14px;}
+  .site-header h1{font-size:1.6rem;}
+}
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="kicker">Hazmat Tactical — Operations Training</div>
+    <h1>Scene Reading<br>&amp; Hazard Prediction</h1>
+    <div class="tagline">Size Up the Scene Before You Commit</div>
+  </header>
+
+  <!-- ══ START SCREEN ══ -->
+  <div id="startScreen">
+    <div class="card">
+      <p class="start-intro">
+        This module trains you to <strong>read a scene and predict where the hazard is going</strong>
+        before any action is taken. The goal is not to identify the exact chemical —
+        it is to ask: <strong>"Where is this going, and where do I need to be?"</strong>
+      </p>
+
+      <div class="objective-grid">
+        <div class="obj-item">
+          <div class="obj-icon">🌬️</div>
+          <div class="obj-text">
+            <strong>Vapor Movement</strong>
+            Predict where airborne hazards will travel based on wind and vapor density.
+          </div>
+        </div>
+        <div class="obj-item">
+          <div class="obj-icon">🗺️</div>
+          <div class="obj-text">
+            <strong>Terrain Awareness</strong>
+            Identify how slopes, ditches, and confined spaces trap and channel hazards.
+          </div>
+        </div>
+        <div class="obj-item">
+          <div class="obj-icon">📍</div>
+          <div class="obj-text">
+            <strong>Safe Positioning</strong>
+            Determine where command, staging, and exposures need to be protected.
+          </div>
+        </div>
+        <div class="obj-item">
+          <div class="obj-icon">🚧</div>
+          <div class="obj-text">
+            <strong>Zone Establishment</strong>
+            Apply isolation principles before hazmat arrival.
+          </div>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+      <div class="section-label">Select Difficulty</div>
+      <div class="diff-grid">
+        <button class="diff-btn active-basic" data-diff="basic" onclick="selectDiff(this,'basic')">
+          <span class="diff-name">Basic</span>
+          <span class="diff-desc">Clear clues, simple terrain, defined wind</span>
+        </button>
+        <button class="diff-btn" data-diff="intermediate" onclick="selectDiff(this,'intermediate')">
+          <span class="diff-name">Intermediate</span>
+          <span class="diff-desc">Multiple variables, moderate complexity</span>
+        </button>
+        <button class="diff-btn" data-diff="advanced" onclick="selectDiff(this,'advanced')">
+          <span class="diff-name">Advanced</span>
+          <span class="diff-desc">Conflicting clues, complex environments</span>
+        </button>
+      </div>
+
+      <button class="btn btn-primary" onclick="startTraining()">Begin Training</button>
+    </div>
+  </div>
+
+  <!-- ══ DRILL SCREEN ══ -->
+  <div id="drillScreen">
+
+    <!-- Progress -->
+    <div class="progress-wrap">
+      <span class="progress-label">Scenario <span id="scenarioNum">1</span></span>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:10%"></div></div>
+      <span class="diff-badge" id="diffBadge">Basic</span>
+    </div>
+
+    <!-- Scenario Card -->
+    <div class="card" id="scenarioCard">
+      <div class="scenario-meta" id="scenarioMeta">HIGHWAY · PRESSURE TANKER</div>
+      <div class="scenario-title" id="scenarioTitle">Scene Loading…</div>
+      <div class="scenario-desc" id="scenarioDesc"></div>
+
+      <!-- Visual Clues -->
+      <div class="clues-block" style="margin-top:20px;">
+        <div class="clues-header">🔍 Visual Clues on Scene</div>
+        <ul class="clues-list" id="cluesList"></ul>
+      </div>
+    </div>
+
+    <!-- Questions Card -->
+    <div class="card">
+      <div class="section-label">Decision Questions</div>
+      <div class="questions-wrap" id="questionsWrap"></div>
+
+      <!-- Analysis (shown after all answered) -->
+      <div id="analysisBlock">
+        <div class="section-divider"></div>
+        <div class="analysis-card">
+          <div class="analysis-header">📋 Scene Analysis &amp; Reasoning</div>
+          <div class="analysis-body" id="analysisBody"></div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-generate" onclick="generateNew()">⟳ Generate New Scenario</button>
+          <button class="btn btn-primary" onclick="nextScenario()" style="flex:2;">Next Scenario →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Back link -->
+    <div style="text-align:center;margin-top:4px;">
+      <button class="btn btn-secondary" style="font-size:.78rem;padding:8px 18px;" onclick="backToStart()">← Change Difficulty</button>
+    </div>
+  </div>
+
+  <div class="module-footer">
+    <strong>Hazmat Tactical — Scene Reading &amp; Hazard Prediction</strong><br>
+    Operations-Level Training · Regulatory Basis: NFPA 470 (2022) Ch. 4 &amp; OSHA 29 CFR 1910.120(q)(3)<br>
+    Training reference only. Not a substitute for live instruction or department SOPs.
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   DATA POOLS
+═══════════════════════════════════════════════ */
+
+const ENVIRONMENTS = [
+  { id:'urban',        label:'Urban Downtown',         ctx:'densely packed city blocks',      nearby:'adjacent structures trap and channel vapors like a canyon' },
+  { id:'suburban',     label:'Suburban Strip Mall',    ctx:'commercial parking area',          nearby:'exposed storefronts and HVAC intakes on adjacent buildings' },
+  { id:'industrial',   label:'Industrial Complex',     ctx:'manufacturing facility grounds',   nearby:'multiple interconnected buildings with shared ventilation' },
+  { id:'highway',      label:'Interstate Highway',     ctx:'elevated highway section',         nearby:'overpasses and underpasses below create vapor traps' },
+  { id:'rural',        label:'Rural Farmland',         ctx:'open agricultural area',           nearby:'few obstructions, vapors travel unrestricted across open ground' },
+  { id:'railyard',     label:'Rail Yard',              ctx:'active rail switching yard',       nearby:'multiple track corridors channel vapors along rail cuts' },
+  { id:'waterfront',   label:'Waterfront Dock Area',   ctx:'working harbor facility',          nearby:'water surface can carry vapors and absorb runoff' },
+  { id:'residential',  label:'Residential Neighborhood', ctx:'suburban residential street',   nearby:'homes with open windows and HVAC systems create exposure risk' },
+  { id:'warehouse',    label:'Warehouse District',     ctx:'large commercial storage area',    nearby:'loading dock recesses and enclosed bays concentrate vapors' },
+  { id:'agricultural', label:'Agricultural Co-op',    ctx:'farm supply and storage facility',  nearby:'grain storage, open bins, and multiple smaller structures nearby' }
+];
+
+const CONTAINERS = [
+  { id:'mc306',     label:'MC-306 Cargo Tanker',       short:'MC-306 TANKER',      pressure:false, situation:'overturned highway cargo tanker leaking from dome cover and emergency valve' },
+  { id:'mc331',     label:'MC-331 Pressure Tanker',    short:'MC-331 PRESSURE TANKER', pressure:true,  situation:'pressure cargo tanker with audible hiss from a compromised fitting' },
+  { id:'dot111',    label:'DOT-111 Rail Tank Car',     short:'DOT-111 RAILCAR',    pressure:false, situation:'derailed rail tank car with product escaping from a breached shell' },
+  { id:'drums',     label:'55-Gallon Drums',           short:'55-GAL DRUMS',       pressure:false, situation:'multiple overturned 55-gallon drums with product pooling on the ground' },
+  { id:'cylinder',  label:'Compressed Gas Cylinder',  short:'GAS CYLINDER',       pressure:true,  situation:'damaged high-pressure cylinder with a loud continuous hiss and frosting around the valve' },
+  { id:'fixedtank', label:'Fixed Aboveground Tank',   short:'FIXED STORAGE TANK', pressure:false, situation:'aboveground storage tank with a failed fitting releasing product at the base' },
+  { id:'nursetank', label:'Nurse Tank (Ag)',           short:'NURSE TANK',         pressure:true,  situation:'pressurized agricultural applicator tank knocked over with vapor escaping from safety relief valve' },
+  { id:'bulk',      label:'Bulk Intermodal Container', short:'INTERMODAL CONTAINER', pressure:false, situation:'ISO shipping container with a ruptured inner container releasing product from the drain' }
+];
+
+const BEHAVIORS = [
+  {
+    id:'flamgas_light', label:'Flammable Gas — Lighter Than Air',
+    vapordensity:'lighter', state:'gas', primaryHazard:'fire/explosion',
+    openingClue:'A colorless vapor is visible rising from the release point, and you can hear a steady high-pressure hiss.',
+    clues:[
+      'Visible vapor cloud rising from the source — not hugging the ground',
+      'Frost or ice forming around the release point (cryogenic or pressurized)',
+      'Hissing sound consistent with high-pressure gas escape',
+      'No pooling liquid on the ground surface',
+      'Vapors appear to drift upward and begin dispersing at head height and above'
+    ],
+    behaviorSummary:'Vapors lighter than air rise and travel downwind at mid-to-upper levels. They accumulate in elevated enclosed spaces such as upper floors and attic spaces. In open areas they disperse relatively quickly, but any enclosed space downwind at elevation becomes a high-concentration trap.',
+    hotZonePrinciple:'The hot zone must extend downwind to account for vapor travel. Elevated enclosed spaces — buildings, parking structures, tunnels above grade — within the downwind corridor are at elevated risk.',
+    stagingPrinciple:'Stage upwind. Avoid enclosed elevated spaces in the downwind direction. Any building entrance with HVAC intakes in the downwind zone should be treated as potentially compromised.',
+    ignitionNote:'Any ignition source in the downwind corridor — vehicle engines, electrical panels, pilot lights — creates a flash fire or explosion hazard. Eliminate sources before the cloud reaches them.'
+  },
+  {
+    id:'flamliq_heavy', label:'Flammable Liquid Vapor — Heavier Than Air',
+    vapordensity:'heavier', state:'liquid', primaryHazard:'fire/explosion',
+    openingClue:'Liquid is pooling and spreading across the ground, and a vapor haze appears to hug the surface.',
+    clues:[
+      'Visible liquid pooling and spreading across the pavement or ground',
+      'Vapor haze visible at ground level, moving low along the surface',
+      'Strong hydrocarbon odor detectable at a significant distance',
+      'Vapors appear to flow toward and collect in low areas and drainage features',
+      'Product sheen or discoloration visible on any nearby water surface'
+    ],
+    behaviorSummary:'Heavier-than-air flammable vapors sink and travel at ground level, flowing downhill and collecting in ditches, storm drains, basements, and any low-lying enclosure. The liquid itself runs to low points. Remote ignition is a significant risk — the vapor cloud can travel far from the source before reaching a spark.',
+    hotZonePrinciple:'The hot zone must account for both the liquid runoff path (downhill) and the vapor travel path (downwind + downhill). Storm drains and underground utilities can carry vapors far beyond the visible spill area.',
+    stagingPrinciple:'Stage upwind AND uphill. Any area downhill or in the low terrain is potentially vapor-filled. Drains, utility vaults, and basements in the downwind/downhill direction must be treated as part of the hot zone.',
+    ignitionNote:'Vapor clouds from flammable liquids can extend hundreds of feet from the source before encountering an ignition point. Engine compartments, traffic, and any electrical source in the vapor path are all ignition risks.'
+  },
+  {
+    id:'toxic_heavy', label:'Toxic Gas — Heavier Than Air',
+    vapordensity:'heavier', state:'gas', primaryHazard:'toxic exposure',
+    openingClue:'A colored vapor cloud is visible near ground level, moving downwind in a defined plume.',
+    clues:[
+      'Visible vapor plume — may appear yellowish-green, white, or hazy — at ground level',
+      'Plume clearly moving downwind, hugging the surface',
+      'Vegetation showing discoloration or wilting in the downwind path',
+      'Animals or bystanders showing symptoms of exposure (coughing, eye irritation)',
+      'Product label or placard visible on container indicating toxic inhalation hazard'
+    ],
+    behaviorSummary:'Dense toxic vapors travel at ground level, collecting in any terrain depression. Even in low concentrations, these materials present life-safety hazards. The invisible leading edge of the plume may extend well beyond what is visible. Life-threatening concentrations can exist at distances far from the source.',
+    hotZonePrinciple:'Establish an aggressive downwind perimeter — larger than initial estimates suggest. The plume\'s leading edge is not visible. Any low area, ditch, underpass, or basement in the downwind path must be included in the hot zone.',
+    stagingPrinciple:'Strictly upwind. In calm conditions or with gusty winds, increase standoff distance significantly. Command and staging must be upwind with clear egress routes that do not cross the plume path.',
+    ignitionNote:'While toxic, this class may also carry secondary fire/explosion risk. Focus first on life safety — evacuate the downwind corridor immediately.'
+  },
+  {
+    id:'toxic_light', label:'Toxic Gas — Lighter Than Air',
+    vapordensity:'lighter', state:'gas', primaryHazard:'toxic exposure',
+    openingClue:'A vapor cloud is rising from the source with a strong, sharp odor detectable at a long distance.',
+    clues:[
+      'Strong pungent odor (sharp, chemical smell) detectable at significant distance',
+      'Visible vapor plume rising from the source, dispersing at mid-to-upper level',
+      'Bystanders reporting eye, skin, or respiratory irritation downwind',
+      'No pooling liquid on the ground — release is gaseous',
+      'Container appears to be pressurized — frost or hiss from the release point'
+    ],
+    behaviorSummary:'Lighter toxic vapors rise and travel downwind at mid-to-upper level. They are less likely to accumulate in ground-level drains but can enter upper floors of buildings and trapped elevated spaces. Still a significant life-safety hazard at very low concentrations in the downwind corridor.',
+    hotZonePrinciple:'A large downwind perimeter is required. Evacuate upper floors of buildings in the downwind corridor. HVAC intakes that pull from the downwind direction will carry contaminated air into occupied buildings.',
+    stagingPrinciple:'Stage strictly upwind. Avoid areas where vapors could be trapped at elevation in the downwind direction. Do not shelter in place in buildings with HVAC intake downwind of the source.',
+    ignitionNote:'Some materials in this category are also flammable — treat as dual hazard until confirmed otherwise.'
+  },
+  {
+    id:'corrosive', label:'Corrosive Liquid',
+    vapordensity:'variable', state:'liquid', primaryHazard:'chemical burns / environmental',
+    openingClue:'Liquid is fuming visibly off the surface, and nearby metal fixtures show discoloration or corrosion.',
+    clues:[
+      'Visible fuming or steaming rising from the spilled liquid surface',
+      'Metal components near the spill showing rapid discoloration or corrosion',
+      'Ground or pavement surface etching visible near the release point',
+      'Liquid runoff flowing downhill, leaving a stained or reactive trail',
+      'Product or placard indicates corrosive hazard class'
+    ],
+    behaviorSummary:'Corrosive liquids run to low points and waterways. Vapor generation may be limited unless the product is heated or highly concentrated. Primary hazards are direct contact burns and environmental contamination through runoff. Secondary hazard is vapor inhalation if fuming is significant.',
+    hotZonePrinciple:'Hot zone must include the liquid runoff path toward all downhill terrain features and waterways. If significant fuming is present, a downwind vapor zone must also be established.',
+    stagingPrinciple:'Stage upwind of any fuming area. Protect downhill terrain and waterways as exposure priorities. Personnel approaching must have full contact protection — no exposed skin.',
+    ignitionNote:'Corrosives are generally not flammable, but reaction with certain materials (reactive metals, organics) can generate heat or flammable gases. Check for secondary hazards.'
+  },
+  {
+    id:'oxidizer', label:'Oxidizer / Reactive Material',
+    vapordensity:'variable', state:'solid/liquid', primaryHazard:'fire enhancement / explosion',
+    openingClue:'An unusual white powder or liquid is visible, and any fire in the area appears unusually intense and resistant to control.',
+    clues:[
+      'White crystalline or powder material visible spilled around the container',
+      'Any fire on scene is unusually intense — burning hotter and faster than expected',
+      'Fire suppression appears ineffective — material re-ignites or accelerates burning',
+      'Placard or label suggests oxidizer class (DOT class 5)',
+      'Packaging shows no flammability marking, but fire risk exists from contact with other materials'
+    ],
+    behaviorSummary:'Oxidizers do not burn themselves but dramatically accelerate the combustion of any nearby material. Contact with combustibles can cause spontaneous ignition. Water may react with some oxidizers, causing violent reaction or release of toxic gases. Explosion risk is elevated if oxidizer contacts organic materials under confinement.',
+    hotZonePrinciple:'Establish a large perimeter — significantly larger than for a typical spill — due to the explosion and rapid fire propagation risk. Remove all combustible materials from the hot zone. Keep all flammable liquids, fuels, and organic materials well clear.',
+    stagingPrinciple:'Stage well upwind and well clear. This material turns ordinary combustibles into fuel. Any vehicle, equipment, or debris in the hot zone becomes an enhanced hazard. Do not approach with combustible equipment.',
+    ignitionNote:'Oxidizers are the force multiplier for fire. A small oxidizer release near any fuel source can cause rapid, uncontrollable fire spread. Treat as explosion risk until proven otherwise.'
+  }
+];
+
+const WEATHER = [
+  { id:'wind_n_light',   label:'Light wind from the North (5 mph)',    from:'N',  toDir:'South',    toShort:'S',   speed:'light',   calm:false, gusty:false,
+    desc:'A steady light northerly breeze is moving across the scene. Flags and light debris indicate a consistent 5 mph wind from the north.',
+    dispersion:'The light breeze provides consistent vapor movement toward the south, with a relatively narrow plume at close range that widens with distance.' },
+  { id:'wind_s_light',   label:'Light wind from the South (5 mph)',    from:'S',  toDir:'North',    toShort:'N',   speed:'light',   calm:false, gusty:false,
+    desc:'A light but consistent southerly breeze is present. Smoke from nearby structures drifts steadily toward the north.',
+    dispersion:'Vapor transport is consistent toward the north. Light winds may allow moderate concentrations to persist further downwind.' },
+  { id:'wind_e_moderate',label:'Moderate wind from the East (12 mph)', from:'E',  toDir:'West',     toShort:'W',   speed:'moderate',calm:false, gusty:false,
+    desc:'A steady 12 mph easterly wind is evident — dust and debris are moving consistently toward the west.',
+    dispersion:'Moderate wind creates a well-defined plume moving westward. Dispersion is faster than light wind but the plume footprint may be wider.' },
+  { id:'wind_w_moderate',label:'Moderate wind from the West (12 mph)', from:'W',  toDir:'East',     toShort:'E',   speed:'moderate',calm:false, gusty:false,
+    desc:'A moderate 12 mph westerly wind is apparent. Trees are swaying and dust is moving steadily toward the east.',
+    dispersion:'Consistent westerly wind pushes vapors eastward. A clearly defined downwind corridor extends from the source.' },
+  { id:'wind_nw_strong', label:'Strong wind from the Northwest (20+ mph)', from:'NW', toDir:'Southeast', toShort:'SE', speed:'strong',  calm:false, gusty:false,
+    desc:'A strong northwest wind of 20+ mph is blowing. Significant debris movement and sustained tree swaying indicate sustained wind toward the southeast.',
+    dispersion:'High wind speed creates rapid dispersion but a wider lateral plume footprint. Concentrations decrease faster, but the affected area is larger.' },
+  { id:'wind_calm',      label:'Calm Conditions — near-zero wind',     from:'calm', toDir:'all directions', toShort:'all areas', speed:'calm', calm:true, gusty:false,
+    desc:'Wind is essentially absent. Smoke from any nearby source rises straight up with minimal drift. The scene is eerily still.',
+    dispersion:'Without wind, vapors accumulate near the source. Heavy vapors pool in all surrounding low areas equally. Concentrations can build to dangerous levels with no natural dilution.' },
+  { id:'wind_sw_light',  label:'Light wind from the Southwest (7 mph)', from:'SW', toDir:'Northeast', toShort:'NE', speed:'light',  calm:false, gusty:false,
+    desc:'A light 7 mph southwesterly breeze is evident. Light flags and smoke indicate a consistent drift toward the northeast.',
+    dispersion:'A defined plume moves toward the northeast at a slow pace. Light wind conditions allow moderate concentrations at distance.' },
+  { id:'wind_ne_gusty',  label:'Gusty Northeast wind (15–25 mph)',     from:'NE', toDir:'Southwest', toShort:'SW', speed:'gusty',  calm:false, gusty:true,
+    desc:'A gusty northeast wind is blowing at 15–25 mph with visible fluctuations in direction. The plume is shifting and variable, making consistent prediction challenging.',
+    dispersion:'Gusty conditions create an intermittent, widening plume toward the southwest. Concentrations are unpredictable — dangerous levels may appear in areas not consistently downwind.' }
+];
+
+const TERRAIN = [
+  { id:'flat',          label:'Flat, Open Terrain',              short:'FLAT TERRAIN',
+    desc:'The surrounding area is flat with no significant grade changes.',
+    effect:'No terrain trapping effect. Vapors move primarily in the wind direction. No low-area collection points visible.',
+    heavyVaporNote:'Heavy vapors will travel at ground level in the wind direction without terrain-assisted pooling.',
+    liquidNote:'Liquid runoff will spread across flat ground with no defined drainage concentration.' },
+  { id:'slope_south',   label:'Terrain Slopes Downward to the South', short:'SOUTH-SLOPING',
+    desc:'The ground has a visible grade — the terrain drops toward the south.',
+    effect:'Liquids and heavy vapors will accelerate southward. Any drainage or gully on the south side becomes a concentration point.',
+    heavyVaporNote:'Heavy vapors will combine with wind and slope — if wind is also southward, the effect is doubled. Even with north wind, gravity pulls heavy vapors south.',
+    liquidNote:'All liquid runoff concentrates toward the south. Southern drains, ditches, and waterways are at high risk.' },
+  { id:'slope_north',   label:'Terrain Slopes Downward to the North', short:'NORTH-SLOPING',
+    desc:'The terrain has a noticeable drop toward the north.',
+    effect:'Gravity-driven runoff and heavy vapor pooling will occur to the north. Northern features — ditches, drains, depressed areas — become collection zones.',
+    heavyVaporNote:'Heavy vapors may fight wind direction if wind is from the north, creating a complex situation with pooling nearest the source on the north side.',
+    liquidNote:'Liquid flows north. Northern drainage infrastructure and any waterway to the north are exposure priorities.' },
+  { id:'ditch_west',    label:'Drainage Ditch on the West Side',  short:'WEST-SIDE DITCH',
+    desc:'A drainage ditch runs along the western perimeter of the scene.',
+    effect:'The ditch creates a defined collection channel on the west side. Liquid and heavy vapors that reach the ditch will travel along its entire length — carrying hazard far from the origin.',
+    heavyVaporNote:'If any heavy vapor reaches the western ditch, it will flow along the ditch corridor regardless of wind direction.',
+    liquidNote:'Any liquid reaching the western ditch will channel along it. Downstream recipients of that ditch must be identified and considered.' },
+  { id:'confined',      label:'Adjacent Basement / Underpass',    short:'CONFINED SPACE NEARBY',
+    desc:'There is an adjacent below-grade space — a basement, underpass, or utility vault — within 200 feet.',
+    effect:'Any heavy vapor that reaches this space will accumulate to dangerous concentrations. Once vapors enter a confined below-grade space, they are extremely difficult to remove without positive pressure ventilation.',
+    heavyVaporNote:'This is the highest-priority exposure in the scene. Heavy vapors will enter and concentrate in the confined space, creating an immediately dangerous environment.',
+    liquidNote:'Liquid runoff entering the confined space will off-gas vapors in an enclosed environment — compounding the hazard significantly.' },
+  { id:'waterway',      label:'Waterway to the East',             short:'EAST-SIDE WATERWAY',
+    desc:'A creek, canal, or drainage waterway runs along the eastern boundary.',
+    effect:'Any liquid that reaches the eastern waterway will be carried downstream, creating an expanding environmental exposure. Some vapors travel along the water surface.',
+    heavyVaporNote:'Heavy vapors may travel along the water surface of the eastern waterway, extending the hazard corridor downstream.',
+    liquidNote:'This is the primary environmental exposure. Contamination reaching the waterway spreads beyond the scene rapidly. Protection of the waterway must be a priority.' }
+];
+
+/* ═══════════════════════════════════════════════
+   DIFFICULTY CONFIGURATION
+═══════════════════════════════════════════════ */
+const DIFF_CONFIG = {
+  basic: {
+    weatherIds: ['wind_n_light','wind_s_light','wind_e_moderate','wind_w_moderate'],
+    terrainIds:  ['flat','slope_south','slope_north'],
+    behaviorIds: ['flamgas_light','flamliq_heavy','toxic_heavy']
+  },
+  intermediate: {
+    weatherIds: ['wind_e_moderate','wind_w_moderate','wind_nw_strong','wind_sw_light'],
+    terrainIds:  ['slope_south','slope_north','ditch_west','waterway'],
+    behaviorIds: ['flamgas_light','flamliq_heavy','toxic_heavy','toxic_light','corrosive']
+  },
+  advanced: {
+    weatherIds: ['wind_calm','wind_ne_gusty','wind_nw_strong','wind_sw_light','wind_n_light'],
+    terrainIds:  ['confined','ditch_west','waterway','slope_south','slope_north'],
+    behaviorIds: ['flamliq_heavy','toxic_heavy','toxic_light','corrosive','oxidizer','flamgas_light']
+  }
+};
+
+/* ═══════════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════════ */
+function rng(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function filterById(pool, ids){ return pool.filter(x=>ids.includes(x.id)); }
+
+function shuffleInto4(correct, distractors){
+  const all = [correct, ...distractors.slice(0,3)];
+  for(let i=all.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [all[i],all[j]]=[all[j],all[i]];
+  }
+  return { options:all, correctIndex:all.indexOf(correct) };
+}
+
+const OPPOSITE = {
+  'N':'South','S':'North','E':'West','W':'East',
+  'NW':'Southeast','NE':'Southwest','SW':'Northeast','SE':'Northwest',
+  'calm':'no single safe direction'
+};
+function downwindDir(from){ return OPPOSITE[from] || 'downwind'; }
+function upwindDir(from){
+  const rev = {'N':'S','S':'N','E':'W','W':'E','NW':'SE','NE':'SW','SW':'NE','SE':'NW'};
+  return rev[from] ? rev[from]+' of the source' : 'away from the source in all upwind directions';
+}
+
+/* ═══════════════════════════════════════════════
+   QUESTION BUILDER
+═══════════════════════════════════════════════ */
+function buildQuestions(beh, wx, ter){
+  const dw  = wx.toDir;    // "South", "Northeast", etc.
+  const dwS = wx.toShort;  // "S", "NE"
+  const uw  = upwindDir(wx.from);
+  const heavy   = beh.vapordensity === 'heavier';
+  const isCalm  = wx.calm;
+  const isGusty = wx.gusty;
+  const isToxic = beh.primaryHazard === 'toxic exposure';
+  const isFlam  = beh.primaryHazard === 'fire/explosion';
+  const isLiquid= beh.state === 'liquid';
+  const hasDitch    = ter.id === 'ditch_west';
+  const hasConfined = ter.id === 'confined';
+  const hasWater    = ter.id === 'waterway';
+  const hasSlopeS   = ter.id === 'slope_south';
+  const hasSlopeN   = ter.id === 'slope_north';
+
+  const qs = [];
+
+  /* ──────────────────────────────────────────
+     Q1 — WHERE DOES THE HAZARD TRAVEL?
+     (always includes tactical tool prompt)
+  ─────────────────────────────────────────── */
+  {
+    let correctText, correctReason;
+    if(isCalm && heavy){
+      correctText = `Near the source and equally into all surrounding low terrain features — with no wind to provide direction, vapors build up and pool in every nearby depression`;
+      correctReason = `Calm winds remove the dominant wind-driven direction. Heavy vapors that cannot rise instead accumulate in all accessible low areas equally. ${ter.effect} This creates hazard in multiple directions simultaneously.`;
+    } else if(isCalm && !heavy){
+      correctText = `Rising from the source and accumulating in any overhead enclosed spaces — calm winds allow no dispersion, causing buildup directly above and in any enclosed elevated area nearby`;
+      correctReason = `Without wind, lighter vapors rise and can stagnate in any enclosed space at elevation directly above or adjacent to the source. Concentrations can build to dangerous levels without the diluting effect of wind.`;
+    } else if(isGusty && heavy){
+      correctText = `Primarily toward the ${dw} but with intermittent shifts — the gusty condition means the leading plume edge may periodically swing toward crosswind positions, creating unpredictable exposure`;
+      correctReason = `Gusty conditions maintain a dominant ${dw} travel direction, but shifts in wind direction mean concentrations can appear in areas that are not consistently downwind. ${heavy?'Heavy vapors still sink and follow low terrain in whatever direction the wind is pushing them.':''}`;
+    } else if(heavy){
+      correctText = `${dw} at ground level — heavy vapors sink and travel along the surface toward the ${dw}, collecting in any low areas, drains, or depressions in that direction`;
+      correctReason = `Vapors heavier than air travel at ground level in the wind direction (${dw}). They are pulled downhill by gravity and drawn into any below-grade feature. ${ter.effect}`;
+    } else {
+      correctText = `${dw} at mid-to-upper elevation — vapors lighter than air rise and travel downwind, dispersing above ground level`;
+      correctReason = `Lighter-than-air vapors travel downwind (${dw}) while rising. They disperse more readily in open areas but can accumulate in any enclosed elevated space in the ${dw} corridor. ${ter.effect}`;
+    }
+
+    const distractors = [
+      `Upwind toward the ${wx.from === 'calm' ? 'north' : OPPOSITE[OPPOSITE[wx.from]] || 'north'} — initial responders often instinctively drive into the wind`,
+      `Remaining at the source without significant migration — the release is controlled enough that vapor is not traveling`,
+      heavy
+        ? `Upward and away from the scene — lighter vapors rise and the release presents minimal ground-level risk`
+        : `Along the ground into storm drains and low areas — the vapor is heavy enough to sink and travel to low points`
+    ];
+    const shuffled = shuffleInto4(correctText, distractors);
+    qs.push({
+      text: `Based on the visual clues and conditions, where will the primary hazard travel from the release point?`,
+      tacticalTip: `Use the Basic Tactical Tool's plume diagram if needed to visualize vapor travel direction relative to wind.`,
+      options: shuffled.options,
+      correctIndex: shuffled.correctIndex,
+      correctReason
+    });
+  }
+
+  /* ──────────────────────────────────────────
+     Q2 — HOT ZONE / KEEP-OUT AREA
+  ─────────────────────────────────────────── */
+  {
+    let correctText, correctReason;
+    const terrainHazard = hasConfined ? 'the adjacent confined below-grade space is the highest-priority exposure and must be within the hot zone'
+      : hasDitch ? 'the western drainage ditch is a collection and transport feature — it must be included in or treated as part of the hot zone'
+      : hasWater ? 'the eastern waterway is an exposure priority — runoff reaching it extends hazard downstream beyond the visible scene'
+      : hasSlopeS ? 'the southward slope will concentrate vapors and runoff on the south side — the hot zone must extend in that direction'
+      : hasSlopeN ? 'the northward slope will collect heavy vapors and runoff — expand the hot zone to the north'
+      : 'flat terrain provides no single collection point but also no terrain barriers to slow vapor migration';
+
+    if(isCalm){
+      correctText = `A circular perimeter around the source extending in all directions — with no wind, there is no safe downwind side, so the hot zone must encompass all directions from the source`;
+      correctReason = `Calm winds create an omnidirectional hazard. There is no clearly safe direction. The hot zone must be circular. ${terrainHazard}. Increase standoff distance significantly compared to wind-driven scenarios.`;
+    } else if(isToxic && heavy){
+      correctText = `An aggressive ${dw} perimeter extending further than initial visual clues suggest, including all low areas, ditches, and enclosed spaces in that direction — with a secondary expansion toward ${ter.id.includes('slope')||hasDitch||hasConfined?'terrain features that will collect vapors':'any low terrain in the downwind path'}`;
+      correctReason = `Toxic heavy vapors travel at ground level toward the ${dw}. The plume\'s leading invisible edge extends beyond what can be seen. ${terrainHazard}. Err toward a larger perimeter — you can always reduce it, you cannot un-expose someone.`;
+    } else if(isToxic && !heavy){
+      correctText = `A large ${dw} corridor including upper floors of buildings in that direction — toxic lighter vapors travel downwind and can enter building HVAC systems and upper floors`;
+      correctReason = `Lighter toxic vapors travel ${dw} and rise. Buildings with HVAC intakes on the ${dw} side are at risk of interior contamination. ${terrainHazard}. Evacuate, do not shelter-in-place, in buildings ${dw} of the source.`;
+    } else if(isFlam && heavy){
+      correctText = `The entire ${dw} ground-level corridor plus all low terrain features and enclosed spaces in that direction — flammable heavy vapors can travel far from the source before encountering ignition`;
+      correctReason = `Heavier flammable vapors travel at ground level ${dw} and accumulate in low areas. A remote ignition source — vehicle, electrical panel, pilot light — can cause a flash fire back toward the source. ${terrainHazard}. Keep all ignition sources out of the hot zone and downwind corridor.`;
+    } else if(isFlam && !heavy){
+      correctText = `The ${dw} corridor at mid-to-upper elevation, including any enclosed elevated spaces where lighter flammable vapors could accumulate`;
+      correctReason = `Lighter flammable vapors travel ${dw} and rise. Enclosed elevated spaces — upper floors, enclosed parking structures, attics — in the downwind direction can accumulate concentrations that reach the flammable range. ${terrainHazard}.`;
+    } else {
+      correctText = `The immediate spill area and the downhill runoff path toward ${hasSlopeS?'the south':hasSlopeN?'the north':hasDitch?'the western ditch':hasWater?'the eastern waterway':'the nearest low terrain feature'} — the corrosive liquid will flow to the lowest accessible point`;
+      correctReason = `Corrosive liquids run to low points. ${terrainHazard}. Any fuming from the liquid also requires a downwind vapor zone if visible steaming is present.`;
+    }
+
+    const distractors = [
+      `Only the immediate area within 50 feet of the release point — limit the perimeter to what is visibly affected`,
+      `The upwind side of the source — keep responders downwind so they can see the scene more clearly`,
+      `Equally in all directions regardless of wind or terrain — use a standard circular perimeter with no adjustments`
+    ];
+    const shuffled = shuffleInto4(correctText, distractors);
+    qs.push({
+      text: `Where should the initial hot zone (keep-out area) be established based on the scene conditions?`,
+      tacticalTip: null,
+      options: shuffled.options,
+      correctIndex: shuffled.correctIndex,
+      correctReason
+    });
+  }
+
+  /* ──────────────────────────────────────────
+     Q3 — SAFE STAGING / COMMAND LOCATION
+  ─────────────────────────────────────────── */
+  {
+    let correctText, correctReason;
+    const avoidItems = [];
+    if(heavy) avoidItems.push('low-lying terrain');
+    if(hasDitch) avoidItems.push('the western drainage ditch');
+    if(hasConfined) avoidItems.push('any area adjacent to the confined below-grade space');
+    if(hasWater) avoidItems.push('the eastern waterway and its banks');
+    if(hasSlopeS) avoidItems.push('any position to the south');
+    if(hasSlopeN) avoidItems.push('any position to the north');
+    const avoidStr = avoidItems.length > 0 ? `Avoid ${avoidItems.join(', ')}.` : '';
+
+    if(isCalm){
+      correctText = `Well back from the source in any direction, with immediate egress established — then reassess as soon as wind develops; avoid all low terrain and enclosed spaces regardless of direction`;
+      correctReason = `Calm winds make positioning uniquely hazardous — there is no reliably safe downwind direction. Stage at maximum practical distance. ${avoidStr} Establish egress routes in multiple directions and continuously monitor for any wind shift that establishes a dominant hazard direction.`;
+    } else if(isGusty){
+      correctText = `Upwind based on current dominant wind direction (${uw}), but with immediate awareness of gusts shifting the plume — maintain egress routes in multiple directions and monitor continuously`;
+      correctReason = `Gusty conditions require upwind positioning with contingency planning. The current dominant wind is from the ${wx.from}, making the ${uw} the staging position. However, gusts can shift the plume. ${avoidStr} Never commit to a single staging point without a clear escape route.`;
+    } else {
+      correctText = `${uw}, on ${hasConfined?'elevated ground above':hasDitch?'high ground away from':hasSlopeS?'elevated ground to the north or northeast,':hasSlopeN?'elevated ground to the south or southeast,':''} the scene — strictly upwind with clear egress that does not cross the hazard path`;
+      correctReason = `The primary staging rule: upwind, uphill, upstream. With wind from the ${wx.from}, staging should be at ${uw}. ${avoidStr} Confirm that your egress route back to the highway/access road does not take units through or across the projected hazard path.`;
+    }
+
+    const distractors = [
+      `${dw} of the source for best visibility into the incident — position command where you can see the most`,
+      heavy
+        ? `In the lowest available ground position to shelter from wind while maintaining visual contact with the scene`
+        : `In an enclosed structure immediately adjacent to the scene for protection from the elements`,
+      hasConfined
+        ? `Near the entrance of the adjacent building for rapid resource access`
+        : hasDitch
+          ? `Along the western drainage ditch where staging area is already established`
+          : `Crosswind with no consideration for terrain features — crosswind is always safe`
+    ];
+    const shuffled = shuffleInto4(correctText, distractors);
+    qs.push({
+      text: `Where is the safest initial location for command and first-arriving unit staging?`,
+      tacticalTip: null,
+      options: shuffled.options,
+      correctIndex: shuffled.correctIndex,
+      correctReason
+    });
+  }
+
+  return qs;
+}
+
+/* ═══════════════════════════════════════════════
+   OPENING SENTENCE TEMPLATES
+═══════════════════════════════════════════════ */
+const OPENERS = [
+  (env,con)=>`Engine company dispatched to a reported ${con.situation.split(' ').slice(0,4).join(' ')} in a ${env.ctx}.`,
+  (env,con)=>`First-arriving units report to a ${env.label} for what dispatch describes as a hazmat situation.`,
+  (env,con)=>`You are the first arriving officer at a ${env.ctx}. On approach, you observe ${con.situation}.`,
+  (env,con)=>`Responding to a reported odor complaint at a ${env.ctx}, you arrive to find ${con.situation}.`,
+  (env,con)=>`Units are on scene at a ${env.label}. The situation involves ${con.situation}.`
+];
+
+/* ═══════════════════════════════════════════════
+   SCENARIO GENERATOR
+═══════════════════════════════════════════════ */
+function generateScenario(difficulty){
+  const cfg = DIFF_CONFIG[difficulty];
+  const env = rng(ENVIRONMENTS);
+  const con = rng(CONTAINERS);
+  const beh = rng(filterById(BEHAVIORS, cfg.behaviorIds));
+  const wx  = rng(filterById(WEATHER,   cfg.weatherIds));
+  const ter = rng(filterById(TERRAIN,   cfg.terrainIds));
+
+  const opener = rng(OPENERS)(env, con);
+
+  const description =
+    `${opener} ${beh.openingClue} `+
+    `${wx.desc} `+
+    `${ter.desc} ${env.nearby}.`;
+
+  // Build clue list: 2 from behavior + wind clue + terrain clue + 1 extra
+  const clues = [
+    beh.clues[0],
+    beh.clues[Math.min(1,beh.clues.length-1)],
+    wx.calm
+      ? 'Wind: Essentially absent — smoke from a nearby source rises straight up with no drift'
+      : wx.gusty
+        ? `Wind: Gusty from the ${wx.from} — ${wx.label.toLowerCase()}`
+        : `Wind: ${wx.label} — ${wx.desc.split('.')[0]}`,
+    `Terrain: ${ter.desc} — ${ter.effect.split('.')[0]}`,
+    env.nearby
+  ].filter(Boolean);
+
+  const questions = buildQuestions(beh, wx, ter);
+
+  return { difficulty, env, con, beh, wx, ter, description, clues, questions };
+}
+
+/* ═══════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════ */
+let currentDifficulty = 'basic';
+let currentScenario   = null;
+let scenarioCount     = 0;
+let answeredCount     = 0; // questions answered in current drill
+
+/* ═══════════════════════════════════════════════
+   DIFFICULTY SELECTOR
+═══════════════════════════════════════════════ */
+function selectDiff(btn, diff){
+  document.querySelectorAll('.diff-btn').forEach(b=>{
+    b.className = 'diff-btn';
+  });
+  btn.className = `diff-btn active-${diff}`;
+  currentDifficulty = diff;
+}
+
+/* ═══════════════════════════════════════════════
+   FLOW
+═══════════════════════════════════════════════ */
+function startTraining(){
+  document.getElementById('startScreen').style.display='none';
+  document.getElementById('drillScreen').style.display='block';
+  scenarioCount = 0;
+  loadScenario(generateScenario(currentDifficulty));
+}
+
+function backToStart(){
+  document.getElementById('startScreen').style.display='block';
+  document.getElementById('drillScreen').style.display='none';
+}
+
+function nextScenario(){
+  loadScenario(generateScenario(currentDifficulty));
+}
+
+function generateNew(){
+  loadScenario(generateScenario(currentDifficulty));
+}
+
+/* ═══════════════════════════════════════════════
+   RENDER SCENARIO
+═══════════════════════════════════════════════ */
+function loadScenario(scen){
+  currentScenario = scen;
+  answeredCount   = 0;
+  scenarioCount++;
+
+  // Progress
+  document.getElementById('scenarioNum').textContent = scenarioCount;
+  const pct = Math.min(scenarioCount*8, 95);
+  document.getElementById('progressFill').style.width = pct+'%';
+
+  // Badge
+  const badge = document.getElementById('diffBadge');
+  badge.textContent = scen.difficulty.charAt(0).toUpperCase()+scen.difficulty.slice(1);
+  badge.className = 'diff-badge badge-'+scen.difficulty;
+
+  // Meta & title
+  document.getElementById('scenarioMeta').textContent =
+    scen.env.label.toUpperCase()+' · '+scen.con.short;
+  document.getElementById('scenarioTitle').textContent =
+    scen.beh.label.toUpperCase();
+
+  // Description
+  document.getElementById('scenarioDesc').textContent = scen.description;
+
+  // Clues
+  const clueList = document.getElementById('cluesList');
+  clueList.innerHTML = scen.clues.map(c=>`<li>${c}</li>`).join('');
+
+  // Questions
+  renderQuestions(scen.questions);
+
+  // Hide analysis
+  document.getElementById('analysisBlock').style.display='none';
+
+  // Scroll to top
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ═══════════════════════════════════════════════
+   RENDER QUESTIONS
+═══════════════════════════════════════════════ */
+function renderQuestions(questions){
+  const wrap = document.getElementById('questionsWrap');
+  wrap.innerHTML = '';
+  questions.forEach((q,qi)=>{
+    const block = document.createElement('div');
+    block.className = 'question-block';
+    block.id = `qblock-${qi}`;
+
+    const letters = ['A','B','C','D'];
+    const optionsHtml = q.options.map((opt,oi)=>`
+      <button class="option-btn" id="opt-${qi}-${oi}" onclick="selectAnswer(${qi},${oi})">
+        <span class="option-letter">${letters[oi]}</span>
+        <span class="option-text">${opt}</span>
+      </button>
+    `).join('');
+
+    block.innerHTML = `
+      <div class="q-header">
+        <div class="q-num">${qi+1}</div>
+        <div>
+          <div class="q-text">${q.text}</div>
+          ${q.tacticalTip ? `<div class="q-tactical-tip">${q.tacticalTip}</div>` : ''}
+        </div>
+      </div>
+      <div class="options-list">${optionsHtml}</div>
+      <div class="feedback-panel" id="feedback-${qi}"></div>
+    `;
+    wrap.appendChild(block);
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   ANSWER HANDLING
+═══════════════════════════════════════════════ */
+function selectAnswer(qi, oi){
+  const q = currentScenario.questions[qi];
+  const block = document.getElementById(`qblock-${qi}`);
+
+  // Already answered?
+  if(block.dataset.answered) return;
+  block.dataset.answered = '1';
+  answeredCount++;
+
+  const isCorrect = oi === q.correctIndex;
+
+  // Style all options
+  q.options.forEach((_,i)=>{
+    const btn = document.getElementById(`opt-${qi}-${i}`);
+    btn.disabled = true;
+    if(i === q.correctIndex){
+      btn.classList.add(isCorrect && i===oi ? 'correct' : 'missed');
+    } else if(i === oi && !isCorrect){
+      btn.classList.add('wrong');
+    }
+  });
+
+  // Block border
+  block.classList.add(isCorrect ? 'answered-correct' : 'answered-wrong');
+
+  // Feedback
+  const fb = document.getElementById(`feedback-${qi}`);
+  if(isCorrect){
+    fb.className = 'feedback-panel show-correct';
+    fb.innerHTML = `<strong>✓ Correct.</strong> ${q.correctReason}`;
+  } else {
+    fb.className = 'feedback-panel show-wrong';
+    fb.innerHTML = `<strong>✗ Incorrect.</strong> The correct answer is shown above. ${q.correctReason}`;
+  }
+
+  // Check if all answered
+  if(answeredCount >= currentScenario.questions.length){
+    showAnalysis();
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   ANALYSIS REVEAL
+═══════════════════════════════════════════════ */
+function showAnalysis(){
+  const scen = currentScenario;
+  const beh  = scen.beh;
+  const wx   = scen.wx;
+  const ter  = scen.ter;
+
+  const analysisHtml = `
+    <div class="analysis-rule">${beh.label}</div>
+
+    <div class="analysis-text">
+      <strong>Behavior:</strong> ${beh.behaviorSummary}
+    </div>
+
+    <div class="analysis-text">
+      <strong>Hot Zone Principle:</strong> ${beh.hotZonePrinciple}
+    </div>
+
+    <div class="analysis-text">
+      <strong>Staging Principle:</strong> ${beh.stagingPrinciple}
+    </div>
+
+    ${beh.ignitionNote ? `<div class="analysis-text">
+      <strong>Ignition / Secondary Hazard:</strong> ${beh.ignitionNote}
+    </div>` : ''}
+
+    <div class="key-principle">
+      <div class="kp-label">Wind &amp; Terrain Effect</div>
+      <p>${wx.dispersion} <strong>${ter.effect}</strong> ${ter.id==='confined'||ter.id==='ditch_west'||ter.id==='waterway' ? ter.heavyVaporNote||'' : ''}</p>
+    </div>
+
+    <div class="tactical-callout">
+      <div class="tc-icon">🔧</div>
+      <div class="tc-body">
+        <div class="tc-label">Basic Tactical Tool Application</div>
+        <div class="tc-text">
+          The Basic Tactical Tool's <strong>plume direction diagram</strong> can be used to quickly visualize
+          the ${wx.from === 'calm' ? 'omnidirectional' : wx.toDir.toLowerCase()+'-traveling'} vapor plume relative to your staging position.
+          The <strong>Chemical ID section</strong> will display vapor density (VD) — values above 1.0 confirm the hazard sinks
+          and travels at ground level. Values below 1.0 confirm upward vapor travel.
+
+        </div>
+      </div>
+    </div>
+  `;
+
+  const analysisBlock = document.getElementById('analysisBlock');
+  document.getElementById('analysisBody').innerHTML = analysisHtml;
+  analysisBlock.style.display = 'block';
+  setTimeout(()=>{ analysisBlock.scrollIntoView({behavior:'smooth',block:'start'}); }, 100);
+}
+
+/* ═══════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════ */
+// Default difficulty button state
+document.querySelector('[data-diff="basic"]').className = 'diff-btn active-basic';
+</script>
+</body>
+</html>
