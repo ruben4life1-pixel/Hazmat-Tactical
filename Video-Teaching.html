@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Real Incident Breakdowns — Hazmat Tactical</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg:        #060a12;
+    --bg-card:   #0c1120;
+    --bg-el:     #111928;
+    --bg-lift:   #15203a;
+    --border:    #1e2c44;
+    --border-hi: #2a3d5e;
+    --text:      #d4dbe8;
+    --text-hi:   #edf2fa;
+    --dim:       #6577909;
+    --muted:     #5d6f87;
+    --amber:     #e8960a;
+    --amber-lt:  #fbbf24;
+    --amber-dim: rgba(232,150,10,0.1);
+    --amber-glow:rgba(232,150,10,0.2);
+    --red:       #dc2626;
+    --red-dim:   rgba(220,38,38,0.12);
+    --green:     #16a34a;
+    --green-lt:  #4ade80;
+    --green-dim: rgba(22,163,74,0.12);
+    --cyan:      #0891b2;
+    --cyan-lt:   #22d3ee;
+    --cyan-dim:  rgba(8,145,178,0.1);
+    --rose:      #e11d48;
+    --rose-dim:  rgba(225,29,72,0.1);
+    --violet:    #7c3aed;
+    --violet-dim:rgba(124,58,237,0.1);
+    --mono:      'IBM Plex Mono', monospace;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.7;
+    position: relative;
+}
+
+/* Subtle grid texture */
+body::before {
+    content:'';
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+        radial-gradient(ellipse 70% 50% at 10% 0%, rgba(232,150,10,.05) 0%, transparent 60%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M 40 0 L 0 0 0 40' fill='none' stroke='%23111928' stroke-width='.5'/%3E%3C/svg%3E");
+}
+
+.app { max-width: 840px; margin: 0 auto; padding: 24px 20px 48px; position:relative; z-index:1; }
+
+/* ══════════════════════ HEADER ══════════════════════ */
+.mod-header {
+    text-align: center;
+    padding: 44px 20px 32px;
+    margin-bottom: 32px;
+    position: relative;
+}
+
+.mod-header::after {
+    content:'';
+    display:block;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--amber), var(--amber-lt), var(--amber), transparent);
+    margin-top: 28px;
+    border-radius: 2px;
+    box-shadow: 0 0 12px var(--amber-glow);
+}
+
+.mod-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--amber-dim);
+    border: 1px solid var(--amber);
+    color: var(--amber-lt);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 5px 16px;
+    border-radius: 2px;
+    margin-bottom: 16px;
+    box-shadow: 0 0 16px var(--amber-dim);
+}
+
+.mod-header h1 {
+    font-family: 'Bebas Neue', 'Rajdhani', sans-serif;
+    font-size: clamp(28px, 6vw, 46px);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-hi);
+    margin-bottom: 8px;
+    line-height: 1;
+    text-shadow: 0 0 40px rgba(232,150,10,.15);
+}
+
+.mod-header p {
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: .5px;
+    font-family: var(--mono);
+}
+
+/* ══════════════════════ SESSION NAV ══════════════════════ */
+.sess-nav-wrap {
+    position: relative;
+    margin-bottom: 28px;
+}
+
+/* Fade hint that more tabs exist */
+.sess-nav-wrap::after {
+    content:'';
+    position:absolute; right:0; top:0; bottom:8px; width:40px;
+    background: linear-gradient(90deg, transparent, var(--bg));
+    pointer-events:none; border-radius:0 4px 4px 0;
+}
+
+.sess-nav {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+.sess-nav::-webkit-scrollbar { display:none; }
+
+.sess-tab {
+    flex-shrink: 0;
+    padding: 9px 15px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: border-color .2s, color .2s, background .2s, box-shadow .2s;
+    white-space: nowrap;
+}
+
+.sess-tab:hover {
+    border-color: var(--amber);
+    color: var(--text);
+    background: var(--bg-el);
+}
+
+.sess-tab.active {
+    background: var(--amber-dim);
+    border-color: var(--amber);
+    color: var(--amber-lt);
+    box-shadow: 0 0 12px var(--amber-dim), inset 0 -2px 0 var(--amber);
+}
+
+/* ══════════════════════ PROGRESS ══════════════════════ */
+.progress-strip {
+    height: 2px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-bottom: 32px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--amber), var(--green-lt));
+    width: 20%;
+    transition: width 0.5s cubic-bezier(.4,0,.2,1);
+    box-shadow: 0 0 8px var(--amber);
+}
+
+/* ══════════════════════ SESSION TITLE AREA ══════════════════════ */
+.session { display: none; }
+.session.active {
+    display: block;
+    animation: sessIn 0.4s cubic-bezier(.2,.8,.3,1) both;
+}
+
+@keyframes sessIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.sess-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 6px;
+    display: flex; align-items: center; gap: 8px;
+}
+.sess-label::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,var(--amber-dim),transparent); }
+
+.session-title-block {
+    margin-bottom: 20px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+}
+
+.session h2 {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: clamp(20px, 4vw, 28px);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-hi);
+    margin-bottom: 6px;
+    line-height: 1.2;
+    word-break: break-word;
+}
+
+.sess-subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    font-family: var(--mono);
+}
+
+/* ══════════════════════ VIDEO BLOCK ══════════════════════ */
+.video-block {
+    background: var(--bg-card);
+    border: 1px solid var(--border-hi);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.video-block:hover {
+    border-color: rgba(220,38,38,.4);
+    box-shadow: 0 4px 24px rgba(0,0,0,.4);
+}
+
+.video-icon {
+    flex-shrink: 0;
+    width: 54px; height: 54px;
+    background: var(--red-dim);
+    border: 1px solid rgba(220,38,38,.35);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    transition: box-shadow .2s;
+}
+.video-block:hover .video-icon { box-shadow: 0 0 16px var(--red-dim); }
+
+.video-block a {
+    color: var(--cyan-lt);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    word-break: break-word;
+    transition: color .2s;
+}
+.video-block a:hover { color: #fff; text-decoration: underline; }
+
+.video-block .vid-note {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--muted);
+    margin-top: 5px;
+    letter-spacing: .3px;
+}
+
+/* ══════════════════════ SCENE BRIEF ══════════════════════ */
+.scene-brief {
+    background: var(--bg-card);
+    border: 1px solid var(--border-hi);
+    border-left: 3px solid var(--amber);
+    border-radius: 6px;
+    padding: 18px 22px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    line-height: 1.85;
+    color: var(--text);
+}
+
+.scene-brief::before {
+    content: '📋  INCIDENT BRIEF';
+    display: block;
+    font-family: var(--mono);
+    font-weight: 600;
+    font-size: 9.5px;
+    letter-spacing: 2.5px;
+    color: var(--amber);
+    margin-bottom: 10px;
+}
+
+/* ══════════════════════ SECTION BLOCK ══════════════════════ */
+.sec-block { margin-bottom: 28px; }
+
+.sec-block h3 {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--cyan-lt);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+}
+.sec-block h3::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,var(--border),transparent); border:none; }
+
+/* ══════════════════════ CLUE BUTTONS ══════════════════════ */
+.clue-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+@media (max-width: 520px) { .clue-grid { grid-template-columns: 1fr; } }
+
+.clue-btn {
+    background: var(--bg-el);
+    border: 1px solid var(--border-hi);
+    color: var(--text);
+    padding: 13px 15px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color .2s, background .2s, box-shadow .2s, transform .15s;
+    text-align: left;
+    width: 100%;
+}
+
+.clue-btn:hover {
+    border-color: var(--cyan-lt);
+    background: var(--bg-lift);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0,0,0,.3);
+}
+
+.clue-btn.revealed {
+    border-color: var(--green-lt);
+    background: var(--green-dim);
+    color: var(--green-lt);
+}
+.clue-btn .ci { margin-right: 7px; }
+
+.clue-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .35s cubic-bezier(.2,.8,.3,1), opacity .3s ease, padding .3s;
+    opacity: 0;
+    padding: 0 14px;
+    font-size: 13px;
+    color: var(--muted);
+    background: rgba(0,0,0,.25);
+    border-radius: 4px;
+    margin-top: 6px;
+    line-height: 1.7;
+    border-left: 2px solid var(--green-lt);
+}
+.clue-body.open {
+    max-height: 200px;
+    opacity: 1;
+    padding: 12px 14px;
+}
+
+/* ══════════════════════ DECISION PROMPT ══════════════════════ */
+.decision { margin: 22px 0; }
+
+.dec-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--rose);
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+}
+
+.dec-question {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-hi);
+    margin-bottom: 14px;
+    line-height: 1.65;
+}
+
+.opt-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+@media (max-width: 520px) { .opt-grid { grid-template-columns: 1fr; } }
+
+.opt-btn {
+    background: var(--bg-el);
+    border: 1px solid var(--border-hi);
+    color: var(--text);
+    padding: 13px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color .2s, background .2s, color .2s, transform .15s;
+    text-align: left;
+}
+.opt-btn:hover:not(.picked) {
+    border-color: var(--amber);
+    background: var(--amber-dim);
+    transform: translateY(-1px);
+}
+.opt-btn.correct {
+    border-color: var(--green-lt);
+    background: var(--green-dim);
+    color: var(--green-lt);
+    box-shadow: 0 0 12px rgba(74,222,128,.15);
+}
+.opt-btn.wrong {
+    border-color: var(--rose);
+    background: var(--rose-dim);
+    color: var(--rose);
+    opacity: 0.5;
+}
+.opt-btn.picked { pointer-events: none; }
+
+/* ══════════════════════ REASONING ══════════════════════ */
+.reasoning {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height .4s cubic-bezier(.2,.8,.3,1), opacity .3s ease, padding .3s;
+    background: var(--bg-card);
+    border: 1px solid var(--green);
+    border-left: 3px solid var(--green-lt);
+    padding: 0 18px;
+    border-radius: 6px;
+    margin-top: 14px;
+    font-size: 14px;
+    line-height: 1.8;
+}
+.reasoning.vis {
+    max-height: 400px;
+    opacity: 1;
+    padding: 16px 18px;
+}
+
+.reasoning-tag {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--green-lt);
+    margin-bottom: 8px;
+    display:flex; align-items:center; gap:6px;
+}
+
+/* ══════════════════════ TOOL TIE-IN ══════════════════════ */
+.tool-ref {
+    background: var(--cyan-dim);
+    border: 1px solid rgba(34,211,238,.2);
+    border-left: 3px solid var(--cyan-lt);
+    padding: 16px 20px;
+    border-radius: 6px;
+    margin: 22px 0;
+    font-size: 13px;
+    line-height: 1.8;
+}
+.tool-ref::before {
+    content: '🔧  HAZMAT TACTICAL TOOL';
+    display: block;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    color: var(--cyan-lt);
+    margin-bottom: 8px;
+}
+
+/* ══════════════════════ STRATEGY CARDS ══════════════════════ */
+.strat-card {
+    background: var(--bg-el);
+    border: 1px solid var(--border-hi);
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: border-color .2s, background .2s, box-shadow .2s;
+}
+.strat-card:hover { border-color: rgba(124,58,237,.5); background: var(--bg-lift); }
+.strat-card.open { border-color: var(--violet); background: var(--violet-dim); }
+
+.strat-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+.strat-title .arrow {
+    color: var(--muted);
+    transition: transform .25s cubic-bezier(.2,.8,.3,1), color .2s;
+    font-size: 11px; flex-shrink:0;
+}
+.strat-card.open .arrow { transform: rotate(90deg); color: var(--violet); }
+
+.strat-body {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height .35s cubic-bezier(.2,.8,.3,1), opacity .25s ease;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.75;
+}
+.strat-card.open .strat-body {
+    max-height: 300px;
+    opacity: 1;
+    margin-top: 10px;
+}
+
+/* ══════════════════════ INSTRUCTOR BOX ══════════════════════ */
+.inst-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-hi);
+    border-top: 2px solid var(--amber);
+    border-radius: 6px;
+    padding: 20px 22px;
+    margin: 24px 0;
+}
+
+.inst-box h4 {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--amber-lt);
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+}
+.inst-box h4::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,var(--amber-dim),transparent); }
+
+.inst-box ol {
+    padding-left: 20px;
+    font-size: 14px;
+    color: var(--text);
+}
+.inst-box ol li {
+    margin-bottom: 8px;
+    line-height: 1.65;
+}
+
+/* ── Reveal Answers button ── */
+.reveal-answers-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: 16px;
+    padding: 9px 18px;
+    background: var(--amber-dim);
+    border: 1px solid var(--amber);
+    border-radius: 4px;
+    color: var(--amber-lt);
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background .2s, box-shadow .2s;
+}
+.reveal-answers-btn:hover { background: var(--amber-glow); box-shadow: 0 0 12px var(--amber-dim); }
+.reveal-answers-btn.open { background: var(--amber-glow); }
+
+/* ── Answer blocks ── */
+.inst-answers {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height .45s cubic-bezier(.2,.8,.3,1), opacity .3s ease;
+}
+.inst-answers.open {
+    max-height: 2000px;
+    opacity: 1;
+}
+
+.inst-answers-inner {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border-hi);
+}
+
+.inst-answers-label {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--green-lt);
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 6px;
+}
+
+.inst-answer-item {
+    margin-bottom: 14px;
+    padding: 12px 14px;
+    background: rgba(0,0,0,.2);
+    border-radius: 5px;
+    border-left: 2px solid var(--green);
+}
+.inst-answer-item:last-child { margin-bottom:0; }
+
+.inst-answer-q {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 5px;
+    font-family: var(--mono);
+    letter-spacing: .3px;
+}
+.inst-answer-text {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.75;
+}
+.inst-answer-text strong { color: var(--text); }
+
+/* ══════════════════════ NAV ══════════════════════ */
+.nav-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+}
+
+.nav-btn {
+    padding: 11px 26px;
+    border: 1px solid var(--border-hi);
+    background: var(--bg-el);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: border-color .2s, color .2s, background .2s, box-shadow .2s, transform .15s;
+}
+.nav-btn:hover {
+    border-color: var(--amber);
+    color: var(--amber-lt);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0,0,0,.3);
+}
+.nav-btn.primary {
+    background: var(--amber);
+    color: var(--bg);
+    border-color: var(--amber);
+    font-weight: 700;
+    box-shadow: 0 0 16px var(--amber-dim);
+}
+.nav-btn.primary:hover {
+    background: var(--amber-lt);
+    box-shadow: 0 0 24px var(--amber-glow);
+}
+
+/* ══════════════════════ FOOTER ══════════════════════ */
+.mod-footer {
+    text-align: center;
+    padding: 28px 20px;
+    margin-top: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--muted);
+    letter-spacing: .3px;
+    line-height: 1.8;
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+    <div class="mod-header">
+        <div class="mod-badge">Video Training Module</div>
+        <h1>Real Incident Breakdowns</h1>
+        <p>Decision-Based Learning from Actual Hazmat Responses</p>
+    </div>
+
+    <div class="sess-nav-wrap">
+        <div class="sess-nav" id="sessNav">
+            <button class="sess-tab active" onclick="goSess(0)">1 — Chlorine Railcar</button>
+            <button class="sess-tab" onclick="goSess(1)">2 — Chlorine Building</button>
+            <button class="sess-tab" onclick="goSess(2)">3 — Ammonia Leak</button>
+            <button class="sess-tab" onclick="goSess(3)">4 — Chemical Plant Fire</button>
+            <button class="sess-tab" onclick="goSess(4)">5 — HCl Derailment</button>
+        </div>
+    </div>
+
+    <div class="progress-strip"><div class="progress-fill" id="pFill"></div></div>
+
+    <!-- ═══════════════════════ SESSION 1 ═══════════════════════ -->
+    <div class="session active" id="s0">
+        <div class="sess-label">Session 1 of 5</div>
+        <div class="session-title-block">
+            <h2>Chlorine Railcar Leak</h2>
+            <div class="sess-subtitle">Industrial Area — Rail Corridor Response</div>
+        </div>
+
+        <div class="video-block">
+            <div class="video-icon">▶</div>
+            <div>
+                <a href="https://www.cbsnews.com/sanfrancisco/video/hazmat-team-inspects-rail-car-near-pittsburg-plant-for-chlorine-leak/" target="_blank" rel="noopener">Watch: Hazmat Team Inspects Rail Car for Chlorine Leak — CBS News</a>
+                <div class="vid-note">Watch the video first, then work through the analysis below.</div>
+            </div>
+        </div>
+
+        <div class="scene-brief">
+            A hazmat team responds to a chlorine leak from a railcar in an industrial area near a chemical plant. Officials confirmed chlorine was found leaking under a railcar, triggering a public health advisory while crews investigated and mitigated the release.
+        </div>
+
+        <div class="sec-block">
+            <h3>Operational Clues — Read the Scene</h3>
+            <p style="font-size:13px; color:var(--dim); margin-bottom:10px;">Click each clue to reveal what an experienced technician would notice:</p>
+            <div class="clue-grid">
+                <div><button class="clue-btn" onclick="clue(this,'s1c1')"><span class="ci">🚂</span>Railcar Type</button><div class="clue-body" id="s1c1">Pressure tank railcars are one of the most common ways chlorine is transported. Technicians learn to recognize tank car silhouettes before reading the placard.</div></div>
+                <div><button class="clue-btn" onclick="clue(this,'s1c2')"><span class="ci">⚠️</span>Placards</button><div class="clue-body" id="s1c2">Toxic Inhalation Hazard (TIH) placards and UN 1017 identify chlorine. The placard alone tells you: poison gas, corrosive, heavier than air, IDLH 10 ppm.</div></div>
+                <div><button class="clue-btn" onclick="clue(this,'s1c3')"><span class="ci">🏭</span>Occupancy</button><div class="clue-body" id="s1c3">Industrial chemical plants and rail yards are high-probability chlorine locations. The occupancy type confirms what the railcar suggests.</div></div>
+                <div><button class="clue-btn" onclick="clue(this,'s1c4')"><span class="ci">🫁</span>Public Symptoms</button><div class="clue-body" id="s1c4">Reports of burning eyes, coughing, and "strong bleach smell" from nearby residents match chlorine exposure — a pulmonary irritant that attacks mucous membranes first.</div></div>
+            </div>
+        </div>
+
+        <div class="sec-block">
+            <h3>Decision Point 1 — Meter Selection</h3>
+            <div class="decision">
+                <div class="dec-label">⚡ Your Call</div>
+                <div class="dec-question">You arrive and confirm a greenish-yellow vapor low to the ground. What meter do you deploy first?</div>
+                <div class="opt-grid" id="s1q1">
+                    <button class="opt-btn" onclick="pick('s1q1','s1r1',this,true)">4-Gas Meter (baseline safety)</button>
+                    <button class="opt-btn" onclick="pick('s1q1','s1r1',this,false)">PID (VOC detection)</button>
+                    <button class="opt-btn" onclick="pick('s1q1','s1r1',this,false)">Radiation detector</button>
+                    <button class="opt-btn" onclick="pick('s1q1','s1r1',this,false)">pH paper</button>
+                </div>
+                <div class="reasoning" id="s1r1">
+                    <div class="reasoning-tag">✓ REASONING</div>
+                    <strong>4-gas meter first — always.</strong> It confirms O₂, LEL, CO, and H₂S baseline. Even though you suspect chlorine, you need to confirm the atmosphere is survivable before committing further. Then deploy chlorine-specific sensors (electrochemical or Dräger tubes) for concentration data. A PID won't detect chlorine effectively. Radiation and pH are irrelevant here.
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-ref">
+            <strong>Chemical Identification:</strong> Look up Chlorine (UN 1017) in the Hazmat Tactical Tool to confirm IDLH (10 ppm), vapor density (2.5 — hugs the ground), and ERG initial isolation distances before establishing zones.<br><br>
+            <strong>Air Monitoring & Meter Alarms:</strong> Reference the chlorine meter alarm setpoints (0.5 ppm low, 1.0 ppm high) to verify your entry team's instruments are correctly configured.
+        </div>
+
+        <div class="sec-block">
+            <h3>Decision Point 2 — Offensive or Defensive?</h3>
+            <div class="decision">
+                <div class="dec-label">⚡ Your Call</div>
+                <div class="dec-question">The leak is steady but not catastrophic. Vapor is migrating toward a populated area 0.5 miles downwind. Do you go offensive or stay defensive?</div>
+                <div class="opt-grid" id="s1q2">
+                    <button class="opt-btn" onclick="pick('s1q2','s1r2',this,false)">Offensive — send entry team immediately</button>
+                    <button class="opt-btn" onclick="pick('s1q2','s1r2',this,true)">Defensive first — isolate, evacuate, monitor</button>
+                </div>
+                <div class="reasoning" id="s1r2">
+                    <div class="reasoning-tag">✓ REASONING</div>
+                    <strong>Defensive first.</strong> Before committing an entry team, you need: confirmed product ID, established zones, PPE selection, decon corridor, and a specific mission. Rushing into a chlorine cloud without these pieces kills responders. Defensive actions (isolation, evacuation, monitoring) protect the public while you build your plan. Offensive operations come after — and only if risk vs. reward is justified.
+                </div>
+            </div>
+        </div>
+
+        <div class="sec-block">
+            <h3>Alternative Strategies</h3>
+            <p style="font-size:13px; color:var(--dim); margin-bottom:10px;">Real incidents rarely follow the textbook. Click to explore alternatives:</p>
+            <div class="strat-card" onclick="this.classList.toggle('open')">
+                <div class="strat-title">Remote Monitoring (Drones / Sensors) <span class="arrow">▸</span></div>
+                <div class="strat-body">If the plume is spreading unpredictably, deploy drone monitoring and remote sensors rather than committing personnel. Delay entry until plume behavior stabilizes. This reduces exposure while maintaining situational awareness.</div>
+            </div>
+            <div class="strat-card" onclick="this.classList.toggle('open')">
+                <div class="strat-title">Container Isolation (Delay Repair) <span class="arrow">▸</span></div>
+                <div class="strat-body">Instead of immediately stopping the leak, isolate the railcar, cool the container if pressure is a concern, and wait for railroad hazmat specialists who know the exact container design and have emergency repair kits. This reduces responder exposure.</div>
+            </div>
+            <div class="strat-card" onclick="this.classList.toggle('open')">
+                <div class="strat-title">Technical Specialist Integration <span class="arrow">▸</span></div>
+                <div class="strat-body">Railcar leaks often require coordination with railroad hazmat specialists, the chemical company, and CHEMTREC. These experts know the specific container design, valve types, and repair procedures. Their knowledge often makes the difference between a controlled mitigation and a catastrophic failure.</div>
+            </div>
+        </div>
+
+        <div class="inst-box">
+            <h4>Instructor Discussion Questions</h4>
+            <ol>
+                <li>What was the first operational clue this was a chlorine incident — before any meter reading?</li>
+                <li>Where would you place your initial Hot Zone boundary and why?</li>
+                <li>Why does chlorine vapor settle in low areas, and what terrain features increase the risk?</li>
+                <li>Would your team attempt a valve shutoff, or remain defensive? What factors drive that decision?</li>
+            </ol>
+            <button class="reveal-answers-btn" onclick="toggleAnswers(this, 's1ans')">▸ See Potential Answers</button>
+            <div class="inst-answers" id="s1ans">
+                <div class="inst-answers-inner">
+                    <div class="inst-answers-label">✓ Potential Answers</div>
+                    <div class="inst-answer-item">
+                        <div class="inst-answer-q">Q1 — First operational clue?</div>
+                        <div class="inst-answer-text">The <strong>TIH placard (UN 1017)</strong> and the rail corridor location near an industrial chemical plant. Before any meter reading, placard reading, facility type, and reported civilian symptoms (burning eyes, bleach odor) are the first clues. The railcar silhouette itself — pressure tank cars — tells you this is a compressed or liquefied gas before you read a single number.</div>
+                    </div>
+                    <div class="inst-answer-item">
+                        <div class="inst-answer-q">Q2 — Initial Hot Zone boundary?</div>
+                        <div class="inst-answer-text">Start with <strong>ERG Guide 124</strong> for chlorine. For a large spill daytime, initial isolation is 900 ft (300m) in all directions; adjust downwind protective action distances based on actual meter readings and wind direction. Zone boundaries are refined by data — never fixed arbitrarily.</div>
+                    </div>
+                    <div class="inst-answer-item">
+                        <div class="inst-answer-q">Q3 — Why chlorine settles low?</div>
+                        <div class="inst-answer-text">Chlorine has a <strong>vapor density of 2.5</strong> (air=1), making it 2.5× heavier than air. It flows into depressions, ditches, culverts, basements, and drainage corridors. Terrain features that amplify risk: drainage ditches running toward populated areas, underpasses, storm drain systems, and any enclosed low space that traps accumulating vapor.</div>
+                    </div>
+                    <div class="inst-answer-item">
+                        <div class="inst-answer-q">Q4 — Valve shutoff or remain defensive?</div>
+                        <div class="inst-answer-text">Offensive entry factors: <strong>Is decon established? Is Level A PPE donned? Is the mission specific and briefed? Is a backup team ready?</strong> If all conditions are met AND risk-benefit supports it, an offensive shutoff may be justified. If any condition is unmet, defensive operations protect both the public and responders. Defensive actions are not failure — they are sound tactics.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-row">
+            <div></div>
+            <button class="nav-btn primary" onclick="goSess(1)">Session 2 →</button>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════ SESSION 2 ═══════════════════════ -->
+    <div class="session" id="s1">
+        <div class="sess-label">Session 2 of 5</div>
+        <div class="session-title-block">
+            <h2>Chlorine Leak — Commercial Building</h2>
+            <div class="sess-subtitle">Indoor Release — Confined Space Vapor Accumulation</div>
+        </div>
+
+        <div class="video-block">
+            <div class="video-icon">▶</div>
+            <div>
+                <a href="https://www.youtube.com/watch?v=LaUdyTn_UEc" target="_blank" rel="noopener">Watch: Hazmat Crews Respond to Chlorine Leak at Lincoln Business — YouTube</a>
+                <div class="vid-note">Watch the video first, then work through the analysis below.</div>
+            </div>
+        </div>
+
+        <div class="scene-brief">
+            Fire crews respond to reports of a chemical odor at a commercial building. They confirm a chlorine release inside the structure. The indoor environment creates additional complications: vapor accumulation, HVAC spread, and confined exposure risk. The building itself becomes a hazard multiplier.
+        </div>
+
+        <div class="sec-block">
+            <h3>Operational Clues — Read the Scene</h3>
+            <div class="clue-grid">
+                <div><button class="clue-btn" onclick="clue(this,'s2c1')"><span class="ci">🏢</span>Occupancy Type</button><div class="clue-body" id="s2c1">Commercial buildings with water treatment systems, pool maintenance operations, or industrial cleaning often store chlorine cylinders or hypochlorite. The occupancy tells you what chemicals are likely inside.</div></div>
+                <div><button class="clue-btn" onclick="clue(this,'s2c2')"><span class="ci">🫁</span>Reported Symptoms</button><div class="clue-body" id="s2c2">"Strong bleach smell," burning eyes, difficulty breathing — these symptoms strongly suggest pulmonary irritants, particularly chlorine gas. The reports arrive before your meters do.</div></div>
+                <div><button class="clue-btn" onclick="clue(this,'s2c3')"><span class="ci">🏠</span>Indoor Environment</button><div class="clue-body" id="s2c3">Unlike outdoor leaks, indoor releases create vapor accumulation, HVAC contamination, and confined exposure risk. The building traps the gas and spreads it through ductwork.</div></div>
+                <div><button class="clue-btn" onclick="clue(this,'s2c4')"><span class="ci">💨</span>Vapor Behavior Indoors</button><div class="clue-body" id="s2c4">Chlorine (VD 2.5) sinks to the floor. In a building, it fills rooms from the floor up. Victims on the ground floor or in basements face the highest concentrations.</div></div>
+            </div>
+        </div>
+
+        <div class="sec-block">
+            <h3>Decision Point 1 — Entry Team or Delay?</h3>
+            <div class="decision">
+                <div class="dec-label">⚡ Your Call</div>
+                <div class="dec-question">Building is evacuated. Chlorine odor confirmed at the door. Do you send an entry team immediately to locate the source?</div>
+                <div class="opt-grid" id="s2q1">
+                    <button class="opt-btn" onclick="pick('s2q1','s2r1',this,false)">Yes — enter immediately to stop the leak</button>
+                    <button class="opt-btn" onclick="pick('s2q1','s2r1',this,true)">No — monitor first, then assess entry</button>
+                </div>
+                <div class="reasoning" id="s2r1">
+                    <div class="reasoning-tag">✓ REASONING</div>
+                    <strong>Monitor first.</strong> Before entry: confirm atmospheric readings at the door, establish the decon corridor, verify PPE level (Level B with SCBA minimum for chlorine vapor), and define a specific entry mission. Rushing into an unknown concentration wastes the advantage of having time — the building is evacuated, nobody is in immediate danger. Use that time to prepare properly.
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-ref">
+            <strong>Chemical Identification:</strong> Confirm Chlorine (UN 1017) data — IDLH 10 ppm, PPE Level B minimum. Indoor releases may produce concentrations far above IDLH near the source.<br><br>
+            <strong>Entry Timer:</strong> Start the timer when the team crosses the Hot Zone boundary. Indoor entry with SCBA demands strict air management — document entry time, planned exit time, and emergency reserve.
+        </div>
+
+        <div class="sec-block">
+            <h3>Decision Point 2 — Ventilation Strategy</h3>
+            <div class="decision">
+                <div class="dec-label">⚡ Your Call</div>
+                <div class="dec-question">After the leak is isolated, how do you ventilate the building?</div>
+                <div class="opt-grid" id="s2q2">
+                    <button class="opt-btn" onclick="pick('s2q2','s2r2',this,false)">Turn on the building HVAC system</button>
+                    <button class="opt-btn" onclick="pick('s2q2','s2r2',this,true)">Controlled PPV from upwind with exhaust downwind</button>
+                    <button class="opt-btn" onclick="pick('s2q2','s2r2',this,false)">Open all doors and windows immediately</button>
+                </div>
+                <div class="reasoning" id="s2r2">
+                    <div class="reasoning-tag">✓ REASONING</div>
+                    <strong>Controlled PPV (Positive Pressure Ventilation).</strong> The HVAC system may spread contamination to unaffected areas. Opening everything randomly pushes vapor in unpredictable directions. Controlled PPV from an upwind entry point with a designated exhaust point downwind creates a planned flow path. Monitor the exhaust plume — it's concentrated chlorine exiting the building, so the downwind area must be clear.
+                </div>
+            </div>
+        </div>
+
+        <div class="sec-block">
+            <h3>Alternative Strategies</h3>
+            <div class="strat-card" onclick="this.classList.toggle('open')">
+                <div class="strat-title">Defensive Ventilation (Remote) <span class="arrow">▸</span></div>
+                <div class="strat-body">If the leak is uncontrolled: ventilate the structure remotely using exterior fan placement, monitor the exterior plume with meters, and delay entry until concentrations drop. This preserves responder safety while the gas dissipates naturally.</div>
+            </div>
+            <div class="strat-card" onclick="this.classList.toggle('open')">
+                <div class="strat-title">Remote Valve Shutoff <span class="arrow">▸</span></div>
+                <div class="strat-body">Use extended shutoff tools, robot reconnaissance, or facility engineers to identify the source remotely. Some chlorine systems have external shutoffs accessible from outside the contaminated area. This eliminates the source without committing an entry team.</div>
+            </div>
+        </div>
+
+        <div class="inst-box">
+            <h4>Instructor Discussion Questions</h4>
+            <ol>
+                <li>What clues suggested chlorine before meters confirmed it?</li>
+                <li>How does an indoor release change your response compared to an outdoor release?</li>
+                <li>What PPE level would you deploy for this entry, and why?</li>
+                <li>How would you manage ventilation to avoid spreading contamination?</li>
+            </ol>
+            <button class="reveal-answers-btn" onclick="toggleAnswers(this, 's2ans')">▸ See Potential Answers</button>
+            <div class="inst-answers" id="s2ans">
+                <div class="inst-answers-inner">
+                    <div class="inst-answers-label">✓ Potential Answers</div>
+                    <div class="inst-answer-item">
+                        <div class="inst-answer-q">Q1 — Clues before meters?</div>
+                        <div class="inst-answer-text">Building occupancy (pool maintenance, water treatment, industrial cleaning), <strong>reported symptoms</strong> (burning eyes, strong bleach odor, respiratory distress), and any visible yellow-green discoloration at the doorway. Civilian reports arrive before your meters do — treat them as data.</div>
+                    </div>
+                    <div class="inst-answer-item">
+                        <div class="inst-answer-q">Q2 — Indoor vs. outdoor release?</div>
+                        <div class="inst-answer-text">Indoor releases <strong>trap and concentrate vapor</strong> (no wind dispersion), HVAC spreads contamination to unaffected areas, confined spaces create accumulation zones. The advantage: the building is evacuated and you control access. Use that time — don't rush the entry timeline just because it looks controllable.</div>
+                    </div>
+                    <div class="inst-answer-item">
+                        <div class="inst-answer-q">Q3 — PPE level?</div>
+                        <div class="inst-answer-text"><strong>Level B with SCBA minimum.</strong> Chlorine is primarily a vapor/gas hazard — Level B (chemical splash suit + SCBA) provides respiratory protection and splash protection from liquid chlorine or hypochlorite on surfaces. Level A is warranted if liquid chlorine at high concentration is suspected or if entry involves direct product contact.</div>
+                    </div>
+                    <div class="inst-answer-item">
+                        <div class="inst-answer-q">Q4 — Ventilation management?</div>
+                        <div class="inst-answer-text"><strong>Controlled PPV:</strong> upwind intake fan at the entry point, designated exhaust openings on the downwind side. Never use the building HVAC — it spreads contamination. Clear the downwind exhaust area of civilians before starting. Monitor the exhaust plume — it carries concentrated chlorine as it exits.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-row">
+            <button class="nav-btn" onclick="goSess(0)">← Session 1</button>
+            <button class="nav-btn primary" onclick="goSess(2)">Session 3 →</button>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════ SESSION 3 ═══════════════════════ -->
+    <div class="session" id="s2">
+        <div class="sess-label">Session 3 of 5</div>
+        <div class="session-title-block">
+            <h2>Ammonia Refrigeration Leak</h2>
+            <div class="sess-subtitle">Industrial Warehouse — Large-Scale Gas Release</div>
+        </div>
+
+        <div class="video-block">
+            <div class="video-icon">▶</div>
+            <div>
+                <a href="https://www.youtube.com/watch?v=SjN9-3ef3fY" target="_blank" rel="noopener">Watch: Ammonia Cloud from Industrial Refrigeration Facility — YouTube</a>
+                <div class="vid-note">Watch the video first, then work through the analysis below.</div>
+            </div>
+        </div>
+
+        <div class="scene-brief">
+            An ammonia release from an industrial refrigeration system at a warehouse facility produces a visible white vapor cloud that rapidly expands and moves with wind patterns. Cold storage warehouses, food processing plants, and distribution centers commonly use anhydrous ammonia refrigeration — these systems contain large quantities of pressurized ammonia.
+        </div>
+
+        <div class="sec-block">
+            <h3>Operational Clues — Read the Scene</h3>
+            <div class="clue-grid">
+                <div><button class="clue-btn" onclick="clue(this,'s3c1')"><span class="ci">🏭</span>Facility Type</button><div class="clue-body" id="s3c1">Cold storage, food processing, and distribution centers use anhydrous ammonia refrigeration. These systems contain hundreds to thousands of pounds of pressurized NH₃. The facility type is your first major clue.</div></div>
+                <div><button class="clue-btn" onclick="clue(this,'s3c2')"><span class="ci">☁️</span>Vapor Cloud</button><div class="clue-body" id="s3c2">Ammonia appears as a white cloud that rapidly expands. Unlike chlorine, ammonia is lighter than air (VD 0.6) and rises — but cold ammonia from a pressurized release initially sinks before warming and rising.</div></div>
+                <div><button class="clue-btn" onclick="clue(this,'s3c3')"><span class="ci">👃</span>Immediate Irritation</button><div class="clue-body" id="s3c3">Ammonia produces a strong pungent odor with severe eye irritation and immediate respiratory distress. Responders often detect ammonia before any meter confirms it — the odor is unmistakable at even low concentrations.</div></div>
+                <div><button class="clue-btn" onclick="clue(this,'s3c4')"><span class="ci">🔧</span>System Type</button><div class="clue-body" id="s3c4">Ammonia leaks often involve broken piping, pressure relief valves, or compressor failures. Facility engineers are critical resources — they know the system layout, valve locations, and emergency shutdown procedures.</div></div>
+            </div>
+        </div>
+
+        <div class="sec-block">
+            <h3>Decision Point 1 — Downwind Protection</h3>
+            <div class="decision">
+                <div class="dec-label">⚡ Your Call</div>
+                <div class="dec-question">A large ammonia cloud is moving toward a residential area 0.5 miles downwind. Evacuate or shelter-in-place?</div>
+                <div class="opt-grid" id="s3q1">
+                    <button class="opt-btn" onclick="pick('s3q1','s3r1',this,false)">Evacuate — get everyone out</button>
+                    <button class="opt-btn" onclick="pick('s3q1','s3r1',this,true)">Shelter-in-place initially, then reassess</button>
+                </div>
+                <div class="reasoning" id="s3r1">
+                    <div class="reasoning-tag">✓ REASONING</div>
+                    <strong>Shelter-in-place first, with evacuation as backup.</strong> Evacuating people through an ammonia cloud exposes them to the hazard you're trying to protect them from. Sheltering (close windows, shut off HVAC, seal doors) provides immediate protection while you assess the plume trajectory and duration. If the release is prolonged or the plume shifts, transition to evacuation using routes that avoid the plume. This is a judgment call that changes with conditions — reassess continuously.
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-ref">
+            <strong>Chemical Identification:</strong> Look up Ammonia, Anhydrous (UN 1005) — IDLH 300 ppm, VD 0.6 (rises), ERG protective action distances. The tool gives you the numbers to size your zones.<br><br>
+            <strong>Air Monitoring & Meter Alarms:</strong> Reference ammonia meter setpoints (25 ppm low, 50 ppm high). IDLH is 300 ppm. Also monitor LEL — ammonia has a flammable range (15%–28%).
+        </div>
+
+        <div class="sec-block">
+            <h3>Decision Point 2 — Worker Rescue</h3>
+            <div class="decision">
+                <div class="dec-label">⚡ Your Call</div>
+                <div class="dec-question">Two workers are reported trapped inside the facility near the leak. Your ammonia meter reads 150 ppm at the door. What's your approach?</div>
+                <div class="opt-grid" id="s3q2">
+                    <button class="opt-btn" onclick="pick('s3q2','s3r2',this,false)">Enter in structural gear with SCBA</button>
+                    <button class="opt-btn" onclick="pick('s3q2','s3r2',this,true)">Level B entry with SCBA, timed mission, backup team</button>
+                    <button class="opt-btn" onclick="pick('s3q2','s3r2',this,false)">Wait for concentrations to drop</button>
+                </div>
+                <div class="reasoning" id="s3r2">
+                    <div class="reasoning-tag">✓ REASONING</div>
+                    <strong>Level B with SCBA, defined mission, backup team.</strong> 150 ppm is below IDLH (300 ppm) but well above safe exposure limits. Structural gear does NOT protect against ammonia vapor — it permeates through turnout gear. Level B (chemical splash suit + SCBA) provides the protection needed. The mission must be defined: specific objective, time limit, route in and out. A backup team must be dressed and ready before the primary team enters. Waiting is not an option with trapped workers — but rushing in without proper PPE creates more victims.
+                </div>
+            </div>
+        </div>
+
+        <div class="sec-block">
+            <h3>Alternative Strategies</h3>
+            <div class="strat-card" onclick="this.classList.toggle('open')">
+                <div class="strat-title">Water Fog Application <span class="arrow">▸</span></div>
+                <div class="strat-body">Water fog is extremely effective against ammonia because NH₃ is highly water-soluble. Fog lines can knock down the vapor cloud, reduce plume spread, and create a safer corridor for rescue operations. Apply from upwind — never walk fog nozzles into the cloud.</div>
+            </div>
+            <div class="strat-card" onclick="this.classList.toggle('open')">
+                <div class="strat-title">Mechanical System Shutdown <span class="arrow">▸</span></div>
+                <div class="strat-body">Facility engineers can often isolate the leak by shutting down compressors and closing system valves remotely or from a safe location. This stops the source — the most effective mitigation. Always coordinate with facility personnel.</div>
+            </div>
+        </div>
+
+        <div class="inst-box">
+            <h4>Instructor Discussion Questions</h4>
+            <ol>
+                <li>What clues identified ammonia before any meter reading?</li>
+                <li>How does ammonia's vapor density (0.6) change your zone placement compared to chlorine (2.5)?</li>
+                <li>Would you attempt immediate system shutdown or isolate and wait?</li>
+                <li>Why is water fog effective against ammonia but not against all chemicals?</li>
+            </ol>
+            <button class="reveal-answers-btn" onclick="toggleAnswers(this, 's3ans')">▸ See Potential Answers</button>
+            <div class="inst-answers" id="s3ans">
+                <div class="inst-answers-inner">
+                    <div class="inst-answers-label">✓ Potential Answers</div>
+                    <div class="inst-answer-item">
+                        <div class="inst-answer-q">Q1 — Clues before meters?</div>
+                        <div class="inst-answer-text"><strong>Facility type</strong> (cold storage, food processing, distribution center), the <strong>distinctive pungent odor</strong> unmistakable even at low concentrations, a white rapidly-expanding vapor cloud, and immediate severe eye irritation and respiratory distress in evacuees — all before a meter is deployed.</div>
+                    </div>
+                    <div class="inst-answer-item">
+                        <div class="inst-answer-q">Q2 — VD 0.6 vs. chlorine VD 2.5?</div>
+                        <div class="inst-answer-text">Ammonia rises — <strong>upper building floors and elevated downwind positions</strong> accumulate more vapor initially. However, cold pressurized releases initially behave like heavier-than-air gas before warming. For chlorine: monitor ditches, basements, storm drains. For ammonia: monitor upper-floor building penetrations and elevated structures downwind. Command post positioning logic differs for each.</div>
+                    </div>
+                    <div class="inst-answer-item">
+                        <div class="inst-answer-q">Q3 — Shutdown or wait?</div>
+                        <div class="inst-answer-text">If facility engineers can access a <strong>remote shutdown panel from outside the hot zone</strong>: coordinate immediately — stopping the source is the priority. If access requires hot zone entry: Level B/SCBA team with a defined mission and time limit. Waiting is only appropriate if no lives are at risk and concentrations are trending downward — not as a default.</div>
+                    </div>
+                    <div class="inst-answer-item">
+                        <div class="inst-answer-q">Q4 — Why water fog works for ammonia?</div>
+                        <div class="inst-answer-text">Ammonia is <strong>highly water-soluble (1:700 absorption ratio)</strong> — it readily dissolves into water droplets, removing it from the vapor phase. Chemicals that are insoluble (chlorinated solvents, gasoline vapors, most compressed gases) are not significantly knocked down. For flammable vapors, water fog can move the cloud unpredictably. Know your chemical before you commit to fog as a tactical tool.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-row">
+            <button class="nav-btn" onclick="goSess(1)">← Session 2</button>
+            <button class="nav-btn primary" onclick="goSess(3)">Session 4 →</button>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════ SESSION 4 ═══════════════════════ -->
+    <div class="session" id="s3">
+        <div class="sess-label">Session 4 of 5</div>
+        <div class="session-title-block">
+            <h2>Chemical Plant Fire with Chlorine Release</h2>
+            <div class="sess-subtitle">Industrial Disaster — Combined Fire and Hazmat Operations</div>
+        </div>
+
+        <div class="video-block">
+            <div class="video-icon">▶</div>
+            <div>
+                <a href="https://www.youtube.com/watch?v=dAIEFx1hpb8" target="_blank" rel="noopener">Watch: Chemical Facility Fire Producing Chlorine Gas — YouTube</a>
+                <div class="vid-note">Watch the video first, then work through the analysis below.</div>
+            </div>
+        </div>
+
+        <div class="scene-brief">
+            A fire at a chemical manufacturing facility produces a toxic gas plume. The facility contains chlorine, solvents, oxidizers, and corrosives. Authorities issue shelter-in-place orders as the plume migrates toward populated areas. This incident combines fireground and hazmat operations — two disciplines that sometimes conflict.
+        </div>
+
+        <div class="sec-block">
+            <h3>Operational Clues — Read the Scene</h3>
+            <div class="clue-grid">
+                <div><button class="clue-btn" onclick="clue(this,'s4c1')"><span class="ci">🏭</span>Facility Contents</button><div class="clue-body" id="s4c1">Chemical manufacturing facilities contain multiple hazard classes: chlorine, solvents, oxidizers, corrosives. Fire conditions dramatically increase the risk of toxic byproducts — burning plastics produce HCN, burning chlorinated compounds produce phosgene and HCl.</div></div>
+                <div><button class="clue-btn" onclick="clue(this,'s4c2')"><span class="ci">🌫️</span>Smoke Characteristics</button><div class="clue-body" id="s4c2">Unusual smoke color, strong chemical odor, and rapid plume spread indicate chemical involvement beyond a normal structure fire. Yellow-green tint suggests chlorine; brown/orange suggests nitric acid or NOx.</div></div>
+                <div><button class="clue-btn" onclick="clue(this,'s4c3')"><span class="ci">📢</span>Shelter-in-Place Orders</button><div class="clue-body" id="s4c3">When authorities issue shelter-in-place alerts, it indicates toxic vapor release with plume migration toward populated areas. This elevates the incident from a local fire to a community-wide emergency.</div></div>
+                <div><button class="clue-btn" onclick="clue(this,'s4c4')"><span class="ci">🔥</span>Fire + Chemical Interaction</button><div class="clue-body" id="s4c4">Fire can cause containers to BLEVE, accelerate chemical reactions, and generate toxic combustion products. Extinguishing the fire can sometimes INCREASE vapor release by removing the thermal updraft that was carrying gases upward.</div></div>
+            </div>
+        </div>
+
+        <div class="sec-block">
+            <h3>Decision Point 1 — Fire Attack vs. Hazmat Isolation</h3>
+            <div class="decision">
+                <div class="dec-label">⚡ Your Call</div>
+                <div class="dec-question">The fire is consuming the chemical storage area. A chlorine cloud is rising with the thermal column. Do you attack the fire or let it burn?</div>
+                <div class="opt-grid" id="s4q1">
+                    <button class="opt-btn" onclick="pick('s4q1','s4r1',this,false)">Attack the fire aggressively</button>
+                    <button class="opt-btn" onclick="pick('s4q1','s4r1',this,true)">Controlled burn — protect exposures only</button>
+                </div>
+                <div class="reasoning" id="s4r1">
+                    <div class="reasoning-tag">✓ REASONING</div>
+                    <strong>Controlled burn with exposure protection.</strong> This is counterintuitive for firefighters, but extinguishing the fire removes the thermal updraft that's carrying chlorine gas upward and dispersing it. Without that thermal column, the heavy chlorine vapor (VD 2.5) drops to ground level and concentrates — making the ground-level exposure dramatically worse. Protect surrounding structures from fire spread, but let the chemical fire burn until hazmat operations can address the source. This is a Unified Command decision.
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-ref">
+            <strong>Chemical Identification:</strong> Multiple chemicals may be involved. Use the Hazmat Tactical Tool to cross-reference each product's IDLH, vapor density, and ERG data. Fire + chlorine + solvents = complex hazard environment.<br><br>
+            <strong>Air Monitoring & Meter Alarms:</strong> Deploy multiple meter types — 4-gas for baseline, PID for VOCs from solvents, and chlorine-specific sensors. Monitor at multiple locations: fire perimeter, downwind residential areas, and elevated positions.
+        </div>
+
+        <div class="sec-block">
+            <h3>Decision Point 2 — Public Protection</h3>
+            <div class="decision">
+                <div class="dec-label">⚡ Your Call</div>
+                <div class="dec-question">The plume is shifting toward a school 1 mile downwind. 500 students are present. Evacuate the school or shelter-in-place?</div>
+                <div class="opt-grid" id="s4q2">
+                    <button class="opt-btn" onclick="pick('s4q2','s4r2',this,false)">Evacuate — buses to move students</button>
+                    <button class="opt-btn" onclick="pick('s4q2','s4r2',this,true)">Shelter-in-place — close up the building</button>
+                </div>
+                <div class="reasoning" id="s4r2">
+                    <div class="reasoning-tag">✓ REASONING</div>
+                    <strong>Shelter-in-place is likely safer here.</strong> Moving 500 students outside and onto buses exposes them to the plume during transit. A sealed building provides protection — shut HVAC, close windows, seal doors with wet towels. Modern commercial buildings provide significant reduction in outdoor gas concentrations. If the plume dissipates or shifts, shelter-in-place worked. If the release escalates, you still have the evacuation option — but now you execute it with a specific route that avoids the plume.
+                </div>
+            </div>
+        </div>
+
+        <div class="sec-block">
+            <h3>Alternative Strategies</h3>
+            <div class="strat-card" onclick="this.classList.toggle('open')">
+                <div class="strat-title">Wide Evacuation with Plume Modeling <span class="arrow">▸</span></div>
+                <div class="strat-body">For prolonged releases, expand evacuation zones using real-time plume modeling (ALOHA, CAMEO). Coordinate with emergency management for mass evacuation routes that stay upwind of the projected plume path.</div>
+            </div>
+            <div class="strat-card" onclick="this.classList.toggle('open')">
+                <div class="strat-title">Drone Reconnaissance <span class="arrow">▸</span></div>
+                <div class="strat-body">Aerial drones equipped with cameras and gas sensors can monitor plume spread, identify involved containers, and assess fire progression without exposing personnel. Real-time aerial data transforms Command's decision-making.</div>
+            </div>
+            <div class="strat-card" onclick="this.classList.toggle('open')">
+                <div class="strat-title">Unified Command Integration <span class="arrow">▸</span></div>
+                <div class="strat-body">Industrial chemical incidents require Unified Command: fire (suppression), hazmat (chemical mitigation), plant engineers (process knowledge), environmental agencies (contamination), and law enforcement (public protection). No single agency has all the expertise needed.</div>
+            </div>
+        </div>
+
+        <div class="inst-box">
+            <h4>Instructor Discussion Questions</h4>
+            <ol>
+                <li>Why might extinguishing the fire make the chemical hazard worse?</li>
+                <li>How would you determine evacuation distance for a multi-chemical plume?</li>
+                <li>What monitoring equipment covers the broadest range of hazards at this scene?</li>
+                <li>How does Unified Command change your decision-making process?</li>
+            </ol>
+            <button class="reveal-answers-btn" onclick="toggleAnswers(this, 's4ans')">▸ See Potential Answers</button>
+            <div class="inst-answers" id="s4ans">
+                <div class="inst-answers-inner">
+                    <div class="inst-answers-label">✓ Potential Answers</div>
+                    <div class="inst-answer-item">
+                        <div class="inst-answer-q">Q1 — Why extinguishing worsens the hazard?</div>
+                        <div class="inst-answer-text">The <strong>thermal column carries chlorine gas upward</strong>, dispersing it at altitude where it dilutes. Knock down the fire and that updraft disappears — chlorine (VD 2.5) sinks to ground level and concentrates. This is counterintuitive for firefighters. Letting a chemical fire burn as a calculated protective action is a legitimate Unified Command decision, not abandonment.</div>
+                    </div>
+                    <div class="inst-answer-item">
+                        <div class="inst-answer-q">Q2 — Evacuation distance for multi-chemical plume?</div>
+                        <div class="inst-answer-text">Use <strong>ERG for each identified product — take the largest protective action distance</strong> as your starting point. Request real-time plume modeling (ALOHA/CAMEO) through emergency management. Actual meter readings at deployed positions may exceed or fall short of modeled distances — monitor continuously. When in doubt, larger zones; reduce as data improves.</div>
+                    </div>
+                    <div class="inst-answer-item">
+                        <div class="inst-answer-q">Q3 — Monitoring for broadest coverage?</div>
+                        <div class="inst-answer-text"><strong>4-gas meter</strong> (O₂, LEL, CO, H₂S baseline) + <strong>PID</strong> for VOCs from solvents + <strong>chlorine electrochemical sensor</strong> + potentially a <strong>cyanide meter</strong> (HCN from burning materials). Multiple instruments at multiple positions: perimeter, downwind residential, elevated monitoring. No single instrument covers all hazards at a complex scene.</div>
+                    </div>
+                    <div class="inst-answer-item">
+                        <div class="inst-answer-q">Q4 — Unified Command impact?</div>
+                        <div class="inst-answer-text">Unified Command integrates <strong>multiple agency authorities</strong> (fire, hazmat, plant engineers, environmental, law enforcement) into shared situational awareness and joint decision-making. Decisions no single agency can authorize alone — letting a fire burn, ordering mass evacuation, releasing a discharge to a waterway — require UC authorization. It prevents agencies working at cross-purposes.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-row">
+            <button class="nav-btn" onclick="goSess(2)">← Session 3</button>
+            <button class="nav-btn primary" onclick="goSess(4)">Session 5 →</button>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════ SESSION 5 ═══════════════════════ -->
+    <div class="session" id="s4">
+        <div class="sess-label">Session 5 of 5</div>
+        <div class="session-title-block">
+            <h2>Train Derailment — Hydrochloric Acid</h2>
+            <div class="sess-subtitle">Rail Incident — Corrosive Material Release with Environmental Impact</div>
+        </div>
+
+        <div class="video-block">
+            <div class="video-icon">▶</div>
+            <div>
+                <a href="https://www.youtube.com/watch?v=dt5e9vEIHhQ" target="_blank" rel="noopener">Watch: Train Derailment with Corrosive Chemical Release — YouTube</a>
+                <div class="vid-note">Watch the video first, then work through the analysis below.</div>
+            </div>
+        </div>
+
+        <div class="scene-brief">
+            A train derailment involves multiple tank cars with corrosive chemical release. Damaged valves, punctured tanks, and compromised fittings create active leaks. The derailment site spans hundreds of feet along the rail corridor. Acid vapor and liquid runoff threaten soil, waterways, and storm drains in the area.
+        </div>
+
+        <div class="sec-block">
+            <h3>Operational Clues — Read the Scene</h3>
+            <div class="clue-grid">
+                <div><button class="clue-btn" onclick="clue(this,'s5c1')"><span class="ci">🚂</span>Tank Car Damage</button><div class="clue-body" id="s5c1">Derailments damage valves, puncture tanks, and compromise fittings. Multiple tank cars may be involved simultaneously — each potentially containing different products. Assess each car individually.</div></div>
+                <div><button class="clue-btn" onclick="clue(this,'s5c2')"><span class="ci">⚠️</span>Placards & Papers</button><div class="clue-body" id="s5c2">Railcar placards display UN numbers and hazard classes. Shipping papers (carried by the conductor) list every car's contents. Get the consist — it tells you exactly what's on every car in the train.</div></div>
+                <div><button class="clue-btn" onclick="clue(this,'s5c3')"><span class="ci">🌡️</span>Acid Vapor & Runoff</button><div class="clue-body" id="s5c3">Corrosive releases produce visible vapor (fuming acid), strong irritating odor, and ground contamination. Liquid acid flows downhill and follows drainage — it will find every storm drain, ditch, and waterway.</div></div>
+                <div><button class="clue-btn" onclick="clue(this,'s5c4')"><span class="ci">🌊</span>Environmental Conditions</button><div class="clue-body" id="s5c4">Acid spills contaminate soil, waterways, and storm drains. Environmental containment is as critical as personnel safety. Rain dramatically accelerates contamination spread by diluting and transporting the acid.</div></div>
+            </div>
+        </div>
+
+        <div class="sec-block">
+            <h3>Decision Point 1 — Hot Zone Size</h3>
+            <div class="decision">
+                <div class="dec-label">⚡ Your Call</div>
+                <div class="dec-question">The derailment spans 400 feet. HCl fumes are visible from two cars. How do you establish your initial Hot Zone?</div>
+                <div class="opt-grid" id="s5q1">
+                    <button class="opt-btn" onclick="pick('s5q1','s5r1',this,false)">150 ft radius around the leaking cars only</button>
+                    <button class="opt-btn" onclick="pick('s5q1','s5r1',this,true)">Encompass the entire derailment + downwind buffer</button>
+                </div>
+                <div class="reasoning" id="s5r1">
+                    <div class="reasoning-tag">✓ REASONING</div>
+                    <strong>Encompass the entire derailment.</strong> You don't know the condition of every car yet. Cars that appear intact may have hidden damage — cracked fittings, stressed valves, or weakened shells that fail hours later. The Hot Zone must cover the entire wreckage plus a downwind buffer based on ERG protective action distances for the worst-case product in the consist. You can always reduce zones later — you can't undo an exposure.
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-ref">
+            <strong>Chemical Identification:</strong> Look up Hydrochloric Acid (UN 1789) — IDLH 50 ppm, ERG Guide 157. Confirm isolation distances and PPE requirements. Check for other products in the consist using the tool's database.<br><br>
+            <strong>Containment Compatibility:</strong> Select 'Acid' to verify which containment materials are compatible. HCl corrodes most metals — use poly dikes, not metal pans. Verify before deploying any containment equipment.
+        </div>
+
+        <div class="sec-block">
+            <h3>Decision Point 2 — Leak Control vs. Wait</h3>
+            <div class="decision">
+                <div class="dec-label">⚡ Your Call</div>
+                <div class="dec-question">Acid is flowing toward a creek 200 yards downhill. Do you attempt leak control or wait for specialists?</div>
+                <div class="opt-grid" id="s5q2">
+                    <button class="opt-btn" onclick="pick('s5q2','s5r2',this,true)">Contain the runoff NOW — dike before it reaches water</button>
+                    <button class="opt-btn" onclick="pick('s5q2','s5r2',this,false)">Wait for railroad hazmat contractors</button>
+                </div>
+                <div class="reasoning" id="s5r2">
+                    <div class="reasoning-tag">✓ REASONING</div>
+                    <strong>Contain the runoff immediately.</strong> Environmental contamination of a waterway is irreversible once it happens. Diking the runoff path with compatible materials (earth, poly barriers — NOT metal) buys time. You're not repairing the tank car — you're preventing the acid from reaching the creek. This is a defensive containment action within Operations-level capability. The tank car repair requires specialists, but ground-level diking does not. Act on what you can control now.
+                </div>
+            </div>
+        </div>
+
+        <div class="sec-block">
+            <h3>Alternative Strategies</h3>
+            <div class="strat-card" onclick="this.classList.toggle('open')">
+                <div class="strat-title">Product Transfer <span class="arrow">▸</span></div>
+                <div class="strat-body">Pump the acid from the damaged car into an intact car or portable tank. This requires specialized hazmat contractors with acid-compatible pumps, hoses, and containment. Transfer operations can take hours to set up but permanently resolve the leak.</div>
+            </div>
+            <div class="strat-card" onclick="this.classList.toggle('open')">
+                <div class="strat-title">Neutralization of Runoff <span class="arrow">▸</span></div>
+                <div class="strat-body">Apply soda ash (sodium carbonate) or lime to contaminated soil and contained runoff to neutralize the acid. Test pH of treated material before release. Neutralization generates heat and CO₂ — apply slowly. This addresses the environmental damage after containment is established.</div>
+            </div>
+            <div class="strat-card" onclick="this.classList.toggle('open')">
+                <div class="strat-title">Long-Term Incident Management <span class="arrow">▸</span></div>
+                <div class="strat-body">Large rail derailments can take days to weeks to fully resolve. Plan for operational periods, personnel rotation, continuous environmental monitoring, and coordination with railroad companies, EPA, and state environmental agencies. This is a marathon, not a sprint.</div>
+            </div>
+        </div>
+
+        <div class="inst-box">
+            <h4>Instructor Discussion Questions</h4>
+            <ol>
+                <li>What operational clues at a derailment suggest corrosive materials before you read a placard?</li>
+                <li>Why should your initial Hot Zone encompass the entire wreckage, not just the leaking cars?</li>
+                <li>What environmental hazards concern you most, and how do you prioritize them?</li>
+                <li>Would you attempt leak control on the tank car, or limit your operations to ground-level containment?</li>
+            </ol>
+            <button class="reveal-answers-btn" onclick="toggleAnswers(this, 's5ans')">▸ See Potential Answers</button>
+            <div class="inst-answers" id="s5ans">
+                <div class="inst-answers-inner">
+                    <div class="inst-answers-label">✓ Potential Answers</div>
+                    <div class="inst-answer-item">
+                        <div class="inst-answer-q">Q1 — Clues before reading a placard?</div>
+                        <div class="inst-answer-text">Visible <strong>fuming vapor</strong> from the tank car, strong irritating chemical odor, corrosion or staining on tank surfaces, immediate symptoms in civilians (burning skin, eyes, respiratory irritation). The <strong>railroad consist</strong> (shipping papers from the conductor) identifies every car's contents — get it early.</div>
+                    </div>
+                    <div class="inst-answer-item">
+                        <div class="inst-answer-q">Q2 — Zone the entire wreckage?</div>
+                        <div class="inst-answer-text">Derailment damage is often <strong>hidden</strong> — stressed valves, cracked weld seams, compromised fittings may not fail immediately. You can't assess hidden internal damage from the perimeter. Zones can always be reduced as cars are individually cleared — you cannot undo an exposure that occurs because you assumed an intact-looking car was safe.</div>
+                    </div>
+                    <div class="inst-answer-item">
+                        <div class="inst-answer-q">Q3 — Environmental hazard priority?</div>
+                        <div class="inst-answer-text"><strong>Waterway contamination is irreversible once it occurs — top priority.</strong> Storm drain entry is the fastest pathway. Priority order: (1) plug storm drains, (2) dike runoff flow paths, (3) contain pooled liquid, (4) notify environmental agencies for long-term soil/groundwater assessment. Groundwater contamination may take years to detect.</div>
+                    </div>
+                    <div class="inst-answer-item">
+                        <div class="inst-answer-q">Q4 — Tank car repair vs. ground containment?</div>
+                        <div class="inst-answer-text"><strong>Both happen — in parallel, with different personnel.</strong> Ground-level containment (diking, storm drain plugs, absorbent barriers) is within operations-level capability and addresses the immediate environmental threat now. Tank car leak control requires hazmat technician capability and railroad hazmat contractors. Operations manages the ground; technicians manage the source.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-row">
+            <button class="nav-btn" onclick="goSess(3)">← Session 4</button>
+            <button class="nav-btn primary" onclick="goSess(0)">Restart Module</button>
+        </div>
+    </div>
+
+    <div class="mod-footer">
+        <strong>Real Incident Breakdowns — Hazmat Tactical</strong><br>
+        © 2026 Hazmat Tactical LLC. All Rights Reserved.<br>
+        For Training Use Only — Not for operational field decisions.
+    </div>
+</div>
+
+<script>
+const TOTAL = 5;
+let cur = 0;
+
+function goSess(n) {
+    document.getElementById('s' + cur).classList.remove('active');
+    cur = n;
+    document.getElementById('s' + n).classList.add('active');
+    document.querySelectorAll('.sess-tab').forEach((t, i) => t.classList.toggle('active', i === n));
+    document.getElementById('pFill').style.width = ((n + 1) / TOTAL * 100) + '%';
+    // Scroll active tab into view
+    const tabs = document.querySelectorAll('.sess-tab');
+    if (tabs[n]) tabs[n].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function clue(btn, id) {
+    btn.classList.add('revealed');
+    document.getElementById(id).classList.add('open');
+}
+
+function pick(gridId, reasonId, btn, isCorrect) {
+    const grid = document.getElementById(gridId);
+    grid.querySelectorAll('.opt-btn').forEach(b => {
+        b.classList.add('picked');
+        if (b === btn) b.classList.add(isCorrect ? 'correct' : 'wrong');
+    });
+    document.getElementById(reasonId).classList.add('vis');
+}
+
+function toggleAnswers(btn, id) {
+    const panel = document.getElementById(id);
+    const isOpen = panel.classList.contains('open');
+    panel.classList.toggle('open', !isOpen);
+    btn.classList.toggle('open', !isOpen);
+    btn.textContent = isOpen ? '▸ See Potential Answers' : '▾ Hide Answers';
+}
+</script>
+
+</body>
+</html>
