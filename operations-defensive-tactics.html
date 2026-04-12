@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operations Defensive Tactics — Hazmat Tactical</title>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy-900: #0b1120;
+            --navy-800: #111827;
+            --navy-700: #1a2332;
+            --navy-600: #243044;
+            --navy-500: #2e3d55;
+            --amber-500: #d4a437;
+            --amber-400: #e8b94a;
+            --amber-300: #f0c95e;
+            --red-600: #c41e1e;
+            --red-500: #dc2626;
+            --red-400: #ef4444;
+            --green-500: #22c55e;
+            --green-400: #4ade80;
+            --blue-500: #3b82f6;
+            --blue-400: #60a5fa;
+            --text-primary: #e8ecf1;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #2a3650;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Barlow', sans-serif;
+            background: var(--navy-900);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        /* ── HEADER ── */
+        .app-header {
+            background: linear-gradient(180deg, var(--navy-800) 0%, var(--navy-900) 100%);
+            border-bottom: 2px solid var(--amber-500);
+            padding: 20px 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+
+        .header-inner {
+            max-width: 960px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .brand-block h1 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 800;
+            font-size: 1.6rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--amber-400);
+            line-height: 1.1;
+        }
+
+        .brand-block .sub {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 500;
+            font-size: 0.8rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .level-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(212, 164, 55, 0.12);
+            border: 1px solid var(--amber-500);
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--amber-400);
+        }
+
+        /* ── MAIN CONTAINER ── */
+        .main {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 24px 20px 60px;
+        }
+
+        /* ── CONTROLS BAR ── */
+        .controls-bar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+
+        .ctrl-select {
+            background: var(--navy-700);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 10px 14px;
+            border-radius: 4px;
+            font-family: 'Barlow', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .ctrl-select:focus {
+            outline: none;
+            border-color: var(--amber-500);
+        }
+
+        .btn {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--amber-500);
+            color: var(--navy-900);
+        }
+
+        .btn-primary:hover {
+            background: var(--amber-400);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(212, 164, 55, 0.25);
+        }
+
+        .btn-secondary {
+            background: var(--navy-600);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--navy-500);
+        }
+
+        /* ── SCENARIO CARD ── */
+        .scenario-card {
+            background: var(--navy-800);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .scenario-stripe {
+            height: 4px;
+            background: linear-gradient(90deg, var(--red-500), var(--amber-500), var(--red-500));
+        }
+
+        .scenario-header {
+            padding: 20px 24px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .scenario-title {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-primary);
+        }
+
+        .scenario-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 600;
+            font-size: 0.7rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border-radius: 3px;
+        }
+
+        .tag-red { background: rgba(196, 30, 30, 0.2); color: var(--red-400); border: 1px solid rgba(196, 30, 30, 0.35); }
+        .tag-amber { background: rgba(212, 164, 55, 0.15); color: var(--amber-400); border: 1px solid rgba(212, 164, 55, 0.3); }
+        .tag-blue { background: rgba(59, 130, 246, 0.15); color: var(--blue-400); border: 1px solid rgba(59, 130, 246, 0.3); }
+
+        .scenario-body {
+            padding: 20px 24px;
+        }
+
+        .dispatch-box {
+            background: var(--navy-900);
+            border-left: 3px solid var(--red-500);
+            padding: 16px 20px;
+            border-radius: 0 4px 4px 0;
+            margin-bottom: 20px;
+        }
+
+        .dispatch-label {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--red-400);
+            margin-bottom: 8px;
+        }
+
+        .dispatch-text {
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .intel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .intel-cell {
+            background: var(--navy-700);
+            padding: 12px 16px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+
+        .intel-label {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 600;
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .intel-value {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--text-primary);
+        }
+
+        .intel-value.warn { color: var(--red-400); }
+        .intel-value.caution { color: var(--amber-400); }
+
+        /* ── CANVAS SITE DIAGRAM ── */
+        .diagram-section {
+            margin-top: 20px;
+        }
+
+        .diagram-label {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .canvas-wrap {
+            background: var(--navy-900);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 8px;
+            display: flex;
+            justify-content: center;
+        }
+
+        canvas#siteCanvas {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            border-radius: 2px;
+        }
+
+        /* ── DECISIONS ── */
+        .decisions-section {
+            margin-top: 24px;
+        }
+
+        .decisions-prompt {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 0.8rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--amber-400);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .decisions-prompt::before {
+            content: '';
+            width: 3px;
+            height: 16px;
+            background: var(--amber-500);
+            border-radius: 1px;
+        }
+
+        .decision-btn {
+            display: block;
+            width: 100%;
+            background: var(--navy-700);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 16px 20px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            text-align: left;
+            font-family: 'Barlow', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .decision-btn:hover:not(.selected):not(.locked) {
+            background: var(--navy-600);
+            border-color: var(--amber-500);
+            padding-left: 24px;
+        }
+
+        .decision-btn .opt-letter {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            color: var(--amber-400);
+            margin-right: 10px;
+            font-size: 0.95rem;
+        }
+
+        .decision-btn.correct {
+            background: rgba(34, 197, 94, 0.1);
+            border-color: var(--green-500);
+        }
+
+        .decision-btn.incorrect {
+            background: rgba(220, 38, 38, 0.08);
+            border-color: rgba(220, 38, 38, 0.3);
+            opacity: 0.7;
+        }
+
+        .decision-btn.locked {
+            cursor: default;
+        }
+
+        /* ── FEEDBACK ── */
+        .feedback-panel {
+            display: none;
+            margin-top: 20px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .feedback-panel.show { display: block; animation: fadeUp 0.35s ease; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .feedback-result {
+            padding: 20px 24px;
+        }
+
+        .feedback-result.good {
+            background: rgba(34, 197, 94, 0.08);
+            border-left: 4px solid var(--green-500);
+        }
+
+        .feedback-result.poor {
+            background: rgba(220, 38, 38, 0.08);
+            border-left: 4px solid var(--red-500);
+        }
+
+        .feedback-heading {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .feedback-heading.good { color: var(--green-400); }
+        .feedback-heading.poor { color: var(--red-400); }
+
+        .feedback-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .instructor-box {
+            background: var(--navy-700);
+            border-top: 1px solid var(--border);
+            padding: 20px 24px;
+        }
+
+        .instructor-label {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--amber-400);
+            margin-bottom: 10px;
+        }
+
+        .instructor-text {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .erg-ref {
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.12);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: var(--blue-400);
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 600;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        /* ── SCENARIO COUNTER ── */
+        .scenario-counter {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 600;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        /* ── WELCOME SCREEN ── */
+        .welcome {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .welcome h2 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 800;
+            font-size: 2rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--amber-400);
+            margin-bottom: 16px;
+        }
+
+        .welcome p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 12px;
+            line-height: 1.7;
+        }
+
+        .welcome .start-btn {
+            margin-top: 28px;
+            padding: 14px 40px;
+            font-size: 1rem;
+        }
+
+        .scope-box {
+            background: var(--navy-800);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 20px 24px;
+            max-width: 600px;
+            margin: 24px auto 0;
+            text-align: left;
+        }
+
+        .scope-heading {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--red-400);
+            margin-bottom: 10px;
+        }
+
+        .scope-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .scope-list li {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            padding: 4px 0;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .scope-list li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--amber-500);
+        }
+
+        /* ── FOOTER ── */
+        .app-footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            font-family: 'Barlow Condensed', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 640px) {
+            .brand-block h1 { font-size: 1.3rem; }
+            .intel-grid { grid-template-columns: 1fr 1fr; }
+            .scenario-title { font-size: 1.1rem; }
+            .header-inner { justify-content: center; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="app-header">
+    <div class="header-inner">
+        <div class="brand-block">
+            <h1>Operations Defensive Tactics</h1>
+            <div class="sub">Hazmat Tactical Training Platform</div>
+        </div>
+        <div class="level-badge">⬡ Operations Level Only</div>
+    </div>
+</header>
+
+<main class="main" id="app">
+    <!-- Welcome screen rendered by JS -->
+</main>
+
+<footer class="app-footer">
+    Hazmat Tactical · Operations Defensive Tactics · Training Tool Only — Not for Field Use · ERG 2024
+</footer>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   OPERATIONS DEFENSIVE TACTICS — SCENARIO ENGINE
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── CHEMICAL DATABASE (25 commonly transported) ── */
+const CHEMICALS = [
+    { name:"Chlorine", un:"1017", erg:124, placard:"Poison Gas / Oxidizer", vd:2.5, state:"Gas (liquefied)", hazards:["Toxic inhalation","Oxidizer","Corrosive","Water-reactive (generates acid)"], isolation_sm:"200 ft",isolation_lg:"1000 ft",downwind_day:"0.2 mi",downwind_night:"0.5 mi",lg_downwind_day:"2.1 mi",lg_downwind_night:"5.0 mi", lel:"N/A",idlh:"10 ppm", protective:"Upwind, uphill. Evacuate downwind.", decon:"Copious water flush.", fireNote:"Do NOT apply water to leak — generates HCl fumes." },
+    { name:"Anhydrous Ammonia", un:"1005", erg:125, placard:"Non-Flammable Gas / Poison", vd:0.6, state:"Gas (liquefied)", hazards:["Toxic inhalation","Corrosive","Lighter than air but cold cloud hugs ground","Flammable at 16-25%"], isolation_sm:"100 ft",isolation_lg:"500 ft",downwind_day:"0.1 mi",downwind_night:"0.2 mi",lg_downwind_day:"0.5 mi",lg_downwind_night:"1.4 mi", lel:"150,000 ppm",idlh:"300 ppm", protective:"Upwind. Vapor cloud visible—use as guide.", decon:"Remove clothing, copious water.", fireNote:"Water fog can knock down vapor cloud." },
+    { name:"Gasoline", un:"1203", erg:128, placard:"Flammable Liquid", vd:3.4, state:"Liquid", hazards:["Extremely flammable","Vapor heavier than air — travels to ignition source","Toxic","Static ignition risk"], isolation_sm:"150 ft",isolation_lg:"330 ft",downwind_day:"N/A",downwind_night:"N/A",lg_downwind_day:"N/A",lg_downwind_night:"N/A", lel:"14,000 ppm (1.4%)",idlh:"N/E", protective:"Eliminate ignition sources. Ground containers.", decon:"Standard.", fireNote:"AFFF or dry chemical. Do NOT use straight stream." },
+    { name:"Diesel Fuel", un:"1202", erg:128, placard:"Combustible Liquid", vd:4.5, state:"Liquid", hazards:["Combustible (higher flash point)","Environmental hazard","Vapors heavier than air"], isolation_sm:"150 ft",isolation_lg:"330 ft",downwind_day:"N/A",downwind_night:"N/A",lg_downwind_day:"N/A",lg_downwind_night:"N/A", lel:"~6,000 ppm",idlh:"N/E", protective:"Protect waterways. Dike spill.", decon:"Standard.", fireNote:"Foam or dry chemical." },
+    { name:"Propane", un:"1978", erg:115, placard:"Flammable Gas", vd:1.6, state:"Gas (liquefied)", hazards:["Extremely flammable","BLEVE risk under fire impingement","Heavier than air","Asphyxiant in enclosed spaces"], isolation_sm:"330 ft",isolation_lg:"330 ft",downwind_day:"N/A",downwind_night:"N/A",lg_downwind_day:"N/A",lg_downwind_night:"N/A", lel:"21,000 ppm (2.1%)",idlh:"2100 ppm", protective:"Eliminate ignition. Evacuate if container in fire. BLEVE zone = length of tank × 4 in all directions.", decon:"Standard.", fireNote:"Cool exposed containers from MAX distance. If fire venting from relief — DO NOT extinguish. Withdraw if relief device sound changes pitch." },
+    { name:"Sulfuric Acid", un:"1830", erg:137, placard:"Corrosive", vd:3.4, state:"Liquid", hazards:["Highly corrosive","Exothermic reaction with water","Severe burns","Vapors heavier than air"], isolation_sm:"150 ft",isolation_lg:"330 ft",downwind_day:"N/A",downwind_night:"N/A",lg_downwind_day:"N/A",lg_downwind_night:"N/A", lel:"N/A",idlh:"15 mg/m³", protective:"Full face shield minimum. Chemical-resistant suit.", decon:"Copious water. Neutralize with soda ash if available.", fireNote:"Do NOT add water directly to concentrate — add acid TO water." },
+    { name:"Sodium Hydroxide (liquid)", un:"1824", erg:154, placard:"Corrosive", vd:"N/A", state:"Liquid (solution)", hazards:["Highly corrosive","Severe burns","Slippery when spilled","Reacts with metals to generate hydrogen"], isolation_sm:"150 ft",isolation_lg:"330 ft",downwind_day:"N/A",downwind_night:"N/A",lg_downwind_day:"N/A",lg_downwind_night:"N/A", lel:"N/A",idlh:"10 mg/m³", protective:"Avoid aluminum contact. Protect waterways.", decon:"Copious water immediately.", fireNote:"Water fog. Avoid runoff into waterways." },
+    { name:"Ethanol", un:"1170", erg:127, placard:"Flammable Liquid", vd:1.6, state:"Liquid", hazards:["Flammable","Miscible with water","Nearly invisible flame","Vapors heavier than air"], isolation_sm:"150 ft",isolation_lg:"330 ft",downwind_day:"N/A",downwind_night:"N/A",lg_downwind_day:"N/A",lg_downwind_night:"N/A", lel:"33,000 ppm (3.3%)",idlh:"3300 ppm", protective:"Eliminate ignition. Flame may be invisible in daylight.", decon:"Standard.", fireNote:"AR-AFFF, CO2, or dry chemical. Water dilution effective — ethanol mixes with water." },
+    { name:"Hydrogen Chloride (Anhydrous)", un:"1050", erg:125, placard:"Poison Gas / Corrosive", vd:1.3, state:"Gas (liquefied)", hazards:["Toxic inhalation","Highly corrosive","Heavier than air","Fumes in moist air"], isolation_sm:"200 ft",isolation_lg:"600 ft",downwind_day:"0.4 mi",downwind_night:"1.4 mi",lg_downwind_day:"1.3 mi",lg_downwind_night:"4.2 mi", lel:"N/A",idlh:"50 ppm", protective:"Upwind. Full chemical PPE.", decon:"Copious water.", fireNote:"Do NOT direct water at source. Water fog for vapor knockdown only." },
+    { name:"Methanol", un:"1230", erg:131, placard:"Flammable Liquid / Poison", vd:1.1, state:"Liquid", hazards:["Flammable","Toxic — absorbed through skin","Nearly invisible flame","Miscible with water"], isolation_sm:"150 ft",isolation_lg:"330 ft",downwind_day:"N/A",downwind_night:"N/A",lg_downwind_day:"N/A",lg_downwind_night:"N/A", lel:"60,000 ppm (6.0%)",idlh:"6000 ppm", protective:"Skin absorption hazard — full PPE required even for small spills.", decon:"Remove contaminated clothing immediately. Copious water.", fireNote:"AR-AFFF or CO2. Water dilution effective." },
+    { name:"Liquefied Petroleum Gas (LPG)", un:"1075", erg:115, placard:"Flammable Gas", vd:1.5, state:"Gas (liquefied)", hazards:["Extremely flammable","BLEVE risk","Heavier than air","Asphyxiant"], isolation_sm:"330 ft",isolation_lg:"330 ft",downwind_day:"N/A",downwind_night:"N/A",lg_downwind_day:"N/A",lg_downwind_night:"N/A", lel:"19,000 ppm (1.9%)",idlh:"2000 ppm", protective:"Same as propane. BLEVE zone critical.", decon:"Standard.", fireNote:"Cool containers from max distance with unmanned monitors if possible. DO NOT extinguish relief valve fire." },
+    { name:"Toluene", un:"1294", erg:130, placard:"Flammable Liquid", vd:3.1, state:"Liquid", hazards:["Flammable","Toxic — CNS depressant","Vapors heavier than air, accumulate in low areas","Environmental hazard"], isolation_sm:"150 ft",isolation_lg:"330 ft",downwind_day:"N/A",downwind_night:"N/A",lg_downwind_day:"N/A",lg_downwind_night:"N/A", lel:"12,000 ppm (1.2%)",idlh:"500 ppm", protective:"Eliminate ignition. Vapor density 3.1 — check basements/sewers.", decon:"Standard. Remove contaminated clothing.", fireNote:"Foam, CO2, dry chemical." },
+    { name:"Styrene", un:"2055", erg:"128P", placard:"Flammable Liquid", vd:3.6, state:"Liquid", hazards:["Flammable","Toxic","Can polymerize under heat — runaway reaction","Vapors heavier than air"], isolation_sm:"150 ft",isolation_lg:"330 ft",downwind_day:"N/A",downwind_night:"N/A",lg_downwind_day:"N/A",lg_downwind_night:"N/A", lel:"11,000 ppm (1.1%)",idlh:"700 ppm", protective:"Monitor for polymerization — container swelling/heat.", decon:"Standard.", fireNote:"AFFF. Monitor container for signs of polymerization (bulging, self-heating)." },
+    { name:"Hydrochloric Acid", un:"1789", erg:157, placard:"Corrosive", vd:1.3, state:"Liquid", hazards:["Corrosive","Fumes in moist air","Attacks metals","Produces H2 with reactive metals"], isolation_sm:"150 ft",isolation_lg:"330 ft",downwind_day:"N/A",downwind_night:"N/A",lg_downwind_day:"0.1 mi",lg_downwind_night:"0.4 mi", lel:"N/A",idlh:"50 ppm", protective:"Chemical splash protection. Protect waterways.", decon:"Copious water. Neutralize with soda ash.", fireNote:"Water fog only. Do NOT use dry chemical on acid spills." },
+    { name:"Acetone", un:"1090", erg:127, placard:"Flammable Liquid", vd:2.0, state:"Liquid", hazards:["Highly flammable","Low flash point (-20°C)","Vapors heavier than air","Narcotic at high concentrations"], isolation_sm:"150 ft",isolation_lg:"330 ft",downwind_day:"N/A",downwind_night:"N/A",lg_downwind_day:"N/A",lg_downwind_night:"N/A", lel:"25,000 ppm (2.5%)",idlh:"2500 ppm", protective:"Eliminate all ignition sources. Vapors travel.", decon:"Standard.", fireNote:"AFFF, CO2, dry chemical." },
+    { name:"Benzene", un:"1114", erg:130, placard:"Flammable Liquid", vd:2.8, state:"Liquid", hazards:["Flammable","Known carcinogen","Toxic — extremely low exposure limits","Vapors heavier than air"], isolation_sm:"150 ft",isolation_lg:"330 ft",downwind_day:"N/A",downwind_night:"N/A",lg_downwind_day:"N/A",lg_downwind_night:"N/A", lel:"12,000 ppm (1.2%)",idlh:"500 ppm", protective:"CARCINOGEN. Minimize ANY exposure. Full PPE for any involvement.", decon:"Thorough decon required. Contaminated clothing double-bagged.", fireNote:"Foam preferred." },
+    { name:"Phosphoric Acid", un:"1805", erg:154, placard:"Corrosive", vd:3.4, state:"Liquid", hazards:["Corrosive","Dehydrating agent","Attacks metals","Low vapor pressure — less off-gassing"], isolation_sm:"150 ft",isolation_lg:"330 ft",downwind_day:"N/A",downwind_night:"N/A",lg_downwind_day:"N/A",lg_downwind_night:"N/A", lel:"N/A",idlh:"1000 mg/m³", protective:"Chemical splash protection.", decon:"Copious water.", fireNote:"Water fog." },
+    { name:"Nitric Acid", un:"2031", erg:157, placard:"Corrosive / Oxidizer", vd:2.2, state:"Liquid", hazards:["Corrosive","Strong oxidizer","Produces toxic NOx fumes (brown/orange cloud)","Reacts violently with organics"], isolation_sm:"150 ft",isolation_lg:"330 ft",downwind_day:"N/A",downwind_night:"N/A",lg_downwind_day:"N/A",lg_downwind_night:"N/A", lel:"N/A",idlh:"25 ppm", protective:"Brown/orange fumes = NOx. Extremely dangerous. Evacuate downwind.", decon:"Copious water. Do NOT neutralize in field — violent reaction.", fireNote:"Water fog. Keep organics away — fire/explosion risk." },
+    { name:"Hydrogen Peroxide (>52%)", un:"2015", erg:143, placard:"Oxidizer / Corrosive", vd:1.2, state:"Liquid", hazards:["Strong oxidizer","Corrosive","Spontaneously combustible with organics","Decomposition generates O2 — feeds fire"], isolation_sm:"150 ft",isolation_lg:"500 ft",downwind_day:"N/A",downwind_night:"N/A",lg_downwind_day:"N/A",lg_downwind_night:"N/A", lel:"N/A",idlh:"75 ppm", protective:"Keep away from ALL organics (wood, paper, cloth). Generates O2.", decon:"Copious water.", fireNote:"Water fog. Decomposition is self-accelerating — cool container." },
+    { name:"Carbon Dioxide (refrigerated)", un:"2187", erg:120, placard:"Non-Flammable Gas", vd:1.5, state:"Cryogenic liquid", hazards:["Asphyxiant","Cryogenic burns","Displaces oxygen in enclosed spaces","Vapors sink — accumulates in low areas"], isolation_sm:"330 ft",isolation_lg:"330 ft",downwind_day:"N/A",downwind_night:"N/A",lg_downwind_day:"N/A",lg_downwind_night:"N/A", lel:"N/A",idlh:"40,000 ppm", protective:"O2 monitoring critical. Ventilate before entry.", decon:"Warm slowly — cryogenic contact.", fireNote:"Non-flammable. Concern is asphyxiation and cold burns." },
+    { name:"Ethylene Oxide", un:"1040", erg:"119P", placard:"Flammable Gas / Poison", vd:1.5, state:"Gas (liquefied)", hazards:["Extremely flammable","Toxic","Carcinogen","Can polymerize explosively"], isolation_sm:"330 ft",isolation_lg:"1000 ft",downwind_day:"0.3 mi",downwind_night:"0.9 mi",lg_downwind_day:"1.5 mi",lg_downwind_night:"3.4 mi", lel:"30,000 ppm (3.0%)",idlh:"800 ppm", protective:"CARCINOGEN. Full encapsulation. Extreme flammability + toxicity.", decon:"Thorough decon. Double-bag clothing.", fireNote:"Water fog from distance. Polymerization risk under heat — container may rupture violently." },
+    { name:"Sodium Hypochlorite (solution)", un:"1791", erg:154, placard:"Corrosive", vd:"N/A", state:"Liquid (solution)", hazards:["Corrosive","Releases chlorine gas if mixed with acids","Oxidizer","Skin/eye burns"], isolation_sm:"150 ft",isolation_lg:"330 ft",downwind_day:"N/A",downwind_night:"N/A",lg_downwind_day:"N/A",lg_downwind_night:"N/A", lel:"N/A",idlh:"N/E", protective:"NEVER mix with acids — chlorine gas. Check nearby chemicals.", decon:"Copious water.", fireNote:"Water fog. Not combustible but generates Cl2 with acids or heat." },
+    { name:"Formaldehyde (solution)", un:"1198", erg:132, placard:"Flammable Liquid / Poison", vd:1.1, state:"Liquid (solution)", hazards:["Flammable","Toxic","Carcinogen","Corrosive to eyes/respiratory"], isolation_sm:"150 ft",isolation_lg:"330 ft",downwind_day:"N/A",downwind_night:"N/A",lg_downwind_day:"N/A",lg_downwind_night:"N/A", lel:"70,000 ppm (7.0%)",idlh:"20 ppm", protective:"CARCINOGEN. Very low IDLH. Full PPE required.", decon:"Thorough decon. Remove all clothing.", fireNote:"AR-AFFF, CO2, dry chemical." },
+    { name:"Hydrogen Fluoride (Anhydrous)", un:"1052", erg:125, placard:"Poison Gas / Corrosive", vd:0.7, state:"Gas (liquefied)", hazards:["Extremely toxic","Penetrates skin — causes deep tissue/bone damage","Corrosive","Lighter than air at ambient temp but released cold"], isolation_sm:"500 ft",isolation_lg:"2000 ft",downwind_day:"0.7 mi",downwind_night:"2.1 mi",lg_downwind_day:"4.1 mi",lg_downwind_night:"6.2 mi", lel:"N/A",idlh:"30 ppm", protective:"EXTREME TOXICITY. Skin contact causes systemic fluoride poisoning — delayed cardiac arrest. Calcium gluconate must be available.", decon:"Copious water + calcium gluconate gel for skin exposure.", fireNote:"Water fog. Not combustible but extremely dangerous." },
+    { name:"Xylene", un:"1307", erg:130, placard:"Flammable Liquid", vd:3.7, state:"Liquid", hazards:["Flammable","Toxic — CNS effects","Vapors much heavier than air","Environmental hazard"], isolation_sm:"150 ft",isolation_lg:"330 ft",downwind_day:"N/A",downwind_night:"N/A",lg_downwind_day:"N/A",lg_downwind_night:"N/A", lel:"10,000 ppm (1.0%)",idlh:"900 ppm", protective:"VD 3.7 — heavy vapors. Check low-lying areas, sewers, basements.", decon:"Standard. Remove contaminated clothing.", fireNote:"Foam, dry chemical, CO2." }
+];
+
+/* Fix ERG numbers — ensure all are strings */
+CHEMICALS.forEach(c => { c.erg = String(c.erg); });
+
+/* ── CONTAINER TYPES ── */
+const CARGO_TANKS = [
+    { type:"MC-306 / DOT-406", desc:"Aluminum, elliptical cross-section, non-pressurized", carries:"Gasoline, diesel, ethanol, fuel oils", capacity:"6,000–9,500 gal", pressure:"3–4 psi", features:"Multiple compartments. Rollover valve on top. Aluminum = easily damaged. Oval shape.", visual:"Oval tanker with multiple dome lids on top", bleve:false },
+    { type:"MC-307 / DOT-407", desc:"Round cross-section, low-pressure chemical hauler", carries:"Corrosives, poisons, mild flammables, solvents", capacity:"6,000–7,000 gal", pressure:"25–40 psi", features:"Single compartment. Round profile. Insulated or lined. Rear discharge.", visual:"Round profile tanker, often with insulation", bleve:false },
+    { type:"MC-312 / DOT-412", desc:"Small-diameter round tank, reinforced", carries:"Concentrated acids, corrosives", capacity:"4,000–6,000 gal", pressure:"15–75 psi", features:"Smaller diameter. External reinforcing rings visible. Often has overturn protection.", visual:"Smaller round tank with visible stiffening rings", bleve:false },
+    { type:"MC-331", desc:"High-pressure, bullet-shaped tank", carries:"LPG, propane, anhydrous ammonia, chlorine", capacity:"3,000–11,500 gal", pressure:"100–500 psi", features:"Rounded heads (no flat ends). Painted white/silver to reflect heat. Relief valve. BLEVE candidate under fire impingement.", visual:"Bullet-shaped white/silver tank with rounded ends", bleve:true },
+    { type:"MC-338", desc:"Cryogenic tanker, vacuum-jacketed", carries:"LOX, LN2, argon, CO2, LNG, ethylene", capacity:"4,000–10,000 gal", pressure:"25–500 psi", features:"Vacuum insulation. Flat rear head. Valves and piping in rear cabinet. Box-in-box construction.", visual:"Smooth tank with flat rear, valve cabinet at back", bleve:false }
+];
+
+const RAIL_CARS = [
+    { type:"DOT-111 (legacy non-pressure)", desc:"General service, non-pressurized tank car", carries:"Flammable liquids, crude oil, ethanol, corrosives", capacity:"20,000–34,500 gal", pressure:"Up to 100 psi", features:"Thin shell. Bottom outlet valve. Historically involved in catastrophic derailments. Being phased out for DOT-117 for flammables.", visual:"Standard cylindrical rail tank car" },
+    { type:"DOT-117", desc:"Enhanced tank car (replaced 111 for flammables)", carries:"Flammable liquids, crude oil, ethanol", capacity:"28,000–31,800 gal", pressure:"100 psi", features:"Thicker shell. Thermal protection. Top fittings protection. Improved bottom outlet.", visual:"Similar to 111 but with head shields and thermal jacket" },
+    { type:"DOT-105 (pressure car)", desc:"Pressurized tank car for compressed/liquefied gases", carries:"Chlorine, LPG, anhydrous ammonia, vinyl chloride", capacity:"17,000–34,500 gal", pressure:"100–600 psi", features:"No bottom outlet. Top-loading only. Thick shell. Head shields. Thermal protection on some. BLEVE candidate.", visual:"Heavier cylindrical car with head shields, no bottom valve" },
+    { type:"DOT-112/114 (pressure car)", desc:"Pressurized tank car", carries:"LPG, propane, butane, vinyl chloride", capacity:"26,000–33,500 gal", pressure:"100–340 psi", features:"BLEVE risk under fire impingement. Pressure relief devices. Head shields required. Thermal protection.", visual:"Heavy cylindrical car, often insulated" },
+    { type:"DOT-113 (cryogenic)", desc:"Inner vessel within outer tank — thermos design", carries:"LNG, liquid hydrogen, liquid ethylene, LOX", capacity:"17,000–34,500 gal", pressure:"Varies", features:"Tank-within-a-tank. Vacuum insulation. Loss of vacuum = rapid boil-off. Look for frost/icing on outer shell.", visual:"Outer tank may show frost if vacuum fails" }
+];
+
+const CYLINDERS = [
+    { type:"Compressed Gas Cylinder (DOT 3AA/3AL)", desc:"Standard high-pressure cylinder", carries:"O2, N2, He, Ar, H2, CO2", capacity:"Up to 300 cu ft", pressure:"2,000–3,000 psi", features:"Stamped with DOT spec, test date, pressure rating. Color coding NOT reliable. Read label.", visual:"Tall narrow cylinder with valve at top" },
+    { type:"Acetylene Cylinder (DOT 8/8AL)", desc:"Low-pressure cylinder with porous filler", carries:"Acetylene", capacity:"Up to 390 cu ft", pressure:"250 psi max", features:"Contains porous mass saturated with acetone. Cannot be laid on side. UNSTABLE if heated — can decompose hours after fire exposure.", visual:"Shorter, wider cylinder, often maroon" },
+    { type:"Chlorine Ton Container", desc:"Horizontal drum container", carries:"Chlorine gas (liquefied)", capacity:"1 ton (150 gal)", pressure:"~300 psi", features:"Two valves (liquid + vapor). Fusible plugs. Extremely toxic contents. Horizontal orientation.", visual:"Horizontal drum with lifting lugs, two valves on one end" },
+    { type:"Propane/LPG Cylinder (DOT 4BA/4BW)", desc:"Portable pressure vessel", carries:"Propane, LPG, butane", capacity:"20–100 lb (common BBQ to forklift)", pressure:"~312 psi at 130°F", features:"OPD valve. Relief device. BLEVE risk if exposed to flame.", visual:"Common grill or forklift tank" },
+    { type:"Cryogenic Liquid Cylinder (Dewar)", desc:"Vacuum-insulated portable cryogenic vessel", carries:"LOX, LN2, LAr, LCO2", capacity:"80–450 liters", pressure:"22–500 psi", features:"Double-walled vacuum insulation. Pressure-building circuit. If frosted/iced — vacuum may have failed. Expansion ratio 600-900:1.", visual:"Stainless steel cylinder on casters, often with frost" }
+];
+
+/* ── SCENARIO VARIABLES ── */
+const LOCATIONS = [
+    { name:"Highway — Two-Lane Rural Road", desc:"Rural highway, nearest town 8 miles. Limited hydrants. Shoulders only.", access:"Single road, difficult turnaround", pop:"Sparse — scattered residences within 1 mile" },
+    { name:"Interstate Highway — Urban Corridor", desc:"Major interstate through metro area. Heavy traffic. Multiple overpasses.", access:"On-ramp access. Traffic control needed.", pop:"Dense — residential neighborhoods within 500 ft" },
+    { name:"Industrial Park", desc:"Commercial/industrial area. Multiple facilities. Some with their own hazmat inventories.", access:"Good road access. Gate may restrict entry.", pop:"Workers during shifts. Nearby commercial areas." },
+    { name:"Rail Yard — Classification Yard", desc:"Busy rail switching yard. Multiple tracks. Cars being sorted.", access:"Limited — specific gate access. Rail operations ongoing.", pop:"Rail workers on-site. Adjacent residential within 1/4 mile." },
+    { name:"Residential Neighborhood", desc:"Suburban area. Houses on both sides of street. Schools within 1/2 mile.", access:"Local streets. May need to shut down blocks.", pop:"High — families, children, elderly. Schools nearby." },
+    { name:"Downtown Commercial District", desc:"Dense urban core. Multi-story buildings. High pedestrian traffic.", access:"One-way streets. Parking garages. Limited staging.", pop:"Very high — office workers, pedestrians, underground transit." },
+    { name:"Highway — Interchange / Overpass", desc:"Tanker incident on elevated highway ramp or overpass.", access:"Limited. Spill may be falling to roadway below.", pop:"Moderate — vehicles below. Nearby structures." },
+    { name:"Agricultural Area", desc:"Farm country. Open fields. Anhydrous ammonia storage nearby.", access:"Gravel roads. Long response distances.", pop:"Low but elderly farming population." },
+    { name:"Warehouse / Distribution Center", desc:"Large warehouse with loading docks. Mixed storage.", access:"Parking lot staging. Loading dock access.", pop:"Workers inside during business hours." },
+    { name:"Port / Marine Terminal", desc:"Waterfront facility. Container storage. Vessel operations.", access:"Restricted access. Large staging area.", pop:"Port workers. Environmental sensitivity — water." }
+];
+
+const WEATHER = [
+    { wind:"Calm (0-3 mph)", temp:"72°F", conditions:"Clear skies", note:"Low dispersion — vapors may accumulate." },
+    { wind:"Light SW 5-10 mph", temp:"85°F", conditions:"Partly cloudy, humid", note:"Heat increases vapor pressure." },
+    { wind:"Moderate NW 15-20 mph", temp:"45°F", conditions:"Overcast", note:"Good dispersion but wider hazard zone downwind." },
+    { wind:"Gusty variable 10-25 mph", temp:"38°F", conditions:"Rain, cold front approaching", note:"Shifting winds complicate zone establishment. Rain may knock down vapors but spreads liquids." },
+    { wind:"Steady N 8-12 mph", temp:"55°F", conditions:"Clear", note:"Consistent wind — reliable plume direction." },
+    { wind:"Light E 3-5 mph", temp:"92°F", conditions:"Hot, hazy, humidity 85%", note:"Extreme heat stress for crews in PPE. Vapor pressure high." },
+    { wind:"Strong S 20-30 mph", temp:"50°F", conditions:"Thunderstorms approaching", note:"Lightning risk with flammables. Wind extends downwind distances." },
+    { wind:"Calm overnight", temp:"28°F", conditions:"Clear, temp inversion", note:"INVERSION — vapors trapped at ground level. Extended downwind distances." }
+];
+
+const TIMES = ["0630 hrs (dawn, shift change)","0845 hrs (morning, school in session)","1130 hrs (midday, lunch traffic)","1415 hrs (afternoon)","1730 hrs (rush hour)","2100 hrs (evening, dark)","0230 hrs (overnight, minimal resources)","1000 hrs (weekday morning)"];
+
+const RELEASE_TYPES = [
+    { type:"Slow leak from valve/fitting", severity:"Low-Moderate", desc:"Product seeping from connection. Vapor or liquid depending on state.", container_stress:"Mechanical — fitting failure or impact damage." },
+    { type:"Puncture — small hole in tank shell", severity:"Moderate", desc:"Steady stream or spray from damage point. May be liquid or vapor phase depending on location on container.", container_stress:"Mechanical — impact or corrosion penetration." },
+    { type:"Large breach — rollover/derailment damage", severity:"High", desc:"Major structural failure. Rapid product release. Large pool or heavy vapor cloud.", container_stress:"Mechanical — catastrophic structural failure." },
+    { type:"Fire impingement on pressurized container", severity:"Critical", desc:"Container exposed to flame. Pressure rising. Relief device may or may not be functioning.", container_stress:"Thermal — direct flame contact or radiant heat." },
+    { type:"Vapor cloud — no visible liquid", severity:"Moderate-High", desc:"Gas release or liquid evaporating rapidly. Cloud visible or detected by meters only.", container_stress:"Varies — pressure relief or breach above liquid line." },
+    { type:"Pool fire from liquid release", severity:"High", desc:"Product ignited after release. Spreading pool fire. Exposures threatened.", container_stress:"Mechanical breach with ignition." },
+    { type:"Pressure relief device (PRD) operating", severity:"High", desc:"Container PRD is venting product. System working as designed but indicates high internal pressure.", container_stress:"Thermal or overfill — pressure exceeding design." }
+];
+
+/* ── DEFENSIVE ACTIONS LIBRARY ── */
+const ACTION_CATEGORIES = {
+    isolation: [
+        "Establish initial isolation zone per ERG at the recommended distance",
+        "Expand isolation beyond ERG minimum based on conditions",
+        "Set up hard isolation — physical barricades, tape, apparatus positioning",
+        "Deny entry to all non-essential personnel"
+    ],
+    evacuation: [
+        "Evacuate all civilians downwind to the recommended protective action distance",
+        "Implement shelter-in-place for immobile populations (nursing homes, schools)",
+        "Order shelter-in-place — close windows/doors, shut off HVAC",
+        "Stage evacuation buses at upwind collection point"
+    ],
+    spill_control: [
+        "Construct dike/dam downstream of spill to contain product",
+        "Deploy absorbent booms at storm drains to prevent entry",
+        "Divert flow away from waterways using available materials",
+        "Cover drains with plastic sheeting and absorbent material"
+    ],
+    vapor: [
+        "Apply water fog streams to knock down/disperse vapor cloud",
+        "Set up unmanned master stream for sustained vapor dispersion",
+        "Ventilate structure with positive pressure (if safe — no ignition sources)"
+    ],
+    cooling: [
+        "Cool exposed containers with water streams from maximum distance",
+        "Set up unmanned monitors for sustained cooling if withdrawal needed",
+        "Cool exposures — adjacent tanks, structures, vehicles"
+    ],
+    withdrawal: [
+        "Withdraw all personnel to safe distance and reassess",
+        "Establish BLEVE evacuation zone (minimum 1,600 ft / length of tank × 4)",
+        "Pull back to cold zone and await HazMat technician team"
+    ],
+    wrong_offensive: [
+        "Approach the container and attempt to close the valve",
+        "Send crew to plug the leak with available tools",
+        "Enter the vapor cloud to rescue a reported victim without proper PPE",
+        "Attempt to upright the overturned container with apparatus",
+        "Apply water directly into a corrosive acid spill to dilute it"
+    ],
+    wrong_passive: [
+        "Do nothing and wait for the HazMat team — they'll handle everything",
+        "Remain in current position — it seems far enough away",
+        "Skip isolation — this product probably isn't that dangerous"
+    ]
+};
+
+/* ── SCENARIO GENERATOR ── */
+let scenarioCount = 0;
+let usedCombos = new Set();
+let currentDifficulty = "standard";
+
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function pickIdx(arr) { const i = Math.floor(Math.random() * arr.length); return { item: arr[i], idx: i }; }
+function shuffle(arr) { const a = [...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+function getContainerForChemical(chem) {
+    const s = chem.state;
+    const h = chem.hazards.join(' ').toLowerCase();
+    let pool = [];
+    if(s.includes('Gas (liquefied)')) {
+        pool.push(...CARGO_TANKS.filter(t => t.type.includes('MC-331')));
+        pool.push(...RAIL_CARS.filter(t => t.type.includes('105') || t.type.includes('112')));
+        if(chem.name.includes('Chlorine')) pool.push(...CYLINDERS.filter(t => t.type.includes('Ton')));
+        if(chem.name.includes('Propane') || chem.name.includes('LPG')) pool.push(...CYLINDERS.filter(t => t.type.includes('Propane')));
+        if(chem.name.includes('Ammonia')) pool.push(...CYLINDERS.filter(t => t.type.includes('Compressed Gas')));
+    } else if(s.includes('Cryogenic')) {
+        pool.push(...CARGO_TANKS.filter(t => t.type.includes('MC-338')));
+        pool.push(...RAIL_CARS.filter(t => t.type.includes('113')));
+        pool.push(...CYLINDERS.filter(t => t.type.includes('Dewar')));
+    } else if(s.includes('Liquid')) {
+        if(h.includes('flammable') || h.includes('combustible') || chem.name.includes('Gasoline') || chem.name.includes('Diesel') || chem.name.includes('Ethanol')) {
+            pool.push(...CARGO_TANKS.filter(t => t.type.includes('306') || t.type.includes('406')));
+            pool.push(...RAIL_CARS.filter(t => t.type.includes('111') || t.type.includes('117')));
+        }
+        if(h.includes('corrosive') || h.includes('acid') || chem.placard.includes('Corrosive')) {
+            pool.push(...CARGO_TANKS.filter(t => t.type.includes('312') || t.type.includes('412') || t.type.includes('307') || t.type.includes('407')));
+            pool.push(...RAIL_CARS.filter(t => t.type.includes('111')));
+        }
+        if(h.includes('poison') || h.includes('toxic')) {
+            pool.push(...CARGO_TANKS.filter(t => t.type.includes('307') || t.type.includes('407')));
+        }
+        if(pool.length === 0) {
+            pool.push(...CARGO_TANKS.filter(t => t.type.includes('307') || t.type.includes('407')));
+            pool.push(...RAIL_CARS.filter(t => t.type.includes('111')));
+        }
+    }
+    if(pool.length === 0) {
+        pool.push(pick(CARGO_TANKS));
+    }
+    return pick(pool);
+}
+
+function generateScenario() {
+    const chem = pick(CHEMICALS);
+    const container = getContainerForChemical(chem);
+    const location = pick(LOCATIONS);
+    const weather = pick(WEATHER);
+    const time = pick(TIMES);
+    const release = pick(RELEASE_TYPES);
+
+    // If fire impingement selected but container can't BLEVE, adjust
+    let adjustedRelease = release;
+    if(release.type.includes('Fire impingement') && !container.bleve && !container.type.includes('105') && !container.type.includes('112') && !container.type.includes('Propane') && !container.type.includes('Acetylene')) {
+        adjustedRelease = RELEASE_TYPES.find(r => !r.type.includes('Fire impingement')) || release;
+    }
+
+    // Generate tactical decisions
+    const decisions = generateDecisions(chem, container, location, weather, adjustedRelease);
+    const instructorInsight = generateInstructorInsight(chem, container, location, weather, adjustedRelease, decisions.correct);
+
+    scenarioCount++;
+
+    return {
+        id: scenarioCount,
+        chem, container, location, weather, time,
+        release: adjustedRelease,
+        decisions,
+        instructorInsight
+    };
+}
+
+function generateDecisions(chem, container, location, weather, release) {
+    const h = chem.hazards.join(' ').toLowerCase();
+    const isGas = chem.state.includes('Gas');
+    const isFlam = h.includes('flammable');
+    const isToxic = h.includes('toxic') || h.includes('poison');
+    const isCorrosive = h.includes('corrosive');
+    const isBleveRisk = release.type.includes('Fire impingement') && (container.bleve || container.type.includes('105') || container.type.includes('112') || container.type.includes('Propane') || container.type.includes('Acetylene'));
+    const isVaporCloud = release.type.includes('Vapor cloud') || isGas;
+    const isPoolFire = release.type.includes('Pool fire');
+    const isLiquidSpill = chem.state.includes('Liquid') && !isPoolFire;
+    const isPRD = release.type.includes('PRD');
+    const isHighPop = location.pop.toLowerCase().includes('high') || location.pop.toLowerCase().includes('dense') || location.pop.toLowerCase().includes('very');
+
+    let correctActions = [];
+    let correctExplanations = [];
+    let wrongActions = [];
+    let wrongExplanations = [];
+
+    // Always: Isolation
+    correctActions.push(`Establish initial isolation at ${chem.isolation_sm} per ERG Guide ${chem.erg}. Position apparatus upwind/uphill. Deny entry.`);
+    correctExplanations.push(`ERG Guide ${chem.erg} for ${chem.name} (UN ${chem.un}) specifies initial isolation of ${chem.isolation_sm}. Upwind/uphill positioning protects crews from vapor exposure and runoff. This is always your first defensive action.`);
+
+    // BLEVE scenario
+    if(isBleveRisk) {
+        correctActions.push(`Evacuate to BLEVE-safe distance immediately — minimum 1,600 feet in all directions. Cool container ONLY with unmanned monitors from maximum distance. If relief device pitch changes or flame impingement exceeds 20 minutes with no water on the tank — WITHDRAW.`);
+        correctExplanations.push(`A pressurized container under fire impingement is the highest-priority defensive emergency. BLEVE fragments have been documented traveling over 1,600 feet. Unmanned monitors let you cool without risking personnel. Never approach a pressurized container under fire. Listen for the relief device — if the pitch rises or it goes silent, failure may be imminent.`);
+
+        wrongActions.push(`Approach the tank to check the relief device and try to cool it with a handline at close range.`);
+        wrongExplanations.push(`NEVER approach a pressurized container under fire impingement. BLEVE failure is instantaneous and catastrophic — the tank becomes a projectile. Handline range puts you well inside the lethal fragment zone. Unmanned monitors from maximum distance are the only acceptable cooling method.`);
+
+        wrongActions.push(`The relief device is working, so the situation is stable. Hold position and monitor.`);
+        wrongExplanations.push(`A working relief device only means it hasn't failed YET. It is venting product under pressure — the situation is actively escalating. Fire impingement weakens the tank shell where the relief device can't compensate. You should be evacuating and setting up unmanned cooling, not holding position.`);
+    }
+
+    // Toxic gas / vapor cloud
+    if(isToxic && isVaporCloud) {
+        const downwind = weather.wind.toLowerCase().includes('calm') ? chem.downwind_night : chem.downwind_day;
+        const evac = downwind !== "N/A" ? downwind : "0.5 mi minimum";
+        if(isHighPop) {
+            correctActions.push(`Initiate downwind evacuation to ${evac}. Coordinate with PD for traffic control. For immobile populations (nursing homes, schools), implement shelter-in-place: close windows/doors, shut off HVAC systems. Use water fog to slow vapor migration while evacuation proceeds.`);
+            correctExplanations.push(`${chem.name} is toxic by inhalation (IDLH: ${chem.idlh}). In a populated area, evacuation is the priority protective action. Shelter-in-place is appropriate for populations that can't be moved quickly — it buys time but is not a substitute for evacuation. Water fog can knock down or redirect vapor but won't eliminate the hazard.`);
+        } else {
+            correctActions.push(`Evacuate downwind to ${evac}. Apply water fog streams from upwind position to disperse/knock down vapor cloud. Monitor cloud movement and adjust zones as wind shifts.`);
+            correctExplanations.push(`${chem.name} IDLH is ${chem.idlh} — the toxic hazard is the priority. Water fog applied from upwind can slow vapor migration and knock down concentrations, giving civilians time to evacuate. This is a core defensive tactic. Continuous monitoring is essential because wind shifts change everything.`);
+        }
+
+        wrongActions.push(`Enter the vapor cloud to search for civilians who may be trapped inside the hazard zone.`);
+        wrongExplanations.push(`Entering a toxic vapor cloud without proper chemical PPE (Level A/B) is an operations-level boundary violation and potentially fatal. ${chem.name} IDLH is ${chem.idlh}. Operations-level responders do not have the PPE or training for entry into IDLH atmospheres. Evacuate from the OUTSIDE, establish a perimeter, and wait for technician-level entry teams.`);
+    }
+
+    // Flammable liquid spill (no fire)
+    if(isFlam && isLiquidSpill && !isPoolFire) {
+        correctActions.push(`Eliminate ALL ignition sources within 300+ feet — shut down traffic, no apparatus repositioning near spill. Dike the spill to prevent spread. Protect storm drains with absorbent booms or plastic sheeting. ${parseFloat(chem.vd) > 1 ? 'Vapor density ' + chem.vd + ' — check low-lying areas, sewers, and basements for vapor accumulation.' : ''}`);
+        correctExplanations.push(`With a flammable liquid spill, ignition prevention and spill containment are your two priorities. ${chem.name} LEL is ${chem.lel} — vapors can reach explosive concentrations quickly. Storm drain protection prevents environmental disaster and eliminates a vapor migration pathway. ${parseFloat(chem.vd) > 1 ? 'Heavy vapors (VD ' + chem.vd + ') travel along the ground and accumulate in enclosed low areas — these become explosion hazards.' : ''}`);
+
+        wrongActions.push(`Use apparatus to push the spill off the road surface with a straight stream to clear the lane.`);
+        wrongExplanations.push(`Spreading a flammable liquid with a hose stream increases the vapor surface area (more evaporation = higher vapor concentrations), spreads the spill to uncontrolled areas, and the stream itself can generate static. Contain the spill — don't spread it.`);
+    }
+
+    // Pool fire
+    if(isPoolFire) {
+        correctActions.push(`Protect exposures with water streams from maximum safe distance. Do NOT attempt to extinguish unless you can simultaneously eliminate the fuel source — an extinguished pool fire leaves explosive vapors. Cool adjacent containers/structures threatened by radiant heat.`);
+        correctExplanations.push(`A pool fire from ${chem.name} requires exposure protection as the primary defensive action. Extinguishing the fire without stopping the fuel supply creates an unignited vapor cloud — which is MORE dangerous than a burning pool because the next ignition source causes a flash fire or vapor cloud explosion. Let it burn while you protect what's around it.`);
+
+        wrongActions.push(`Extinguish the pool fire immediately with foam, then address the spill.`);
+        wrongExplanations.push(`If you extinguish a pool fire but the product is still flowing, you've traded a visible hazard for an invisible one — an expanding vapor cloud looking for an ignition source. The resulting flash fire or explosion will be far more destructive than the original pool fire. Offensive firefighting on hazmat pool fires requires stopping the fuel source first — that's technician-level work.`);
+    }
+
+    // Corrosive spill
+    if(isCorrosive && isLiquidSpill) {
+        correctActions.push(`Contain the spill using compatible diking materials. Protect waterways and storm drains. Do NOT apply water directly to concentrated acids — exothermic reaction risk. ${chem.name.includes('Nitric') ? 'Brown/orange fumes indicate NOx gas — extremely toxic. Evacuate downwind immediately.' : ''} ${chem.name.includes('Hypochlorite') ? 'Check for nearby acids — mixing produces chlorine gas.' : ''}`);
+        correctExplanations.push(`Corrosive spills require containment and waterway protection as primary actions. ${chem.name} is corrosive to skin, eyes, and respiratory tract. Water on concentrated acid generates dangerous heat and splatter. The correct approach is diking and containment, then awaiting technician-level neutralization/cleanup.`);
+    }
+
+    // PRD operating
+    if(isPRD) {
+        correctActions.push(`The PRD is doing its job — do NOT attempt to stop it. Establish isolation. If the container is NOT under fire impingement, the PRD venting may stabilize pressure. Monitor from safe distance. If the container IS under fire impingement, implement BLEVE procedures: withdraw to safe distance and cool with unmanned monitors only.`);
+        correctExplanations.push(`A PRD venting is a safety system working as designed. Interfering with it (attempting to close or block) could cause catastrophic container failure. Your job is to maintain isolation, protect civilians, and monitor the situation. The PRD tells you pressure is elevated — that's information, not a problem to solve at the operations level.`);
+    }
+
+    // Generic wrong options to fill out
+    if(wrongActions.length < 2) {
+        wrongActions.push(`Do nothing — hold position at the original staging area and wait for the HazMat technician team to arrive and handle everything.`);
+        wrongExplanations.push(`"Wait for HazMat" is NOT a defensive strategy — it's inaction. Operations-level responders are trained and expected to take defensive action: isolate, evacuate/shelter, deny entry, protect exposures, contain spills, and establish command. Waiting passively while a chemical release threatens the public is a failure of duty and training. You have the authority and tools to act defensively right now.`);
+    }
+
+    if(wrongActions.length < 2) {
+        wrongActions.push(`The placard says ${chem.placard} — that's not really that dangerous. Reduce isolation to 50 feet and open the road.`);
+        wrongExplanations.push(`Minimizing the hazard based on a placard alone is dangerous. ${chem.name} (IDLH: ${chem.idlh}) requires ERG-specified isolation of ${chem.isolation_sm} minimum. ERG distances are based on worst-case modeling. Reducing isolation below those distances exposes civilians and responders to the hazard. The ERG is the floor, not the ceiling.`);
+    }
+
+    // Build the options — 1 correct, 3 wrong (or 2 correct + 2 wrong for complex)
+    let correctIdx;
+    let options = [];
+
+    if(currentDifficulty === "complex" && correctActions.length >= 2) {
+        // 2 correct, 2 wrong
+        const c1 = 0, c2 = 1;
+        const w1 = 0, w2 = Math.min(1, wrongActions.length - 1);
+        options = shuffle([
+            { text: correctActions[c1], correct: true, explanation: correctExplanations[c1] },
+            { text: correctActions[c2], correct: true, explanation: correctExplanations[c2] },
+            { text: wrongActions[w1], correct: false, explanation: wrongExplanations[w1] },
+            { text: wrongActions[w2], correct: false, explanation: wrongExplanations[w2] }
+        ]);
+    } else {
+        // 1 correct, 3 wrong
+        const ci = correctActions.length > 1 ? Math.floor(Math.random() * Math.min(correctActions.length, 2)) : 0;
+        const wrongs = shuffle(wrongActions).slice(0, 3);
+        const wrongExps = [];
+        wrongs.forEach(w => {
+            const idx = wrongActions.indexOf(w);
+            wrongExps.push(wrongExplanations[idx]);
+        });
+
+        // Pad if needed
+        while(wrongs.length < 3) {
+            wrongs.push(pick(ACTION_CATEGORIES.wrong_passive));
+            wrongExps.push(`Passive inaction is not a defensive strategy. Operations-level responders have clear responsibilities: isolate, deny entry, protect civilians, and establish command. Defaulting to inaction leaves the public unprotected.`);
+        }
+
+        options = shuffle([
+            { text: correctActions[ci], correct: true, explanation: correctExplanations[ci] },
+            { text: wrongs[0], correct: false, explanation: wrongExps[0] },
+            { text: wrongs[1], correct: false, explanation: wrongExps[1] },
+            { text: wrongs[2], correct: false, explanation: wrongExps[2] }
+        ]);
+    }
+
+    const bestAction = correctActions.length > 1 ? correctActions.slice(0, 2).join(' Additionally: ') : correctActions[0];
+
+    return { options, correct: bestAction, correctExplanation: correctExplanations.join(' ') };
+}
+
+function generateInstructorInsight(chem, container, location, weather, release, bestAction) {
+    let insight = `The optimal approach for this scenario centers on ${chem.name} (UN ${chem.un}, ERG Guide ${chem.erg}) in a ${container.type}. `;
+
+    if(release.type.includes('Fire impingement')) {
+        insight += `Fire impingement on a ${container.type} is a critical emergency. ${container.bleve ? 'This container is a BLEVE candidate — evacuate to safe distance immediately and use unmanned monitors only.' : 'While this container type has a lower BLEVE risk, thermal stress still compromises structural integrity.'} `;
+    }
+
+    if(chem.state.includes('Gas')) {
+        insight += `As a gas/liquefied gas, the release produces an immediate vapor hazard. Vapor density of ${chem.vd} means vapors will ${parseFloat(chem.vd) > 1 ? 'sink and accumulate in low-lying areas' : 'rise and disperse — but a cold release may initially hug the ground'}. `;
+    }
+
+    insight += `Key defensive actions at the operations level: ${bestAction} `;
+
+    if(weather.note) {
+        insight += `Weather conditions are significant: ${weather.note} `;
+    }
+
+    insight += `Remember: Operations-level responders are NOT passive bystanders. You isolate, evacuate, deny entry, contain spills defensively, protect exposures, and establish command. The line between operations and technician is OFFENSIVE action on the product or container — you don't cross that line, but everything on this side of it is YOUR responsibility.`;
+
+    return insight;
+}
+
+/* ── CANVAS SITE DIAGRAM ── */
+function drawSiteDiagram(scenario) {
+    const canvas = document.getElementById('siteCanvas');
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const W = 600, H = 400;
+    canvas.width = W;
+    canvas.height = H;
+
+    // Background
+    ctx.fillStyle = '#0b1120';
+    ctx.fillRect(0, 0, W, H);
+
+    // Grid
+    ctx.strokeStyle = 'rgba(42,54,80,0.4)';
+    ctx.lineWidth = 0.5;
+    for(let x = 0; x < W; x += 30) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+    for(let y = 0; y < H; y += 30) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+    // Road
+    ctx.fillStyle = '#1a2332';
+    ctx.fillRect(0, 170, W, 60);
+    ctx.strokeStyle = '#d4a437';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([12, 8]);
+    ctx.beginPath(); ctx.moveTo(0, 200); ctx.lineTo(W, 200); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#64748b';
+    ctx.font = '10px Barlow Condensed';
+    ctx.fillText('ROADWAY', 10, 195);
+
+    // Incident location
+    const incX = 280, incY = 195;
+
+    // Container icon
+    ctx.fillStyle = 'rgba(220, 38, 38, 0.15)';
+    ctx.beginPath();
+    ctx.arc(incX, incY, 40, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#dc2626';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Tank shape
+    ctx.fillStyle = '#dc2626';
+    ctx.beginPath();
+    if(scenario.container.type.includes('MC-331') || scenario.container.type.includes('105') || scenario.container.type.includes('112')) {
+        // Bullet shape
+        ctx.ellipse(incX, incY, 22, 10, 0, 0, Math.PI * 2);
+    } else {
+        // Rectangle tank
+        ctx.rect(incX - 20, incY - 8, 40, 16);
+    }
+    ctx.fill();
+
+    // Incident label
+    ctx.fillStyle = '#ef4444';
+    ctx.font = 'bold 11px Barlow Condensed';
+    ctx.textAlign = 'center';
+    ctx.fillText('INCIDENT', incX, incY - 48);
+    ctx.fillStyle = '#fbbf24';
+    ctx.font = '10px Barlow Condensed';
+    ctx.fillText(scenario.container.type.split('/')[0].trim(), incX, incY - 36);
+
+    // Release indicator
+    const releaseType = scenario.release.type;
+    if(releaseType.includes('Vapor') || releaseType.includes('leak') || releaseType.includes('PRD')) {
+        // Vapor puffs
+        ctx.fillStyle = 'rgba(148, 163, 184, 0.2)';
+        for(let i = 0; i < 5; i++) {
+            const px = incX + 50 + i * 25 + Math.random() * 15;
+            const py = incY - 15 + Math.random() * 30;
+            ctx.beginPath();
+            ctx.arc(px, py, 8 + Math.random() * 8, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.fillStyle = '#64748b';
+        ctx.font = '9px Barlow Condensed';
+        ctx.textAlign = 'left';
+        ctx.fillText('VAPOR', incX + 55, incY - 25);
+    }
+
+    if(releaseType.includes('Pool') || releaseType.includes('breach') || releaseType.includes('Puncture')) {
+        // Spill pool
+        ctx.fillStyle = 'rgba(212, 164, 55, 0.15)';
+        ctx.beginPath();
+        ctx.ellipse(incX + 10, incY + 25, 35, 15, 0.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(212, 164, 55, 0.4)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.fillStyle = '#d4a437';
+        ctx.font = '9px Barlow Condensed';
+        ctx.textAlign = 'center';
+        ctx.fillText('SPILL', incX + 10, incY + 30);
+    }
+
+    if(releaseType.includes('fire') || releaseType.includes('Fire')) {
+        // Fire icon
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath();
+        ctx.moveTo(incX, incY - 25);
+        ctx.quadraticCurveTo(incX + 12, incY - 40, incX + 5, incY - 55);
+        ctx.quadraticCurveTo(incX + 8, incY - 42, incX + 18, incY - 50);
+        ctx.quadraticCurveTo(incX + 10, incY - 30, incX, incY - 25);
+        ctx.fill();
+        ctx.fillStyle = '#fbbf24';
+        ctx.font = '9px Barlow Condensed';
+        ctx.textAlign = 'center';
+        ctx.fillText('FIRE', incX + 5, incY - 58);
+    }
+
+    // Wind arrow
+    const windStr = scenario.weather.wind;
+    let windDir = null;
+    if(windStr.includes(' N ') || windStr.startsWith('Steady N') || windStr.includes(' N ')) windDir = 'N';
+    else if(windStr.includes(' S ') || windStr.includes('Strong S')) windDir = 'S';
+    else if(windStr.includes(' E ') || windStr.includes('Light E')) windDir = 'E';
+    else if(windStr.includes(' NW ')) windDir = 'NW';
+    else if(windStr.includes(' SW ')) windDir = 'SW';
+
+    ctx.fillStyle = '#3b82f6';
+    ctx.font = 'bold 11px Barlow Condensed';
+    ctx.textAlign = 'left';
+    if(windDir) {
+        const windLabel = `WIND FROM ${windDir}`;
+        ctx.fillText(windLabel, 10, 30);
+        // Arrow
+        ctx.strokeStyle = '#3b82f6';
+        ctx.lineWidth = 2;
+        const arrowMap = { N:[0,-1], S:[0,1], E:[1,0], NW:[-0.7,-0.7], SW:[-0.7,0.7] };
+        const d = arrowMap[windDir] || [0, -1];
+        const ax = 80, ay = 50;
+        ctx.beginPath();
+        ctx.moveTo(ax, ay);
+        ctx.lineTo(ax + d[0] * 35, ay + d[1] * 35);
+        ctx.stroke();
+        // Arrowhead
+        ctx.beginPath();
+        ctx.moveTo(ax + d[0] * 35, ay + d[1] * 35);
+        ctx.lineTo(ax + d[0] * 28 - d[1] * 5, ay + d[1] * 28 + d[0] * 5);
+        ctx.lineTo(ax + d[0] * 28 + d[1] * 5, ay + d[1] * 28 - d[0] * 5);
+        ctx.closePath();
+        ctx.fillStyle = '#3b82f6';
+        ctx.fill();
+    } else {
+        ctx.fillText('WIND: CALM / VARIABLE', 10, 30);
+    }
+
+    // Isolation zone
+    const isoRadius = 70;
+    ctx.strokeStyle = 'rgba(239, 68, 68, 0.5)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([6, 4]);
+    ctx.beginPath();
+    ctx.arc(incX, incY, isoRadius, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(239, 68, 68, 0.6)';
+    ctx.font = 'bold 9px Barlow Condensed';
+    ctx.textAlign = 'center';
+    ctx.fillText('INITIAL ISOLATION', incX, incY + isoRadius + 14);
+    ctx.fillText(scenario.chem.isolation_sm, incX, incY + isoRadius + 26);
+
+    // Apparatus / CP suggested position
+    const cpX = 100, cpY = 320;
+    ctx.fillStyle = '#22c55e';
+    ctx.fillRect(cpX - 15, cpY - 8, 30, 16);
+    ctx.fillStyle = '#0b1120';
+    ctx.font = 'bold 8px Barlow Condensed';
+    ctx.textAlign = 'center';
+    ctx.fillText('CP', cpX, cpY + 4);
+    ctx.fillStyle = '#22c55e';
+    ctx.font = '9px Barlow Condensed';
+    ctx.fillText('COMMAND POST', cpX, cpY + 22);
+    ctx.fillText('(UPWIND)', cpX, cpY + 33);
+
+    // Staging
+    const stgX = 500, stgY = 340;
+    ctx.fillStyle = '#60a5fa';
+    ctx.fillRect(stgX - 18, stgY - 8, 36, 16);
+    ctx.fillStyle = '#0b1120';
+    ctx.font = 'bold 8px Barlow Condensed';
+    ctx.fillText('STG', stgX, stgY + 4);
+    ctx.fillStyle = '#60a5fa';
+    ctx.font = '9px Barlow Condensed';
+    ctx.fillText('STAGING', stgX, stgY + 22);
+
+    // Legend
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#64748b';
+    ctx.font = '9px Barlow Condensed';
+    ctx.fillText('NOT TO SCALE — TACTICAL REFERENCE ONLY', W - 10, H - 10);
+
+    ctx.textAlign = 'left';
+    ctx.resetTransform();
+}
+
+/* ── RENDER FUNCTIONS ── */
+const app = document.getElementById('app');
+
+function renderWelcome() {
+    app.innerHTML = `
+        <div class="welcome">
+            <h2>Operations Defensive Tactics</h2>
+            <p>This training tool presents randomized hazmat scenarios requiring <strong>defensive tactical decisions</strong> at the operations level.</p>
+            <p>You will assess the incident, choose a course of action, and receive immediate feedback on your decision-making.</p>
+            
+            <div class="scope-box">
+                <div class="scope-heading">Operations-Level Scope — Defensive Actions Only</div>
+                <ul class="scope-list">
+                    <li>Isolation and denial of entry</li>
+                    <li>Evacuation and shelter-in-place decisions</li>
+                    <li>Diking, diverting, and containing spills defensively</li>
+                    <li>Storm drain and waterway protection</li>
+                    <li>Vapor dispersion with hose streams</li>
+                    <li>Cooling exposed containers from safe distance</li>
+                    <li>Establishing command and requesting resources</li>
+                </ul>
+            </div>
+            <div class="scope-box" style="border-color: var(--red-500);">
+                <div class="scope-heading" style="color: var(--red-400);">⚠ Not included — technician-level actions</div>
+                <ul class="scope-list">
+                    <li>Plugging, patching, or product control</li>
+                    <li>Entry into IDLH atmospheres</li>
+                    <li>Valve operations on containers</li>
+                    <li>Product transfer or container uprighting</li>
+                </ul>
+            </div>
+
+            <div style="margin-top:24px;">
+                <label style="font-family:'Barlow Condensed',sans-serif; font-weight:600; font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px;">Difficulty</label>
+                <select class="ctrl-select" id="diffSelect" style="max-width:260px; margin:0 auto; display:block;">
+                    <option value="basic">Basic — Straightforward incidents</option>
+                    <option value="standard" selected>Standard — Realistic complexity</option>
+                    <option value="complex">Complex — Multi-factor decisions</option>
+                </select>
+            </div>
+
+            <button class="btn btn-primary start-btn" onclick="startTraining()">Begin Training</button>
+        </div>
+    `;
+}
+
+function startTraining() {
+    const sel = document.getElementById('diffSelect');
+    if(sel) currentDifficulty = sel.value;
+    loadScenario();
+}
+
+function loadScenario() {
+    const s = generateScenario();
+    const letters = ['A','B','C','D'];
+
+    app.innerHTML = `
+        <div class="controls-bar">
+            <select class="ctrl-select" id="diffSelectInline" onchange="currentDifficulty=this.value">
+                <option value="basic" ${currentDifficulty==='basic'?'selected':''}>Basic</option>
+                <option value="standard" ${currentDifficulty==='standard'?'selected':''}>Standard</option>
+                <option value="complex" ${currentDifficulty==='complex'?'selected':''}>Complex</option>
+            </select>
+            <button class="btn btn-primary" onclick="loadScenario()">New Scenario</button>
+            <span class="scenario-counter">Scenario #${s.id}</span>
+        </div>
+
+        <div class="scenario-card">
+            <div class="scenario-stripe"></div>
+            <div class="scenario-header">
+                <div class="scenario-title">${s.chem.name} — ${s.release.type}</div>
+                <div class="scenario-tags">
+                    <span class="tag tag-red">${s.chem.placard.split('/')[0].trim()}</span>
+                    <span class="tag tag-amber">UN ${s.chem.un}</span>
+                    <span class="tag tag-blue">ERG ${s.chem.erg}</span>
+                </div>
+            </div>
+            <div class="scenario-body">
+                <div class="dispatch-box">
+                    <div class="dispatch-label">Dispatch Information</div>
+                    <div class="dispatch-text">
+                        <strong>${s.time}</strong> — Your company is dispatched to a reported hazmat incident at a <strong>${s.location.name.toLowerCase()}</strong>. 
+                        ${s.location.desc} On arrival you find a <strong>${s.container.type}</strong> (${s.container.desc}) carrying <strong>${s.chem.name} (UN ${s.chem.un})</strong>. 
+                        ${s.release.desc} 
+                        ${s.container.features} 
+                        Population exposure: ${s.location.pop}
+                    </div>
+                </div>
+
+                <div class="intel-grid">
+                    <div class="intel-cell">
+                        <div class="intel-label">Chemical</div>
+                        <div class="intel-value">${s.chem.name}</div>
+                    </div>
+                    <div class="intel-cell">
+                        <div class="intel-label">Container</div>
+                        <div class="intel-value">${s.container.type.split('/')[0].trim()}</div>
+                    </div>
+                    <div class="intel-cell">
+                        <div class="intel-label">Release Type</div>
+                        <div class="intel-value ${s.release.severity.includes('Critical') || s.release.severity.includes('High') ? 'warn' : 'caution'}">${s.release.severity}</div>
+                    </div>
+                    <div class="intel-cell">
+                        <div class="intel-label">Placard</div>
+                        <div class="intel-value">${s.chem.placard}</div>
+                    </div>
+                    <div class="intel-cell">
+                        <div class="intel-label">Vapor Density</div>
+                        <div class="intel-value">${s.chem.vd} ${parseFloat(s.chem.vd) > 1 ? '▼ Sinks' : parseFloat(s.chem.vd) < 1 ? '▲ Rises' : ''}</div>
+                    </div>
+                    <div class="intel-cell">
+                        <div class="intel-label">IDLH</div>
+                        <div class="intel-value warn">${s.chem.idlh}</div>
+                    </div>
+                    <div class="intel-cell">
+                        <div class="intel-label">Wind</div>
+                        <div class="intel-value">${s.weather.wind}</div>
+                    </div>
+                    <div class="intel-cell">
+                        <div class="intel-label">Temperature</div>
+                        <div class="intel-value">${s.weather.temp}</div>
+                    </div>
+                    <div class="intel-cell">
+                        <div class="intel-label">Conditions</div>
+                        <div class="intel-value">${s.weather.conditions}</div>
+                    </div>
+                    <div class="intel-cell">
+                        <div class="intel-label">Initial Isolation</div>
+                        <div class="intel-value warn">${s.chem.isolation_sm}</div>
+                    </div>
+                    <div class="intel-cell">
+                        <div class="intel-label">Container Pressure</div>
+                        <div class="intel-value">${s.container.pressure}</div>
+                    </div>
+                    <div class="intel-cell">
+                        <div class="intel-label">LEL</div>
+                        <div class="intel-value">${s.chem.lel}</div>
+                    </div>
+                </div>
+
+                ${s.weather.note ? `<div style="margin-top:12px; padding:10px 14px; background:rgba(59,130,246,0.08); border-left:3px solid var(--blue-500); border-radius:0 4px 4px 0; font-size:0.85rem; color:var(--blue-400);"><strong>Weather Note:</strong> ${s.weather.note}</div>` : ''}
+
+                <div class="diagram-section">
+                    <div class="diagram-label">Tactical Site Diagram</div>
+                    <div class="canvas-wrap">
+                        <canvas id="siteCanvas"></canvas>
+                    </div>
+                </div>
+
+                <div class="decisions-section">
+                    <div class="decisions-prompt">Select Your Tactical Action</div>
+                    ${s.decisions.options.map((opt, i) => `
+                        <button class="decision-btn" id="opt${i}" onclick="selectOption(${i})">
+                            <span class="opt-letter">${letters[i]}.</span>${opt.text}
+                        </button>
+                    `).join('')}
+                </div>
+
+                <div class="feedback-panel" id="feedbackPanel">
+                    <div id="feedbackResult" class="feedback-result"></div>
+                    <div class="instructor-box">
+                        <div class="instructor-label">Instructor Insight</div>
+                        <div class="instructor-text">${s.instructorInsight}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align:center; margin-top:20px;">
+            <button class="btn btn-primary" onclick="loadScenario()" id="nextBtn" style="display:none;">Next Scenario →</button>
+        </div>
+    `;
+
+    // Store scenario data for selection handler
+    window._currentScenario = s;
+
+    // Draw canvas
+    setTimeout(() => drawSiteDiagram(s), 50);
+}
+
+function selectOption(idx) {
+    const s = window._currentScenario;
+    if(!s) return;
+
+    const opt = s.decisions.options[idx];
+    const btns = document.querySelectorAll('.decision-btn');
+
+    // Lock all buttons
+    btns.forEach((btn, i) => {
+        btn.classList.add('locked');
+        btn.onclick = null;
+        if(s.decisions.options[i].correct) {
+            btn.classList.add('correct');
+        }
+        if(i === idx && !opt.correct) {
+            btn.classList.add('incorrect');
+        }
+    });
+
+    // Show feedback
+    const panel = document.getElementById('feedbackPanel');
+    const result = document.getElementById('feedbackResult');
+
+    if(opt.correct) {
+        result.className = 'feedback-result good';
+        result.innerHTML = `
+            <div class="feedback-heading good">✓ Correct Defensive Action</div>
+            <div class="feedback-text">${opt.explanation}</div>
+        `;
+    } else {
+        result.className = 'feedback-result poor';
+        result.innerHTML = `
+            <div class="feedback-heading poor">✗ Incorrect — Risk Identified</div>
+            <div class="feedback-text" style="margin-bottom:16px;">${opt.explanation}</div>
+            <div style="padding-top:12px; border-top:1px solid var(--border);">
+                <div style="font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; color:var(--green-400); margin-bottom:8px;">Recommended Action</div>
+                <div class="feedback-text" style="color:var(--text-primary);">${s.decisions.correct}</div>
+            </div>
+        `;
+    }
+
+    panel.classList.add('show');
+    document.getElementById('nextBtn').style.display = 'inline-block';
+
+    // Scroll to feedback
+    setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+}
+
+/* ── INIT ── */
+renderWelcome();
+</script>
+</body>
+</html>
