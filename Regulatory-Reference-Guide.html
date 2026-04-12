@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Regulatory Reference Guide | Hazmat Tactical</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #0a1628;
+  --navy-800: #0f2035;
+  --navy-700: #152d4a;
+  --navy-600: #1b3a5e;
+  --navy-500: #234b78;
+  --accent-amber: #f59e0b;
+  --accent-amber-dim: rgba(245,158,11,0.10);
+  --accent-red: #dc2626;
+  --accent-red-dim: rgba(220,38,38,0.08);
+  --white: #f1f5f9;
+  --white-pure: #ffffff;
+  --gray-200: #cbd5e1;
+  --gray-300: #94a3b8;
+  --gray-400: #64748b;
+  --border: rgba(255,255,255,0.08);
+  --border-accent: rgba(245,158,11,0.25);
+  --border-red: rgba(220,38,38,0.25);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Barlow', sans-serif;
+  background: var(--navy-900);
+  color: var(--white);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.7;
+}
+
+/* Grid texture */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 5% 15%, rgba(220,38,38,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 95% 85%, rgba(245,158,11,0.05) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page-wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px 20px 80px;
+}
+
+/* ── HEADER ── */
+header {
+  text-align: center;
+  padding: 48px 20px 36px;
+  border-bottom: 2px solid var(--accent-amber);
+  margin-bottom: 48px;
+  position: relative;
+}
+
+header::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 50%;
+  transform: translateX(-50%);
+  width: 60px; height: 4px;
+  background: var(--accent-amber);
+  box-shadow: 0 0 14px rgba(245,158,11,0.5);
+}
+
+.header-eyebrow {
+  display: inline-block;
+  background: var(--accent-amber);
+  color: var(--navy-900);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  padding: 4px 16px;
+  margin-bottom: 18px;
+  border-radius: 2px;
+}
+
+header h1 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: clamp(28px, 5vw, 46px);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--white-pure);
+  margin-bottom: 10px;
+  line-height: 1.1;
+}
+
+.header-sub {
+  font-size: 13px;
+  color: var(--gray-300);
+  letter-spacing: 0.5px;
+  max-width: 560px;
+  margin: 0 auto 0;
+}
+
+/* ── VERIFIED NOTICE ── */
+.verified-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--accent-amber-dim);
+  border: 1px solid var(--border-accent);
+  border-left: 3px solid var(--accent-amber);
+  border-radius: 2px;
+  padding: 12px 18px;
+  margin-bottom: 40px;
+  font-size: 13px;
+  color: var(--gray-300);
+}
+
+.verified-bar .vb-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent-amber);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── SECTION DIVIDERS ── */
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 48px 0 28px;
+}
+
+.section-divider-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: clamp(48px, 8vw, 72px);
+  color: rgba(245,158,11,0.08);
+  line-height: 1;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.section-divider-text {}
+
+.section-divider-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent-amber);
+  margin-bottom: 4px;
+}
+
+.section-divider-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: clamp(18px, 3vw, 24px);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--white-pure);
+  line-height: 1.2;
+}
+
+/* ── REFERENCE ENTRY CARD ── */
+.ref-card {
+  background: var(--navy-800);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent-amber);
+  border-radius: 2px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.ref-card-head {
+  padding: 16px 22px 14px;
+  background: var(--navy-700);
+  border-bottom: 1px solid var(--border);
+}
+
+.ref-citation {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent-amber);
+  margin-bottom: 4px;
+}
+
+.ref-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: 1px;
+  color: var(--white-pure);
+  line-height: 1.3;
+}
+
+.ref-body {
+  padding: 18px 22px;
+}
+
+.ref-row {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 8px 16px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.ref-row:last-child { margin-bottom: 0; }
+
+.ref-row-key {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gray-400);
+  padding-top: 1px;
+}
+
+.ref-row-val { color: var(--gray-200); line-height: 1.6; }
+.ref-row-val strong { color: var(--white-pure); font-weight: 600; }
+
+.ref-months {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.month-tag {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  background: var(--navy-600);
+  border: 1px solid var(--border-accent);
+  color: var(--accent-amber);
+  border-radius: 2px;
+}
+
+.ref-access {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--gray-400);
+}
+
+.ref-access a {
+  color: var(--gray-300);
+  word-break: break-all;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.ref-access a:hover { color: var(--accent-amber); }
+
+/* DOT note card */
+.ref-card.dot-note {
+  border-left-color: var(--gray-400);
+}
+
+.ref-card.dot-note .ref-citation { color: var(--gray-400); }
+.ref-card.dot-note .ref-row-key { color: var(--gray-400); }
+
+.important-callout {
+  background: var(--accent-red-dim);
+  border: 1px solid var(--border-red);
+  border-left: 3px solid var(--accent-red);
+  border-radius: 2px;
+  padding: 12px 16px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--gray-200);
+  line-height: 1.6;
+}
+
+.important-callout strong { color: #ef4444; }
+
+/* ── QUICK REFERENCE TABLE ── */
+.qr-section {
+  margin-top: 52px;
+}
+
+.qr-heading {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--white-pure);
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-accent);
+}
+
+.qr-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.qr-table thead tr {
+  background: var(--navy-700);
+  border-bottom: 2px solid var(--accent-amber);
+}
+
+.qr-table thead th {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent-amber);
+  padding: 12px 16px;
+  text-align: left;
+}
+
+.qr-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+
+.qr-table tbody tr:hover { background: rgba(245,158,11,0.04); }
+
+.qr-table tbody tr:last-child { border-bottom: none; }
+
+.qr-table td {
+  padding: 11px 16px;
+  color: var(--gray-200);
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.qr-table td:first-child {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--white-pure);
+  white-space: nowrap;
+}
+
+.qr-table td:nth-child(2) {
+  color: var(--accent-amber);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+}
+
+.qr-mandatory {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #ef4444;
+  margin-left: 6px;
+}
+
+/* ── FOOTER DISCLAIMER ── */
+.footer-disclaimer {
+  margin-top: 48px;
+  padding: 18px 22px;
+  background: var(--accent-red-dim);
+  border: 1px solid var(--border-red);
+  border-left: 3px solid var(--accent-red);
+  border-radius: 2px;
+  font-size: 12px;
+  color: var(--gray-300);
+  line-height: 1.7;
+}
+
+.footer-disclaimer strong { color: #ef4444; }
+
+footer {
+  text-align: center;
+  margin-top: 32px;
+  padding: 20px;
+  font-size: 11px;
+  color: var(--gray-400);
+  border-top: 1px solid var(--border);
+  font-family: 'Barlow Condensed', sans-serif;
+  letter-spacing: 1px;
+  line-height: 1.8;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .ref-row { grid-template-columns: 1fr; gap: 2px; }
+  .ref-row-key { margin-bottom: 0; }
+  .qr-table td:first-child { white-space: normal; }
+  .section-divider-num { font-size: 48px; }
+}
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-eyebrow">Hazmat Tactical&trade; — References</div>
+    <h1>Regulatory Reference Guide</h1>
+    <p class="header-sub">Verified regulatory references for hazmat emergency response training. All references verified against current editions as of 2024–2025.</p>
+  </header>
+
+  <!-- VERIFIED BAR -->
+  <div class="verified-bar">
+    <span class="vb-label">&#10003; Verified</span>
+    All citations verified against current federal and NFPA editions. This document is updated as standards are revised. For official compliance determinations always consult the full text of each standard and your AHJ.
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       SECTION 1 — OSHA
+  ════════════════════════════════════════════ -->
+  <div class="section-divider">
+    <div class="section-divider-num">01</div>
+    <div class="section-divider-text">
+      <div class="section-divider-label">Section 1</div>
+      <div class="section-divider-title">OSHA — Occupational Safety &amp; Health Administration</div>
+    </div>
+  </div>
+
+  <!-- 1910.120(q) -->
+  <div class="ref-card">
+    <div class="ref-card-head">
+      <div class="ref-citation">29 CFR 1910.120(q)</div>
+      <div class="ref-title">HAZWOPER Emergency Response Operations</div>
+    </div>
+    <div class="ref-body">
+      <div class="ref-row">
+        <div class="ref-row-key">What It Is</div>
+        <div class="ref-row-val">The core federal standard governing hazmat emergency response training. Paragraph (q) specifically covers emergency response to hazardous substance releases.</div>
+      </div>
+      <div class="ref-row">
+        <div class="ref-row-key">Requires</div>
+        <div class="ref-row-val">Defines five responder levels (Awareness, Operations, Technician, Specialist, Incident Commander). Technician level requires a minimum of <strong>24 hours</strong> at Operations level plus additional competencies.</div>
+      </div>
+      <div class="ref-row">
+        <div class="ref-row-key">Applies To</div>
+        <div class="ref-row-val">Any employer whose workers respond to hazardous substance releases — hazmat teams, fire departments, industrial emergency response teams.</div>
+      </div>
+      <div class="ref-row">
+        <div class="ref-row-key">Months</div>
+        <div class="ref-row-val">
+          <div class="ref-months"><span class="month-tag">All Months</span></div>
+          <div style="margin-top:6px; font-size:13px;">Core framework for the entire training program.</div>
+        </div>
+      </div>
+      <div class="ref-access">
+        <strong style="color:var(--gray-300);">Access:</strong>
+        <a href="https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.120" target="_blank">
+          https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.120
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1910.120(q)(6) -->
+  <div class="ref-card">
+    <div class="ref-card-head">
+      <div class="ref-citation">29 CFR 1910.120(q)(6)</div>
+      <div class="ref-title">Hazmat Technician Training Competencies</div>
+    </div>
+    <div class="ref-body">
+      <div class="ref-row">
+        <div class="ref-row-key">What It Is</div>
+        <div class="ref-row-val">The subsection defining what a hazmat technician must be trained to do — performance-based competencies, not just classroom hours.</div>
+      </div>
+      <div class="ref-row">
+        <div class="ref-row-key">Requires</div>
+        <div class="ref-row-val">Technicians must be trained to approach a release using specialized PPE and control methods. Covers hazard and risk assessment, hazard control, PPE use, decontamination, and emergency procedures.</div>
+      </div>
+      <div class="ref-row">
+        <div class="ref-row-key">Applies To</div>
+        <div class="ref-row-val">All hazmat technicians. This is the baseline your drills are designed to maintain.</div>
+      </div>
+      <div class="ref-row">
+        <div class="ref-row-key">Months</div>
+        <div class="ref-row-val">
+          <div class="ref-months">
+            <span class="month-tag">January</span><span class="month-tag">February</span><span class="month-tag">March</span>
+            <span class="month-tag">April</span><span class="month-tag">May</span><span class="month-tag">June</span>
+            <span class="month-tag">July</span><span class="month-tag">August</span><span class="month-tag">September</span>
+            <span class="month-tag">October</span><span class="month-tag">November</span>
+          </div>
+          <div style="margin-top:6px; font-size:13px;">Drives objectives for January through November.</div>
+        </div>
+      </div>
+      <div class="ref-access">
+        <strong style="color:var(--gray-300);">Access:</strong>
+        <a href="https://www.ecfr.gov/current/title-29/subtitle-B/chapter-XVII/part-1910/subpart-H/section-1910.120" target="_blank">
+          https://www.ecfr.gov/current/title-29/subtitle-B/chapter-XVII/part-1910/subpart-H/section-1910.120
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1910.120(q)(8) -->
+  <div class="ref-card">
+    <div class="ref-card-head">
+      <div class="ref-citation">29 CFR 1910.120(q)(8)</div>
+      <div class="ref-title">Annual Refresher Training Requirement</div>
+    </div>
+    <div class="ref-body">
+      <div class="ref-row">
+        <div class="ref-row-key">What It Is</div>
+        <div class="ref-row-val">The mandatory annual refresher requirement for hazmat technicians — the legal basis for maintaining a recurring training program.</div>
+      </div>
+      <div class="ref-row">
+        <div class="ref-row-key">Requires</div>
+        <div class="ref-row-val">Employees trained under (q)(6) must receive annual refresher training <strong>"of sufficient content and duration to maintain their competencies, or shall demonstrate competency in those areas at least yearly."</strong> No minimum duration is prescribed — adequacy is based on demonstrated competency.</div>
+      </div>
+      <div class="ref-row">
+        <div class="ref-row-key">Applies To</div>
+        <div class="ref-row-val">All hazmat technicians and emergency response personnel.</div>
+      </div>
+      <div class="ref-row">
+        <div class="ref-row-key">Months</div>
+        <div class="ref-row-val">
+          <div class="ref-months"><span class="month-tag">December</span></div>
+          <div style="margin-top:6px; font-size:13px;">Annual competency demonstration (mandatory).</div>
+        </div>
+      </div>
+      <div class="ref-access">
+        <strong style="color:var(--gray-300);">Access:</strong>
+        <a href="https://www.osha.gov/emergency-preparedness/hazardous-waste-operations/standards" target="_blank">
+          https://www.osha.gov/emergency-preparedness/hazardous-waste-operations/standards
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1910.120(h) -->
+  <div class="ref-card">
+    <div class="ref-card-head">
+      <div class="ref-citation">29 CFR 1910.120(h)</div>
+      <div class="ref-title">Air Monitoring Program</div>
+    </div>
+    <div class="ref-body">
+      <div class="ref-row">
+        <div class="ref-row-key">What It Is</div>
+        <div class="ref-row-val">Requires employers to implement an air monitoring program to identify and quantify airborne contaminants and ensure proper PPE selection.</div>
+      </div>
+      <div class="ref-row">
+        <div class="ref-row-key">Requires</div>
+        <div class="ref-row-val">Monitoring must be performed before and during hazmat operations. Results drive PPE selection and zone establishment decisions.</div>
+      </div>
+      <div class="ref-row">
+        <div class="ref-row-key">Applies To</div>
+        <div class="ref-row-val">All hazmat operations involving potential inhalation hazards.</div>
+      </div>
+      <div class="ref-row">
+        <div class="ref-row-key">Months</div>
+        <div class="ref-row-val">
+          <div class="ref-months">
+            <span class="month-tag">February</span>
+            <span class="month-tag">August</span>
+          </div>
+          <div style="margin-top:6px; font-size:13px;">Atmospheric Monitoring and Advanced Monitoring.</div>
+        </div>
+      </div>
+      <div class="ref-access">
+        <strong style="color:var(--gray-300);">Access:</strong>
+        <a href="https://www.ecfr.gov/current/title-29/subtitle-B/chapter-XVII/part-1910/subpart-H/section-1910.120" target="_blank">
+          https://www.ecfr.gov/current/title-29/subtitle-B/chapter-XVII/part-1910/subpart-H/section-1910.120
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1910.120(k) -->
+  <div class="ref-card">
+    <div class="ref-card-head">
+      <div class="ref-citation">29 CFR 1910.120(k)</div>
+      <div class="ref-title">Decontamination</div>
+    </div>
+    <div class="ref-body">
+      <div class="ref-row">
+        <div class="ref-row-key">What It Is</div>
+        <div class="ref-row-val">Establishes decontamination procedure requirements during hazmat operations.</div>
+      </div>
+      <div class="ref-row">
+        <div class="ref-row-key">Requires</div>
+        <div class="ref-row-val">A decontamination procedure must be developed and implemented before any employee enters a potentially contaminated area. All personnel and equipment leaving a contaminated area must be decontaminated.</div>
+      </div>
+      <div class="ref-row">
+        <div class="ref-row-key">Applies To</div>
+        <div class="ref-row-val">All hazmat operations involving potential contamination of personnel or equipment.</div>
+      </div>
+      <div class="ref-row">
+        <div class="ref-row-key">Months</div>
+        <div class="ref-row-val">
+          <div class="ref-months">
+            <span class="month-tag">March</span>
+            <span class="month-tag">September</span>
+          </div>
+          <div style="margin-top:6px; font-size:13px;">Decontamination and Mass Decon.</div>
+        </div>
+      </div>
+      <div class="ref-access">
+        <strong style="color:var(--gray-300);">Access:</strong>
+        <a href="https://www.ecfr.gov/current/title-29/subtitle-B/chapter-XVII/part-1910/subpart-H/section-1910.120" target="_blank">
+          https://www.ecfr.gov/current/title-29/subtitle-B/chapter-XVII/part-1910/subpart-H/section-1910.120
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       SECTION 2 — NFPA
+  ════════════════════════════════════════════ -->
+  <div class="section-divider">
+    <div class="section-divider-num">02</div>
+    <div class="section-divider-text">
+      <div class="section-divider-label">Section 2</div>
+      <div class="section-divider-title">NFPA — National Fire Protection Association</div>
+    </div>
+  </div>
+
+  <!-- NFPA 470 -->
+  <div class="ref-card">
+    <div class="ref-card-head">
+      <div class="ref-citation">NFPA 470 (2022)</div>
+      <div class="ref-title">Hazardous Materials/WMD Standard for Responders</div>
+    </div>
+    <div class="ref-body">
+      <div class="ref-row">
+        <div class="ref-row-key">What It Is</div>
+        <div class="ref-row-val">Created in 2022 by consolidating NFPA 472, 473, and 1072 into one document. The single NFPA standard for hazmat responder training competencies. Uses <strong>"shall" language</strong> — mandatory where adopted by AHJ. Next edition scheduled for 2027.</div>
+      </div>
+      <div class="ref-row">
+        <div class="ref-row-key">Requires</div>
+        <div class="ref-row-val">Defines competencies for Awareness, Operations, Technician, and Incident Commander levels. Chapter 11 contains Mission-Specific Competencies including radiological monitoring, atmospheric sampling, product control, decontamination, and victim rescue.</div>
+      </div>
+      <div class="ref-row">
+        <div class="ref-row-key">Applies To</div>
+        <div class="ref-row-val">Hazmat responders at all levels. Technician competencies are the primary target of this training program.</div>
+      </div>
+      <div class="ref-row">
+        <div class="ref-row-key">Months</div>
+        <div class="ref-row-val">
+          <div class="ref-months"><span class="month-tag">All Months</span></div>
+          <div style="margin-top:6px; font-size:13px;">Chapter 11 JPRs drive drill objectives throughout the year.</div>
+        </div>
+      </div>
+      <div class="ref-access">
+        <strong style="color:var(--gray-300);">Access:</strong>
+        <a href="https://www.nfpa.org/product/nfpa-470-standard/p0470code" target="_blank">
+          https://www.nfpa.org/product/nfpa-470-standard/p0470code
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- NFPA 470 Ch. 11 -->
+  <div class="ref-card">
+    <div class="ref-card-head">
+      <div class="ref-citation">NFPA 470 (2022) — Chapter 11</div>
+      <div class="ref-title">Mission-Specific Competencies (JPRs)</div>
+    </div>
+    <div class="ref-body">
+      <div class="ref-row">
+        <div class="ref-row-key">What It Is</div>
+        <div class="ref-row-val">The chapter defining Job Performance Requirements for specific hazmat skills beyond the core technician level — the tasks your team must be able to demonstrate.</div>
+      </div>
+      <div class="ref-row">
+        <div class="ref-row-key">Requires</div>
+        <div class="ref-row-val">Competencies include: radiological monitoring, atmospheric sampling, victim rescue, product control, evidence preservation, and decontamination. Each JPR describes the condition, task, and evaluation criteria.</div>
+      </div>
+      <div class="ref-row">
+        <div class="ref-row-key">Applies To</div>
+        <div class="ref-row-val">Hazmat technicians performing mission-specific functions.</div>
+      </div>
+      <div class="ref-row">
+        <div class="ref-row-key">Months</div>
+        <div class="ref-row-val">
+          <div class="ref-months">
+            <span class="month-tag">Jan / Jul — Radiation</span>
+            <span class="month-tag">Feb / Aug — Atmospheric</span>
+            <span class="month-tag">Mar / Sep — Decon</span>
+            <span class="month-tag">Apr / Oct — Leak Control</span>
+            <span class="month-tag">May / Nov — Command</span>
+          </div>
+        </div>
+      </div>
+      <div class="ref-access">
+        <strong style="color:var(--gray-300);">Access:</strong>
+        <a href="https://www.nfpa.org/product/nfpa-470-standard/p0470code" target="_blank">
+          https://www.nfpa.org/product/nfpa-470-standard/p0470code
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- NFPA 475 -->
+  <div class="ref-card">
+    <div class="ref-card-head">
+      <div class="ref-citation">NFPA 475 (2022)</div>
+      <div class="ref-title">Recommended Practice for Organizing, Managing, and Sustaining a Hazmat/WMD Response Program</div>
+    </div>
+    <div class="ref-body">
+      <div class="ref-row">
+        <div class="ref-row-key">What It Is</div>
+        <div class="ref-row-val">Companion to NFPA 470. Uses <strong>"should" language</strong> — a recommended practice, not a mandate. Covers how to build, manage, and sustain a hazmat program at the organizational level.</div>
+      </div>
+      <div class="ref-row">
+        <div class="ref-row-key">Requires</div>
+        <div class="ref-row-val">Guidance on program structure, SOPs, resource management, training documentation, after action reviews, and inter-agency coordination. Section 9.13 addresses training records maintenance.</div>
+      </div>
+      <div class="ref-row">
+        <div class="ref-row-key">Applies To</div>
+        <div class="ref-row-val">Company officers, hazmat coordinators, and program managers responsible for sustaining a hazmat response capability.</div>
+      </div>
+      <div class="ref-row">
+        <div class="ref-row-key">Months</div>
+        <div class="ref-row-val">
+          <div class="ref-months"><span class="month-tag">All Months</span></div>
+          <div style="margin-top:6px; font-size:13px;">Program management framework. AAR guidance applies after every drill.</div>
+        </div>
+      </div>
+      <div class="ref-access">
+        <strong style="color:var(--gray-300);">Access:</strong>
+        <a href="https://www.nfpa.org/product/nfpa-475-recommended-practice/p0475code" target="_blank">
+          https://www.nfpa.org/product/nfpa-475-recommended-practice/p0475code
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       SECTION 3 — DOT
+  ════════════════════════════════════════════ -->
+  <div class="section-divider">
+    <div class="section-divider-num">03</div>
+    <div class="section-divider-text">
+      <div class="section-divider-label">Section 3</div>
+      <div class="section-divider-title">DOT — Department of Transportation</div>
+    </div>
+  </div>
+
+  <!-- 49 CFR 172.704 -->
+  <div class="ref-card dot-note">
+    <div class="ref-card-head">
+      <div class="ref-citation">49 CFR 172.704</div>
+      <div class="ref-title">DOT Hazmat Transportation Training Requirements</div>
+    </div>
+    <div class="ref-body">
+      <div class="ref-row">
+        <div class="ref-row-key">What It Is</div>
+        <div class="ref-row-val">The DOT training standard for hazmat employees involved in the transportation of hazardous materials in commerce — drivers, shippers, handlers, and packaging staff. Requires recurrent training every <strong>3 years</strong>.</div>
+      </div>
+      <div class="ref-row">
+        <div class="ref-row-key">Requires</div>
+        <div class="ref-row-val">General awareness, function-specific, safety, and security awareness training. Requires testing and recordkeeping.</div>
+      </div>
+      <div class="important-callout">
+        <strong>IMPORTANT:</strong> This governs transportation functions — it is <strong>NOT</strong> the primary training requirement for emergency responders. OSHA 1910.120(q) and NFPA 470 govern emergency response training.
+      </div>
+      <div class="ref-row" style="margin-top:12px;">
+        <div class="ref-row-key">Applies To</div>
+        <div class="ref-row-val">Hazmat employees who transport, load, unload, or handle hazmat in commerce. May apply to your department if members perform transportation functions. <strong>Verify with your AHJ.</strong></div>
+      </div>
+      <div class="ref-access">
+        <strong style="color:var(--gray-300);">Access:</strong>
+        <a href="https://www.ecfr.gov/current/title-49/subtitle-B/chapter-I/subchapter-C/part-172/subpart-H/section-172.704" target="_blank">
+          https://www.ecfr.gov/current/title-49/subtitle-B/chapter-I/subchapter-C/part-172/subpart-H/section-172.704
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       QUICK REFERENCE TABLE
+  ════════════════════════════════════════════ -->
+  <div class="qr-section">
+    <div class="qr-heading">Quick Reference — Standard-to-Month Mapping</div>
+    <div style="overflow-x:auto;">
+      <table class="qr-table">
+        <thead>
+          <tr>
+            <th>Month</th>
+            <th>Topic</th>
+            <th>Primary Standards</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>January</td>
+            <td>Radiation Awareness</td>
+            <td>NFPA 470 Ch. 11 &bull; OSHA 1910.120(q)(6)</td>
+          </tr>
+          <tr>
+            <td>February</td>
+            <td>Atmospheric Monitoring</td>
+            <td>NFPA 470 Ch. 11 &bull; OSHA 1910.120(h)</td>
+          </tr>
+          <tr>
+            <td>March</td>
+            <td>Decontamination</td>
+            <td>NFPA 470 Ch. 11 &bull; OSHA 1910.120(k) &bull; (q)(6)</td>
+          </tr>
+          <tr>
+            <td>April</td>
+            <td>Leak Control</td>
+            <td>NFPA 470 Ch. 11 &bull; OSHA 1910.120(q)(6)</td>
+          </tr>
+          <tr>
+            <td>May</td>
+            <td>Incident Command</td>
+            <td>NFPA 470 Ch. 11 &bull; OSHA 1910.120(q)(3)</td>
+          </tr>
+          <tr>
+            <td>June</td>
+            <td>Integrated Drill</td>
+            <td>NFPA 470 Ch. 11 &bull; OSHA 1910.120(q)(8) &bull; NFPA 475</td>
+          </tr>
+          <tr>
+            <td>July</td>
+            <td>Radiation — Advanced</td>
+            <td>NFPA 470 Ch. 11 &bull; OSHA 1910.120(q)(6)</td>
+          </tr>
+          <tr>
+            <td>August</td>
+            <td>Atmospheric — Advanced</td>
+            <td>NFPA 470 Ch. 11 &bull; OSHA 1910.120(h)</td>
+          </tr>
+          <tr>
+            <td>September</td>
+            <td>Mass Decon</td>
+            <td>NFPA 470 Ch. 11 &amp; 13 &bull; OSHA 1910.120(k)</td>
+          </tr>
+          <tr>
+            <td>October</td>
+            <td>Leak Control — Advanced</td>
+            <td>NFPA 470 Ch. 11 &bull; OSHA 1910.120(q)(6)</td>
+          </tr>
+          <tr>
+            <td>November</td>
+            <td>IC — Advanced</td>
+            <td>NFPA 470 Ch. 11 &bull; NFPA 475 Ch. 6</td>
+          </tr>
+          <tr>
+            <td>December</td>
+            <td>Integrated Final <span class="qr-mandatory">Mandatory</span></td>
+            <td>OSHA 1910.120(q)(8) &bull; NFPA 470 Ch. 11 &bull; NFPA 475</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- FOOTER DISCLAIMER -->
+  <div class="footer-disclaimer">
+    <strong>FOR TRAINING REFERENCE ONLY</strong> — This document summarizes regulatory requirements to assist with training program development. It is not legal advice. Always consult your Authority Having Jurisdiction (AHJ), department legal counsel, and the full text of each standard for official compliance determinations. Standards are subject to revision.
+  </div>
+
+  <footer>
+    &copy; 2026 Hazmat Tactical LLC &bull; hazmattactical.com &bull; For Training Use Only &bull; References current as of 2025
+  </footer>
+
+</div>
+</body>
+</html>
