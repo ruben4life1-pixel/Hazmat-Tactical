@@ -1,0 +1,2121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hazmat Tactical Tool — Advanced</title>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+  /* ═══════════════════════════════════════════════════════════
+     DESIGN SYSTEM — matches Basic Hazmat Tactical Tool
+  ═══════════════════════════════════════════════════════════ */
+  :root {
+    --navy-900: #0a1628;
+    --navy-800: #0f2035;
+    --navy-700: #152d4a;
+    --navy-600: #1b3a5e;
+    --navy-500: #234b78;
+    --accent-amber: #f59e0b;
+    --accent-amber-dim: #b47708;
+    --accent-red: #dc2626;
+    --white: #f1f5f9;
+    --white-pure: #ffffff;
+    --gray-100: #e2e8f0;
+    --gray-200: #cbd5e1;
+    --gray-300: #94a3b8;
+    --gray-400: #64748b;
+    --border: rgba(255,255,255,0.08);
+    --border-accent: rgba(245,158,11,0.3);
+    --border-red: rgba(220,38,38,0.3);
+    /* legacy aliases used by JS-generated HTML */
+    --primary: #f59e0b;
+    --secondary: #f59e0b;
+    --danger: #dc2626;
+    --success: #22c55e;
+    --warning: #f59e0b;
+    --bg-dark: #0a1628;
+    --bg-card: #0f2035;
+    --bg-elevated: #152d4a;
+    --text: #f1f5f9;
+    --text-muted: #94a3b8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--navy-900);
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    text-align: center;
+    padding: 40px 20px 30px;
+    border-bottom: 2px solid var(--accent-amber);
+    margin-bottom: 32px;
+    position: relative;
+  }
+
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: var(--accent-amber);
+    box-shadow: 0 0 12px rgba(245,158,11,0.4);
+  }
+
+  .brand {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--white-pure);
+    margin-bottom: 6px;
+  }
+
+  .tagline {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gray-300);
+  }
+
+  /* ── SCBA TIMER ── */
+  .timer-card {
+    background: var(--navy-800);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent-red);
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 28px;
+    border-radius: 2px;
+  }
+
+  .timer-card::before { display: none; }
+  @keyframes pulse { 0%,100%{opacity:.6} 50%{opacity:1} }
+
+  #timerDisplay {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: var(--accent-red);
+    letter-spacing: 4px;
+  }
+
+  .timer-controls { display: flex; gap: 10px; }
+
+  .timer-btn {
+    background: var(--navy-700);
+    border: 1px solid var(--border);
+    color: var(--white);
+    padding: 10px 20px;
+    border-radius: 2px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .timer-btn:hover {
+    background: var(--accent-amber);
+    color: var(--navy-900);
+    border-color: var(--accent-amber);
+    transform: translateY(-1px);
+  }
+
+  /* ── SECTION HEADERS ── */
+  .section-header {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent-amber);
+    margin: 32px 0 16px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-accent);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-header::before {
+    content: '';
+    width: 4px;
+    height: 20px;
+    background: var(--accent-amber);
+    flex-shrink: 0;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--navy-800);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent-amber);
+    border-radius: 2px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    position: relative;
+    transition: border-left-color 0.2s;
+  }
+
+  .card::before { display: none; }
+  .card:hover { border-left-color: var(--accent-amber-dim); transform: none; box-shadow: none; }
+
+  /* ── INPUTS & SELECTS ── */
+  input, select {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--navy-900);
+    border: 1px solid var(--border);
+    color: var(--white);
+    font-family: 'Barlow', sans-serif;
+    font-size: 15px;
+    border-radius: 2px;
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+    cursor: pointer;
+  }
+
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--accent-amber);
+    box-shadow: 0 0 0 2px rgba(245,158,11,0.15);
+    background: var(--navy-800);
+  }
+
+  input::placeholder { color: var(--gray-400); }
+
+  label {
+    display: block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gray-300);
+    margin-bottom: 8px;
+  }
+
+  /* ── WIND RANGE SLIDER ── */
+  .wind-control input[type="range"] {
+    -webkit-appearance: auto;
+    appearance: auto;
+    margin-bottom: 0 !important;
+    flex-grow: 1;
+    accent-color: #3b82f6;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    height: auto;
+    cursor: pointer;
+  }
+
+  /* ── CHEMICAL RESULT HEADER ── */
+  .chem-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .chem-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent-amber);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .chem-meta { font-size: 13px; color: var(--gray-300); }
+
+  /* ── BADGES ── */
+  .badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 2px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 4px 4px 4px 0;
+  }
+
+  .badge-ppe {
+    background: rgba(168,85,247,0.15);
+    border: 1px solid rgba(168,85,247,0.4);
+    color: #a855f7;
+  }
+
+  .badge-sink {
+    background: rgba(220,38,38,0.12);
+    border: 1px solid var(--border-red);
+    color: #ef4444;
+  }
+
+  .badge-float {
+    background: rgba(34,197,94,0.1);
+    border: 1px solid rgba(34,197,94,0.3);
+    color: #22c55e;
+  }
+
+  /* ── DATA GRID ── */
+  .data-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+  }
+
+  .data-cell {
+    background: var(--navy-900);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--border-accent);
+    padding: 14px 16px;
+    border-radius: 2px;
+    transition: border-left-color 0.2s;
+  }
+
+  .data-cell:hover { border-left-color: var(--accent-amber); transform: none; }
+
+  .data-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    margin-bottom: 6px;
+  }
+
+  .data-value {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent-amber);
+  }
+
+  /* ── PLUME VISUALIZATION ── */
+  .plume-viz-wrapper {
+    position: relative;
+    background: var(--navy-900);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    margin: 16px 0;
+  }
+
+  #plumeCanvas {
+    display: block;
+    width: 100%;
+    height: 420px;
+    cursor: crosshair;
+  }
+
+  .plume-info-overlay {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(10,22,40,0.90);
+    border: 1px solid var(--border-accent);
+    border-radius: 2px;
+    padding: 12px 16px;
+    font-size: 12px;
+    line-height: 1.7;
+    pointer-events: none;
+    max-width: 240px;
+  }
+
+  .plume-info-overlay .info-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--accent-amber);
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .plume-info-overlay .info-row { color: var(--gray-300); }
+  .plume-info-overlay .info-row strong { color: var(--white); }
+
+  .plume-legend {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: rgba(10,22,40,0.90);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 10px 14px;
+    font-size: 11px;
+    pointer-events: none;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+    color: var(--gray-300);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .legend-item:last-child { margin-bottom: 0; }
+
+  .legend-swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 1px;
+    flex-shrink: 0;
+  }
+
+  /* ── WIND CONTROL ── */
+  .wind-control {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 12px;
+  }
+
+  .wind-control label {
+    margin-bottom: 0;
+    white-space: nowrap;
+    min-width: 130px;
+    color: var(--gray-300);
+  }
+
+  .wind-deg-display {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--accent-amber);
+    min-width: 55px;
+    text-align: right;
+  }
+
+  /* ── STATUS BOXES ── */
+  .status-box {
+    padding: 14px 18px;
+    border-radius: 2px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    margin-top: 12px;
+    border: 1px solid transparent;
+    line-height: 1.6;
+  }
+
+  .behavior-out {
+    background: rgba(245,158,11,0.08);
+    color: var(--accent-amber);
+    border-color: var(--border-accent);
+  }
+
+  .meter-alert {
+    background: rgba(220,38,38,0.08);
+    color: #ef4444;
+    border-color: var(--border-red);
+  }
+
+  /* ── SEARCH RESULTS ── */
+  .search-results {
+    max-height: 220px;
+    overflow-y: auto;
+    background: var(--navy-700);
+    border: 1px solid var(--border-accent);
+    border-radius: 2px;
+    margin-top: 6px;
+  }
+
+  .search-item {
+    padding: 10px 14px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s, padding-left 0.15s;
+    font-size: 14px;
+    color: var(--gray-200);
+  }
+
+  .search-item:hover {
+    background: rgba(245,158,11,0.1);
+    color: var(--accent-amber);
+    padding-left: 20px;
+  }
+
+  .search-item:last-child { border-bottom: none; }
+
+  /* ── GRID HELPERS ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* ── EMERGENCY BUTTON ── */
+  .btn-emergency {
+    display: block;
+    width: 100%;
+    background: var(--accent-red);
+    color: white;
+    text-align: center;
+    padding: 14px;
+    border-radius: 2px;
+    text-decoration: none;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 28px;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-emergency:hover { background: #b91c1c; transform: translateY(-1px); }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    margin-top: 20px;
+    padding: 20px;
+    font-size: 12px;
+    color: var(--gray-400);
+    border-top: 1px solid var(--border);
+    font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: 0.5px;
+    line-height: 1.8;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 700px) {
+    .brand { font-size: 1.8rem; }
+    #timerDisplay { font-size: 2rem; }
+    .timer-controls { flex-direction: column; }
+    .grid-2 { grid-template-columns: 1fr; }
+    .wind-control { flex-direction: column; align-items: stretch; }
+    .wind-deg-display { text-align: left; }
+    #plumeCanvas { height: 280px; }
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    body { background: #fff; color: #111; }
+    body::before { display: none; }
+    .header::after { display: none; }
+    .brand, .chem-name { color: #111; }
+    .card { background: #fff; border-color: #ccc; }
+    .timer-card { background: #fff; border-color: #ccc; }
+    #timerDisplay { color: #111; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="brand">HAZMAT TACTICAL TOOL</div>
+        <div class="tagline">Advanced Training Platform</div>
+        
+        <div class="timer-card">
+            <div id="timerDisplay">00:00:00</div>
+            <div class="timer-controls">
+                <button class="timer-btn" onclick="toggleTimer()" id="timerCtrl">START ENTRY</button>
+                <button class="timer-btn" onclick="resetTimer()">RESET</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-header">🔬 Chemical Identification</div>
+    <div class="card">
+        <input type="text" id="chemSearch" placeholder="Search by Name or UN Number (e.g., Chlorine or 1017)..." oninput="processSearch()">
+        <div id="searchResults" class="search-results" style="display:none;"></div>
+        <div id="resultArea" style="display:none;">
+            <div class="chem-header">
+                <div>
+                    <div id="outName" class="chem-name"></div>
+                    <div class="chem-meta">UN <span id="outUN"></span> | <span id="outType"></span></div>
+                </div>
+                <div id="ppeBadge" class="badge badge-ppe"></div>
+            </div>
+            
+            <div style="display: flex; gap: 8px; margin: 12px 0;">
+                <span id="airBadge" class="badge"></span>
+                <span id="waterBadge" class="badge"></span>
+            </div>
+
+            <div class="data-grid">
+                <div class="data-cell">
+                    <div class="data-label">REL (NIOSH)</div>
+                    <div class="data-value" id="outREL">--</div>
+                </div>
+                <div class="data-cell">
+                    <div class="data-label">TWA</div>
+                    <div class="data-value" id="outTWA">--</div>
+                </div>
+                <div class="data-cell">
+                    <div class="data-label">STEL</div>
+                    <div class="data-value" id="outSTEL">--</div>
+                </div>
+                <div class="data-cell">
+                    <div class="data-label">IDLH</div>
+                    <div class="data-value" id="outIDLH">--</div>
+                </div>
+                <div class="data-cell">
+                    <div class="data-label">VD (Air=1)</div>
+                    <div class="data-value" id="outVD">--</div>
+                </div>
+                <div class="data-cell">
+                    <div class="data-label">SG (H₂O=1)</div>
+                    <div class="data-value" id="outSG">--</div>
+                </div>
+            </div>
+
+            <div style="margin-top:24px; border-top: 1px solid var(--border); padding-top:16px;">
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--success); font-weight:700; margin-bottom:12px;">
+                    <span>ERG ISOLATION DISTANCE</span>
+                    <span id="isoInitDisp" style="color: #fff;"></span>
+                </div>
+
+                <!-- Spill size / time of day selectors -->
+                <div class="grid-2" style="margin-bottom: 12px;">
+                    <select id="spillSize" onchange="updateIso()">
+                        <option value="small">Small Spill (&lt;55 gal)</option>
+                        <option value="large">Large Spill (&gt;55 gal)</option>
+                    </select>
+                    <select id="timeDay" onchange="updateIso()">
+                        <option value="day">Daytime</option>
+                        <option value="night">Nighttime</option>
+                    </select>
+                </div>
+
+                <!-- Canvas plume visualization -->
+                <div class="plume-viz-wrapper" id="plumeVizWrapper">
+                    <canvas id="plumeCanvas" width="800" height="400"></canvas>
+
+                    <div class="plume-info-overlay" id="plumeInfoOverlay">
+                        <div class="info-title" id="infoChemName">—</div>
+                        <div class="info-row"><strong id="infoSpillType">—</strong> — <span id="infoTime">Daytime</span></div>
+                        <div class="info-row">Initial Isolation: <strong id="infoIso">—</strong></div>
+                        <div class="info-row">Downwind: <strong id="infoDown">—</strong></div>
+                    </div>
+
+                    <div class="plume-legend">
+                        <div class="legend-item">
+                            <div class="legend-swatch" style="background:rgba(220,38,38,0.35); border:2px dashed rgba(220,38,38,0.9);"></div>
+                            <span>Initial Isolation Zone</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-swatch" style="background:rgba(245,158,11,0.22); border:2px dashed rgba(245,158,11,0.85);"></div>
+                            <span>Protective Action Zone</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-swatch" style="background:#0a1628; border:2px solid #fff; border-radius:50%;"></div>
+                            <span>Hazard Source (spill)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wind direction slider -->
+                <div class="wind-control">
+                    <label>Wind Coming FROM:</label>
+                    <input type="range" id="windSlider" min="0" max="360" value="180" step="1" oninput="updatePlume()">
+                    <div class="wind-deg-display"><span id="windDeg">180</span>°</div>
+                </div>
+
+                <!-- Positioning Guide -->
+                <div style="margin-top: 16px; padding: 14px; background: rgba(245,158,11,0.06); border-radius: 2px; border: 1px solid rgba(245,158,11,0.2);">
+                    <div style="font-size: 0.75rem; color: var(--accent-amber); font-weight: 700; margin-bottom: 8px; letter-spacing: 1px; text-transform: uppercase; font-family: 'Barlow Condensed', sans-serif;">💡 Positioning Guide</div>
+                    <div style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.7;">
+                        <span style="color: var(--success);">✓ UPWIND:</span> Safe zone — Position command post here<br>
+                        <span style="color: var(--warning);">⚠ CROSSWIND:</span> Caution zone — Monitor for wind shift<br>
+                        <span style="color: var(--danger);">✗ DOWNWIND:</span> Danger zone — Evacuate protection distance
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-header">🔬 VOC Correction Factor (PID)</div>
+    <div class="card">
+        <p style="color: var(--text-muted); margin-bottom: 20px;">PIDs are calibrated to isobutylene. Use correction factors to get true chemical concentration.</p>
+        
+        <div class="grid-2">
+            <div>
+                <label>Select Chemical</label>
+                <select id="vocChemical" onchange="updateVocCalc()">
+                    <option value="">-- Select Chemical --</option>
+                </select>
+            </div>
+            <div>
+                <label>PID Reading (ppm)</label>
+                <input type="number" id="pidReading" placeholder="e.g., 50" oninput="updateVocCalc()" min="0" step="0.1">
+            </div>
+        </div>
+        
+        <div id="vocResult" class="status-box behavior-out" style="display:none; margin-top: 16px; text-align: center;">
+            <div style="font-size: 1.2rem; font-weight: 700; margin-bottom: 8px;">Corrected Reading: <span id="vocCorrected" style="color: var(--primary);">--</span> ppm</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">
+                Calculation: <span id="vocCalcShow">--</span>
+            </div>
+        </div>
+        
+        <div style="margin-top: 20px; padding: 16px; background: rgba(255, 107, 53, 0.05); border-radius: 10px; border: 1px solid rgba(255, 107, 53, 0.3);">
+            <div style="font-size: 0.75rem; color: var(--primary); font-weight: 700; margin-bottom: 8px;">💡 HOW TO USE:</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+                1. Read your PID (calibrated to isobutylene)<br>
+                2. Select the chemical you're monitoring<br>
+                3. Enter your PID reading<br>
+                4. The calculator shows TRUE concentration<br>
+                <br>
+                <strong style="color: var(--primary);">Example:</strong> Gasoline spill reads 50 ppm. CF = 2.1. True concentration = 50 × 2.1 = 105 ppm
+            </div>
+        </div>
+    </div>
+
+    <div class="section-header">💥 LEL to PPM Converter</div>
+    <div class="card">
+        <p style="color: var(--text-muted); margin-bottom: 20px;">Convert LEL% readings to actual ppm concentration. Remember: Products are TOXIC before they're EXPLOSIVE.</p>
+        
+        <div class="grid-2">
+            <div>
+                <label>Select Chemical</label>
+                <select id="lelChemical" onchange="updateLelCalc()">
+                    <option value="">-- Select Chemical --</option>
+                </select>
+            </div>
+            <div>
+                <label>LEL Meter Reading (%)</label>
+                <input type="number" id="lelReading" placeholder="e.g., 10" oninput="updateLelCalc()" min="0" max="100" step="0.1">
+            </div>
+        </div>
+        
+        <div id="lelResult" class="status-box" style="display:none; margin-top: 16px;">
+            <div style="font-size: 1.2rem; font-weight: 700; margin-bottom: 8px;">
+                Actual Concentration: <span id="lelActual" style="color: var(--primary);">--</span> ppm
+            </div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
+                Calculation: <span id="lelCalcShow">--</span>
+            </div>
+            <div id="lelToxicWarning" style="display:none; padding: 12px; background: rgba(255, 56, 56, 0.1); border-radius: 8px; border: 1px solid var(--danger); margin-top: 12px;">
+                <div style="font-size: 0.9rem; color: var(--danger); font-weight: 700;">⚠️ TOXIC HAZARD</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;" id="lelToxicText">--</div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 20px; padding: 16px; background: rgba(255, 56, 56, 0.05); border-radius: 10px; border: 1px solid rgba(255, 56, 56, 0.3);">
+            <div style="font-size: 0.75rem; color: var(--danger); font-weight: 700; margin-bottom: 8px;">🔥 CRITICAL TRAINING POINT:</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+                <strong style="color: var(--danger);">Chemicals are TOXIC before they're EXPLOSIVE!</strong><br>
+                <br>
+                Example: Gasoline<br>
+                • Toxic at ~300 ppm (health hazard)<br>
+                • 10% LEL = 1,400 ppm (still below explosive range)<br>
+                • 100% LEL = 14,000 ppm (explosive range)<br>
+                <br>
+                <strong>Lesson:</strong> Even "low" LEL readings can be serious toxic hazards!
+            </div>
+        </div>
+    </div>
+
+    <div class="section-header">📊 Behavioral Modeling (GEBMO)</div>
+    <div class="card">
+        <label>Release Type / Container Stress</label>
+        <select id="stressType" onchange="runBehavior()">
+            <option value="">-- Select Situation --</option>
+            <option value="mechanical">Mechanical Stress (Puncture/Crack)</option>
+            <option value="thermal">Thermal Stress (Fire/Heat Impingement)</option>
+            <option value="chemical">Chemical Stress (Reaction/Corrosion)</option>
+        </select>
+        <div id="behaviorResult" class="status-box behavior-out" style="display:none;"></div>
+    </div>
+
+    <div class="section-header">🌡️ Air Monitoring & Meter Alarms</div>
+    <div class="card">
+        <select id="meterSel" onchange="updateMeter()">
+            <option value="">-- Select Meter --</option>
+            <option value="multirae">MultiRAE (5-Gas)</option>
+            <option value="altair">Altair 5x</option>
+            <option value="pid">PID (VOCs)</option>
+            <option value="ppb">PPB Meter</option>
+            <option value="sensit">Sensit Gas Meter</option>
+            <option value="nh3">Ammonia Meter</option>
+            <option value="cl2">Chlorine Meter</option>
+            <option value="hcn">Cyanide Meter</option>
+            <option value="prd">PRD (Gamma)</option>
+            <option value="ludlum">Ludlum (Alpha/Beta/Gamma)</option>
+        </select>
+        <div id="meterDisplay" style="display:none; margin-top:16px;">
+            <div style="overflow-x: auto;">
+                <table style="width:100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--border);">
+                            <th style="text-align:left; padding:12px; color:var(--text-muted); font-size:0.75rem; text-transform:uppercase; letter-spacing:1px;">Sensor</th>
+                            <th style="text-align:left; padding:12px; color:var(--text-muted); font-size:0.75rem; text-transform:uppercase; letter-spacing:1px;">Low Alarm</th>
+                            <th style="text-align:left; padding:12px; color:var(--text-muted); font-size:0.75rem; text-transform:uppercase; letter-spacing:1px;">High Alarm</th>
+                        </tr>
+                    </thead>
+                    <tbody id="meterBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-header">☢️ Radiation: Inverse Square Law</div>
+    <div class="card">
+        <label>Calculation Mode</label>
+        <select id="radMode" onchange="updateRadMode()">
+            <option value="distance">Find Safe Distance (I know dose, need distance)</option>
+            <option value="dose">Find Dose at Distance (I know distance, need dose)</option>
+            <option value="source">Calculate Source Strength (Estimate hazard)</option>
+        </select>
+        
+        <div id="radInputs" style="margin-top:16px;"></div>
+        
+        <div id="radResult" class="status-box behavior-out" style="text-align: center;">Select mode and enter values</div>
+        
+        <div style="margin-top: 16px; padding: 16px; background: rgba(0, 0, 0, 0.3); border-radius: 10px; font-size: 0.75rem; color: var(--text-muted);">
+            <strong style="color: var(--secondary);">💡 How to use:</strong>
+            <div id="radHelp" style="margin-top: 8px;">Select a calculation mode above to see instructions</div>
+        </div>
+    </div>
+
+    <div class="section-header">⚗️ Reactivity Check</div>
+    <div class="card">
+        <div class="grid-2">
+            <div>
+                <label>Chemical A</label>
+                <select id="chemA" onchange="checkReact()">
+                    <option value="">-- Select --</option>
+                </select>
+            </div>
+            <div>
+                <label>Chemical B</label>
+                <select id="chemB" onchange="checkReact()">
+                    <option value="">-- Select --</option>
+                </select>
+            </div>
+        </div>
+        <div id="reactOut" class="status-box meter-alert" style="display:none;"></div>
+    </div>
+
+    <div class="section-header">🛢️ Containment Compatibility</div>
+    <div class="card">
+        <label>Product Type</label>
+        <select id="containType" onchange="updateContainment()">
+            <option value="">-- Select Product Type --</option>
+            <option value="Acid">Acid (pH &lt; 7)</option>
+            <option value="Base">Base (pH &gt; 7)</option>
+            <option value="Oxidizer">Oxidizer</option>
+            <option value="Flammable">Flammable Liquid/Gas</option>
+            <option value="Poison">Poison/Toxic</option>
+            <option value="Cyanide">Cyanide Compound</option>
+            <option value="Solvent">Chlorinated Solvent</option>
+            <option value="Explosive">Explosive Material</option>
+            <option value="Inert">Inert/Low Hazard</option>
+            <option value="Cryogenic">Cryogenic</option>
+            <option value="Radioactive">Radioactive Material</option>
+        </select>
+        
+        <div id="containResult" style="display:none; margin-top: 20px;">
+            <div style="background: rgba(0, 255, 136, 0.05); padding: 16px; border-radius: 10px; margin-bottom: 12px; border: 1px solid var(--success);">
+                <div style="font-size: 0.8rem; color: var(--success); font-weight: 700; margin-bottom: 10px;">✅ COMPATIBLE OPTIONS</div>
+                <div id="containCompatible" style="font-size: 0.9rem; line-height: 1.8;"></div>
+            </div>
+            
+            <div style="background: rgba(255, 56, 56, 0.05); padding: 16px; border-radius: 10px; margin-bottom: 12px; border: 1px solid var(--danger);">
+                <div style="font-size: 0.8rem; color: var(--danger); font-weight: 700; margin-bottom: 10px;">⛔ AVOID / INCOMPATIBLE</div>
+                <div id="containAvoid" style="font-size: 0.9rem; line-height: 1.8; color: #ff8a80;"></div>
+            </div>
+            
+            <div style="background: rgba(245,158,11,0.06); padding: 16px; border-radius: 2px; border: 1px solid var(--border-accent);">
+                <div style="font-size: 0.8rem; color: var(--secondary); font-weight: 700; margin-bottom: 10px;">💡 FIELD TIPS</div>
+                <div id="containTips" style="font-size: 0.9rem; line-height: 1.8; color: #80d8ff;"></div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="footer">
+        <strong>Hazmat Tactical Tool v1.0</strong><br>
+        Data: NIOSH Pocket Guide & ERG 2024 | Training Tool Only - Not for Field Use
+    </div>
+</div>
+
+<script>
+    /* COMPREHENSIVE CHEMICAL DATABASE - NIOSH & ERG 2024 */
+    const chemicals = [
+        // TOXIC GASES
+        { name: "Chlorine", un: "1017", vd: 2.5, sg: 1.56, ppe: "A", rel: "C 0.5 ppm", twa: "0.5 ppm", stel: "1 ppm", idlh: "10 ppm", type: "Oxidizer", smallIso: ["200 ft", "0.2 mi", "0.5 mi"], largeIso: ["1000 ft", "2.1 mi", "5.0 mi"] },
+        { name: "Ammonia, Anhydrous", un: "1005", vd: 0.6, sg: 0.7, ppe: "B", rel: "25 ppm", twa: "25 ppm", stel: "35 ppm", idlh: "300 ppm", type: "Base", smallIso: ["100 ft", "0.1 mi", "0.2 mi"], largeIso: ["500 ft", "0.5 mi", "1.4 mi"] },
+        { name: "Phosgene", un: "1076", vd: 3.4, sg: 1.37, ppe: "A", rel: "C 0.1 ppm", twa: "0.1 ppm", stel: "N.D.", idlh: "2 ppm", type: "Poison", smallIso: ["200 ft", "0.6 mi", "1.9 mi"], largeIso: ["1500 ft", "3.8 mi", "7+ mi"] },
+        { name: "Hydrogen Cyanide", un: "1051", vd: 0.94, sg: 0.69, ppe: "A", rel: "C 4.7 ppm", twa: "4.7 ppm", stel: "N.D.", idlh: "50 ppm", type: "Cyanide", smallIso: ["500 ft", "0.7 mi", "2.1 mi"], largeIso: ["2000 ft", "4.1 mi", "6.2 mi"] },
+        { name: "Chlorine Dioxide", un: "9191", vd: 2.3, sg: 1.6, ppe: "A", rel: "0.1 ppm", twa: "0.1 ppm", stel: "0.3 ppm", idlh: "5 ppm", type: "Oxidizer", smallIso: ["200 ft", "0.3 mi", "1.0 mi"], largeIso: ["800 ft", "1.7 mi", "4.5 mi"] },
+        
+        // CORROSIVES
+        { name: "Sulfuric Acid", un: "1830", vd: 3.4, sg: 1.84, ppe: "A", rel: "1 mg/m³", twa: "1 mg/m³", stel: "N.D.", idlh: "15 mg/m³", type: "Acid", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        { name: "Hydrochloric Acid", un: "1789", vd: 1.3, sg: 1.18, ppe: "B", rel: "C 5 ppm", twa: "5 ppm", stel: "N.D.", idlh: "50 ppm", type: "Acid", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "0.1 mi", "0.4 mi"] },
+        { name: "Nitric Acid", un: "2031", vd: 2.2, sg: 1.5, ppe: "A", rel: "2 ppm", twa: "2 ppm", stel: "4 ppm", idlh: "25 ppm", type: "Acid", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        { name: "Hydrofluoric Acid", un: "1790", vd: 0.7, sg: 1.15, ppe: "A", rel: "C 3 ppm", twa: "3 ppm", stel: "N.D.", idlh: "30 ppm", type: "Acid", smallIso: ["150 ft", "0.1 mi", "0.2 mi"], largeIso: ["500 ft", "0.6 mi", "1.2 mi"] },
+        { name: "Phosphoric Acid", un: "1805", vd: 3.4, sg: 1.87, ppe: "B", rel: "1 mg/m³", twa: "1 mg/m³", stel: "3 mg/m³", idlh: "1000 mg/m³", type: "Acid", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        { name: "Acetic Acid", un: "2789", vd: 2.1, sg: 1.05, ppe: "B", rel: "10 ppm", twa: "10 ppm", stel: "15 ppm", idlh: "50 ppm", type: "Acid", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        { name: "Sodium Hydroxide", un: "1823", vd: "N/A", sg: 2.13, ppe: "B", rel: "C 2 mg/m³", twa: "2 mg/m³", stel: "N.D.", idlh: "10 mg/m³", type: "Base", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        
+        // FLAMMABLES
+        { name: "Benzene", un: "1114", vd: 2.8, sg: 0.88, ppe: "B", rel: "C 0.1 ppm", twa: "0.1 ppm", stel: "1 ppm", idlh: "500 ppm", type: "Flammable", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        { name: "Ethanol", un: "1170", vd: 1.6, sg: 0.79, ppe: "D", rel: "1000 ppm", twa: "1000 ppm", stel: "N.D.", idlh: "3300 ppm", type: "Flammable", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        { name: "Methanol", un: "1230", vd: 1.1, sg: 0.79, ppe: "B", rel: "200 ppm", twa: "200 ppm", stel: "250 ppm", idlh: "6000 ppm", type: "Flammable", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        { name: "Acetone", un: "1090", vd: 2.0, sg: 0.79, ppe: "D", rel: "250 ppm", twa: "250 ppm", stel: "N.D.", idlh: "2500 ppm", type: "Flammable", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        { name: "Toluene", un: "1294", vd: 3.1, sg: 0.87, ppe: "B", rel: "100 ppm", twa: "100 ppm", stel: "150 ppm", idlh: "500 ppm", type: "Flammable", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        
+        // COMPRESSED GASES
+        { name: "Methane", un: "1971", vd: 0.6, sg: "N/A", ppe: "D", rel: "N.E.", twa: "N.E.", stel: "N.E.", idlh: "N.D.", type: "Flammable", smallIso: ["N/A", "N/A", "N/A"], largeIso: ["N/A", "N/A", "N/A"] },
+        { name: "Propane", un: "1978", vd: 1.6, sg: "N/A", ppe: "D", rel: "1000 ppm", twa: "1000 ppm", stel: "N.D.", idlh: "2100 ppm", type: "Flammable", smallIso: ["N/A", "N/A", "N/A"], largeIso: ["N/A", "N/A", "N/A"] },
+        { name: "Oxygen", un: "1072", vd: 1.1, sg: 1.14, ppe: "B", rel: "N.E.", twa: "N.E.", stel: "N.E.", idlh: "N.D.", type: "Oxidizer", smallIso: ["N/A", "N/A", "N/A"], largeIso: ["N/A", "N/A", "N/A"] },
+        { name: "Nitrogen", un: "1066", vd: 1.0, sg: 0.81, ppe: "B", rel: "N.E.", twa: "N.E.", stel: "N.E.", idlh: "N.D.", type: "Inert", smallIso: ["N/A", "N/A", "N/A"], largeIso: ["N/A", "N/A", "N/A"] },
+        { name: "Hydrogen", un: "1049", vd: 0.07, sg: "N/A", ppe: "D", rel: "N.E.", twa: "N.E.", stel: "N.E.", idlh: "N.D.", type: "Flammable", smallIso: ["N/A", "N/A", "N/A"], largeIso: ["N/A", "N/A", "N/A"] },
+        { name: "Carbon Dioxide", un: "1013", vd: 1.5, sg: "N/A", ppe: "B", rel: "5000 ppm", twa: "5000 ppm", stel: "30000 ppm", idlh: "40000 ppm", type: "Inert", smallIso: ["N/A", "N/A", "N/A"], largeIso: ["N/A", "N/A", "N/A"] },
+        
+        // RADIOACTIVE
+        { name: "Technetium-99m", un: "2911", vd: "N/A", sg: "N/A", ppe: "Rad", rel: "Rad", twa: "Rad", stel: "Rad", idlh: "Rad", type: "Radioactive", smallIso: ["See Rad", "See Rad", "See Rad"], largeIso: ["See Rad", "See Rad", "See Rad"] },
+        { name: "Iodine-131", un: "2910", vd: "N/A", sg: "N/A", ppe: "Rad", rel: "Rad", twa: "Rad", stel: "Rad", idlh: "Rad", type: "Radioactive", smallIso: ["See Rad", "See Rad", "See Rad"], largeIso: ["See Rad", "See Rad", "See Rad"] },
+        { name: "Cobalt-60", un: "2912", vd: "N/A", sg: "N/A", ppe: "Rad", rel: "Rad", twa: "Rad", stel: "Rad", idlh: "Rad", type: "Radioactive", smallIso: ["See Rad", "See Rad", "See Rad"], largeIso: ["See Rad", "See Rad", "See Rad"] },
+        { name: "Cesium-137", un: "2912", vd: "N/A", sg: "N/A", ppe: "Rad", rel: "Rad", twa: "Rad", stel: "Rad", idlh: "Rad", type: "Radioactive", smallIso: ["See Rad", "See Rad", "See Rad"], largeIso: ["See Rad", "See Rad", "See Rad"] },
+        
+        // COMMON FLAMMABLE LIQUIDS / FUELS
+        { name: "Gasoline", un: "1203", vd: 3.4, sg: 0.73, ppe: "D", rel: "Ca", twa: "300 ppm", stel: "500 ppm", idlh: "Ca [N.D.]", type: "Flammable", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        { name: "Diesel Fuel", un: "1993", vd: 4.5, sg: 0.85, ppe: "D", rel: "N.E.", twa: "N.E.", stel: "N.E.", idlh: "N.D.", type: "Flammable", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        { name: "Kerosene", un: "1223", vd: 4.5, sg: 0.80, ppe: "D", rel: "100 mg/m³", twa: "100 mg/m³", stel: "N.D.", idlh: "N.D.", type: "Flammable", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        { name: "Fuel Oil (No. 2)", un: "1993", vd: 4.5, sg: 0.87, ppe: "D", rel: "N.E.", twa: "N.E.", stel: "N.E.", idlh: "N.D.", type: "Flammable", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        { name: "Paint Thinner (Mineral Spirits)", un: "1256", vd: 4.5, sg: 0.78, ppe: "D", rel: "350 mg/m³", twa: "350 mg/m³", stel: "1800 mg/m³", idlh: "29500 mg/m³", type: "Flammable", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        { name: "Aerosols (Flammable)", un: "1950", vd: "Varies", sg: "Varies", ppe: "D", rel: "Varies", twa: "Varies", stel: "Varies", idlh: "Varies", type: "Flammable", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        
+        // INDUSTRIAL CHEMICALS
+        { name: "Ethylene Oxide", un: "1040", vd: 1.5, sg: 0.82, ppe: "A", rel: "Ca <0.1 ppm", twa: "<0.1 ppm", stel: "C 5 ppm", idlh: "Ca [800 ppm]", type: "Flammable", smallIso: ["100 ft", "0.1 mi", "0.1 mi"], largeIso: ["200 ft", "0.3 mi", "0.8 mi"] },
+        { name: "Formaldehyde", un: "2209", vd: 1.08, sg: 1.08, ppe: "B", rel: "0.016 ppm", twa: "0.016 ppm", stel: "0.1 ppm", idlh: "20 ppm", type: "Flammable", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        { name: "Hydrogen Peroxide (>60%)", un: "2015", vd: 1.1, sg: 1.4, ppe: "B", rel: "1 ppm", twa: "1 ppm", stel: "N.D.", idlh: "75 ppm", type: "Oxidizer", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        { name: "Dry Ice (Solid CO₂)", un: "1845", vd: 1.5, sg: 1.56, ppe: "B", rel: "5000 ppm", twa: "5000 ppm", stel: "30000 ppm", idlh: "40000 ppm", type: "Inert", smallIso: ["N/A", "N/A", "N/A"], largeIso: ["N/A", "N/A", "N/A"] },
+        { name: "Nitromethane", un: "1261", vd: 2.1, sg: 1.14, ppe: "D", rel: "N.E.", twa: "N.E.", stel: "N.E.", idlh: "N.D.", type: "Flammable", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        { name: "Lithium Batteries", un: "3480", vd: "N/A", sg: "N/A", ppe: "B", rel: "HF risk", twa: "See HF", stel: "See HF", idlh: "See HF", type: "Flammable", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+
+        // EXPLOSIVE PRECURSORS / OXIDIZERS
+        { name: "Ammonium Nitrate", un: "1942", vd: "N/A", sg: 1.73, ppe: "B", rel: "N.E.", twa: "N.E.", stel: "N.E.", idlh: "N.D.", type: "Oxidizer", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        { name: "Potassium Nitrate", un: "1486", vd: "N/A", sg: 2.11, ppe: "B", rel: "N.E.", twa: "N.E.", stel: "N.E.", idlh: "N.D.", type: "Oxidizer", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        { name: "Sodium Nitrate", un: "1498", vd: "N/A", sg: 2.26, ppe: "B", rel: "N.E.", twa: "N.E.", stel: "N.E.", idlh: "N.D.", type: "Oxidizer", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        { name: "Aluminum Powder (Uncoated)", un: "1396", vd: "N/A", sg: 2.70, ppe: "D", rel: "5 mg/m³", twa: "5 mg/m³", stel: "N.D.", idlh: "N.D.", type: "Flammable", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        { name: "Sulfur", un: "1350", vd: "N/A", sg: 2.07, ppe: "D", rel: "N.E.", twa: "N.E.", stel: "N.E.", idlh: "N.D.", type: "Flammable", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        { name: "Charcoal", un: "1361", vd: "N/A", sg: 0.5, ppe: "D", rel: "N.E.", twa: "N.E.", stel: "N.E.", idlh: "N.D.", type: "Flammable", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        { name: "Potassium Chlorate", un: "1485", vd: "N/A", sg: 2.32, ppe: "B", rel: "N.E.", twa: "N.E.", stel: "N.E.", idlh: "N.D.", type: "Oxidizer", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        { name: "Urea", un: "N/A", vd: "N/A", sg: 1.32, ppe: "B", rel: "N.E.", twa: "N.E.", stel: "N.E.", idlh: "N.D.", type: "Inert", smallIso: ["N/A", "N/A", "N/A"], largeIso: ["N/A", "N/A", "N/A"] },
+        { name: "Hexamine (Hexamethylenetetramine)", un: "1328", vd: "N/A", sg: 1.33, ppe: "D", rel: "N.E.", twa: "N.E.", stel: "N.E.", idlh: "N.D.", type: "Flammable", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        { name: "Calcium Ammonium Nitrate", un: "1454", vd: "N/A", sg: 1.70, ppe: "B", rel: "N.E.", twa: "N.E.", stel: "N.E.", idlh: "N.D.", type: "Oxidizer", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+        { name: "Glycerine (Glycerol)", un: "N/A", vd: 3.17, sg: 1.26, ppe: "B", rel: "N.E.", twa: "5 mg/m³ (mist)", stel: "N.D.", idlh: "N.D.", type: "Inert", smallIso: ["N/A", "N/A", "N/A"], largeIso: ["N/A", "N/A", "N/A"] },
+        { name: "Citric Acid", un: "N/A", vd: "N/A", sg: 1.67, ppe: "B", rel: "N.E.", twa: "N.E.", stel: "N.E.", idlh: "N.D.", type: "Acid", smallIso: ["N/A", "N/A", "N/A"], largeIso: ["N/A", "N/A", "N/A"] },
+        { name: "Ammonium Perchlorate", un: "1442", vd: "N/A", sg: 1.95, ppe: "B", rel: "N.E.", twa: "N.E.", stel: "N.E.", idlh: "N.D.", type: "Oxidizer", smallIso: ["150 ft", "N/A", "N/A"], largeIso: ["330 ft", "N/A", "N/A"] },
+
+        // EXPLOSIVES — PRIMARY (DETONATOR-SENSITIVE)
+        { name: "Lead Azide", un: "0129", vd: "N/A", sg: 4.71, ppe: "A", rel: "0.05 mg/m³ (as Pb)", twa: "0.05 mg/m³", stel: "N.D.", idlh: "N.D.", type: "Explosive", smallIso: ["1640 ft", "N/A", "N/A"], largeIso: ["2500 ft", "N/A", "N/A"] },
+        { name: "Lead Styphnate", un: "0130", vd: "N/A", sg: 3.0, ppe: "A", rel: "0.05 mg/m³ (as Pb)", twa: "0.05 mg/m³", stel: "N.D.", idlh: "N.D.", type: "Explosive", smallIso: ["1640 ft", "N/A", "N/A"], largeIso: ["2500 ft", "N/A", "N/A"] },
+
+        // EXPLOSIVES — SECONDARY (HIGH EXPLOSIVES)
+        { name: "TNT (Trinitrotoluene)", un: "0209", vd: "N/A", sg: 1.65, ppe: "B", rel: "0.5 mg/m³", twa: "0.5 mg/m³", stel: "N.D.", idlh: "500 mg/m³", type: "Explosive", smallIso: ["1640 ft", "N/A", "N/A"], largeIso: ["2500 ft", "N/A", "N/A"] },
+        { name: "RDX (Cyclonite)", un: "0072", vd: "N/A", sg: 1.82, ppe: "B", rel: "1.5 mg/m³", twa: "1.5 mg/m³", stel: "N.D.", idlh: "N.D.", type: "Explosive", smallIso: ["1640 ft", "N/A", "N/A"], largeIso: ["2500 ft", "N/A", "N/A"] },
+        { name: "HMX (Octogen)", un: "0226", vd: "N/A", sg: 1.96, ppe: "B", rel: "N.E.", twa: "N.E.", stel: "N.E.", idlh: "N.D.", type: "Explosive", smallIso: ["1640 ft", "N/A", "N/A"], largeIso: ["2500 ft", "N/A", "N/A"] },
+        { name: "PETN (Pentaerythritol Tetranitrate)", un: "0150", vd: "N/A", sg: 1.77, ppe: "B", rel: "N.E.", twa: "N.E.", stel: "N.E.", idlh: "N.D.", type: "Explosive", smallIso: ["1640 ft", "N/A", "N/A"], largeIso: ["2500 ft", "N/A", "N/A"] },
+        { name: "TATB (Triaminotrinitrobenzene)", un: "N/A", vd: "N/A", sg: 1.93, ppe: "B", rel: "N.E.", twa: "N.E.", stel: "N.E.", idlh: "N.D.", type: "Explosive", smallIso: ["1640 ft", "N/A", "N/A"], largeIso: ["2500 ft", "N/A", "N/A"] },
+        { name: "Tetryl (Trinitrophenylmethylnitramine)", un: "0208", vd: "N/A", sg: 1.73, ppe: "B", rel: "1.5 mg/m³", twa: "1.5 mg/m³", stel: "N.D.", idlh: "750 mg/m³", type: "Explosive", smallIso: ["1640 ft", "N/A", "N/A"], largeIso: ["2500 ft", "N/A", "N/A"] },
+        { name: "Picric Acid (Trinitrophenol)", un: "0154", vd: "N/A", sg: 1.77, ppe: "B", rel: "0.1 mg/m³", twa: "0.1 mg/m³", stel: "N.D.", idlh: "75 mg/m³", type: "Explosive", smallIso: ["1640 ft", "N/A", "N/A"], largeIso: ["2500 ft", "N/A", "N/A"] },
+        { name: "Nitroglycerin", un: "0143", vd: "N/A", sg: 1.60, ppe: "A", rel: "C 0.1 mg/m³", twa: "C 0.1 mg/m³", stel: "N.D.", idlh: "75 mg/m³", type: "Explosive", smallIso: ["1640 ft", "N/A", "N/A"], largeIso: ["2500 ft", "N/A", "N/A"] },
+
+        // EXPLOSIVES — COMPOSITE / COMMERCIAL
+        { name: "C-4 (Composition C-4)", un: "0084", vd: "N/A", sg: 1.59, ppe: "B", rel: "1.5 mg/m³ (as RDX)", twa: "1.5 mg/m³", stel: "N.D.", idlh: "N.D.", type: "Explosive", smallIso: ["1640 ft", "N/A", "N/A"], largeIso: ["2500 ft", "N/A", "N/A"] },
+        { name: "Semtex", un: "0084", vd: "N/A", sg: 1.40, ppe: "B", rel: "1.5 mg/m³ (as RDX)", twa: "1.5 mg/m³", stel: "N.D.", idlh: "N.D.", type: "Explosive", smallIso: ["1640 ft", "N/A", "N/A"], largeIso: ["2500 ft", "N/A", "N/A"] },
+        { name: "ANFO (Ammonium Nitrate/Fuel Oil)", un: "0331", vd: "N/A", sg: 0.85, ppe: "B", rel: "N.E.", twa: "N.E.", stel: "N.E.", idlh: "N.D.", type: "Explosive", smallIso: ["1640 ft", "N/A", "N/A"], largeIso: ["2500 ft", "N/A", "N/A"] },
+        { name: "Dynamite", un: "0081", vd: "N/A", sg: 1.40, ppe: "B", rel: "C 0.1 mg/m³ (as NG)", twa: "C 0.1 mg/m³", stel: "N.D.", idlh: "75 mg/m³", type: "Explosive", smallIso: ["1640 ft", "N/A", "N/A"], largeIso: ["2500 ft", "N/A", "N/A"] },
+        { name: "Emulsion Explosives", un: "0241", vd: "N/A", sg: 1.20, ppe: "B", rel: "N.E.", twa: "N.E.", stel: "N.E.", idlh: "N.D.", type: "Explosive", smallIso: ["1640 ft", "N/A", "N/A"], largeIso: ["2500 ft", "N/A", "N/A"] },
+        { name: "Water Gels / Slurry Explosives", un: "0247", vd: "N/A", sg: 1.25, ppe: "B", rel: "N.E.", twa: "N.E.", stel: "N.E.", idlh: "N.D.", type: "Explosive", smallIso: ["1640 ft", "N/A", "N/A"], largeIso: ["2500 ft", "N/A", "N/A"] },
+
+        // EXPLOSIVES — LOW EXPLOSIVES / PROPELLANTS
+        { name: "Black Powder", un: "0027", vd: "N/A", sg: 1.80, ppe: "B", rel: "N.E.", twa: "N.E.", stel: "N.E.", idlh: "N.D.", type: "Explosive", smallIso: ["1640 ft", "N/A", "N/A"], largeIso: ["2500 ft", "N/A", "N/A"] },
+        { name: "Smokeless Powder", un: "0161", vd: "N/A", sg: 1.60, ppe: "B", rel: "N.E.", twa: "N.E.", stel: "N.E.", idlh: "N.D.", type: "Explosive", smallIso: ["1640 ft", "N/A", "N/A"], largeIso: ["2500 ft", "N/A", "N/A"] },
+        { name: "Urea Nitrate", un: "0220", vd: "N/A", sg: 1.69, ppe: "B", rel: "N.E.", twa: "N.E.", stel: "N.E.", idlh: "N.D.", type: "Explosive", smallIso: ["1640 ft", "N/A", "N/A"], largeIso: ["2500 ft", "N/A", "N/A"] }
+    ];
+
+    const vocCorrectionFactors = {
+        "Acetaldehyde": 1.8, "Acetic acid": 3.4, "Acetyl anhydride": 2.0, "Acetone": 2.2,
+        "Acetylene": 2.8, "Allyl Alcohol": 1.7, "Ammonia": 0.8, "Aniline": 3.0,
+        "Benzene": 2.2, "Butadiene, 1,3-": 2.5, "Butane, n-": 2.0, "Butane, i-": 1.8,
+        "Butanol, n-": 3.0, "Butanol, i-": 2.5, "Butanol, t-": 1.8, "Butene, 1": 2.1,
+        "Butene, 2 cis": 2.1, "Butene, 2 trans": 1.9, "Butyric acid": 2.4,
+        "Carbon disulfide": 3.2, "Carbon monoxide": 1.2, "Carbonyl sulfide": 1.0,
+        "Chlorobenzene": 3.0, "Chloroethane": 1.7, "Chloroform": 1.0, "Chloropro pane, 1-": 1.8,
+        "Cyanogen": 1.1, "Cyclohexane": 2.5, "Cyclopropane": 1.8, "Decane, n-": 3.4,
+        "Dichloroethane, 1,2-": 1.5, "Dichloromethane": 1.0, "Diesel": "use PID",
+        "Dimethylbutane": 2.7, "Dimethyl pentane, 2,3-": 2.3, "Dimethyl sulfide": 2.3,
+        "Dioxane, 1,4-": 2.5, "Ethane": 1.4, "Ethanol": 1.7, "Ethene": 1.4,
+        "Ethyl acetate": 2.2, "Ethylamine": 1.4, "Ethyl benzene": 2.8, "Ethyl bromide": 0.9,
+        "Ethyl chloride": 1.7, "Ethyl ether": 2.3, "Ethyl formate": 2.4, "Ethyl mercaptan": 1.8,
+        "Ethyl methyl ether": 2.3, "Ethyl sec": 2.4, "Ethylene oxide": 2.3, "Gasoline": 2.1,
+        "Heptane, n-": 2.4, "Hexadiene, 1,4-": 1.5, "Hexane, n-": 2.3, "Hydrazine": 2.1,
+        "Hydrogen": 1.1, "Hydrogen cyanide": 2.0, "Hydrogen sulfide": 3.2, "Isobutylene": 1.5,
+        "Isopropanol": 2.6, "Jet fuel, JP4, JP5, JP8": "use PID", "Methane": 1.0,
+        "Methanol": 1.5, "Methyl acetate": 2.2, "Methylamine": 1.3, "Methyl bromide": 1.1,
+        "Methyl chloride": 1.3, "Methylcyclohexane": 2.6, "Methyl ether": 1.7,
+        "Methyl ethyl ketone": 2.6, "Methyl formate": 1.9, "Methyl hexane": 2.4,
+        "Methyl mercaptan": 1.6, "Methyl pentane": 2.7, "Methyl propyl ketone": 2.7,
+        "Methyl n-propyl ketone": 2.7, "Napthalene": 2.9, "Nitromethane": 1.0,
+        "Nonane, n-": 3.2, "Octane, n-": 2.9, "Pentane, n-": 2.2, "Pentane, i-": 2.3,
+        "Pentane, neo-": 2.5, "Pentene, l-": 2.3, "Phosphine": 0.3, "Propane": 1.6,
+        "Propanol, n-": 2.0, "Propene": 1.6, "Propylene, n-": 2.1, "Propylene oxide": 2.6,
+        "Propyl ether, i-": 2.3, "Propyne": 2.3, "Toluene": 2.6, "Triethylamine": 2.5,
+        "Trimethylamine": 1.9, "Trimethylbutane": 2.3, "Turpentine": 2.9, "Vinyl chloride": 1.8,
+        "Xylene, m-": 2.7, "Xylene, o-": 3.0, "Xylene, p-": 2.8
+    };
+
+    const lelValues = {
+        // Format: { lel: LEL in ppm, toxic: typical toxic threshold for comparison }
+        "Gasoline": { lel: 14000, toxic: 300, idlh: 1000 },
+        "Propane": { lel: 21000, toxic: 1000, idlh: 2100 },
+        "Methane": { lel: 50000, toxic: "N/A", idlh: "N/A" },
+        "Benzene": { lel: 12000, toxic: 10, idlh: 500 },
+        "Toluene": { lel: 12000, toxic: 100, idlh: 500 },
+        "Xylene": { lel: 10000, toxic: 100, idlh: 900 },
+        "Acetone": { lel: 25000, toxic: 250, idlh: 2500 },
+        "Methanol": { lel: 60000, toxic: 200, idlh: 6000 },
+        "Ethanol": { lel: 33000, toxic: 1000, idlh: 3300 },
+        "Isopropanol": { lel: 20000, toxic: 400, idlh: 2000 },
+        "Hexane": { lel: 12000, toxic: 50, idlh: 1100 },
+        "Heptane": { lel: 11000, toxic: 400, idlh: 750 },
+        "Octane": { lel: 10000, toxic: 300, idlh: 1000 },
+        "Butane": { lel: 18000, toxic: 800, idlh: 1600 },
+        "Pentane": { lel: 14000, toxic: 600, idlh: 1500 },
+        "Ethyl acetate": { lel: 20000, toxic: 400, idlh: 2000 },
+        "Acetaldehyde": { lel: 40000, toxic: 100, idlh: 2000 },
+        "Hydrogen": { lel: 40000, toxic: "N/A", idlh: "N/A" },
+        "Carbon monoxide": { lel: 125000, toxic: 35, idlh: 1200 },
+        "Ammonia": { lel: 150000, toxic: 25, idlh: 300 },
+        "Hydrogen sulfide": { lel: 40000, toxic: 10, idlh: 100 },
+        "Styrene": { lel: 11000, toxic: 50, idlh: 700 },
+        "MEK (Methyl Ethyl Ketone)": { lel: 18000, toxic: 200, idlh: 3000 },
+        "Cyclohexane": { lel: 13000, toxic: 300, idlh: 1300 },
+        "Diesel Fuel": { lel: 6000, toxic: "N/A", idlh: "N/A" },
+        "Kerosene": { lel: 7000, toxic: "N/A", idlh: "N/A" },
+        "Ethylene Oxide": { lel: 30000, toxic: 0.1, idlh: 800 },
+        "Formaldehyde": { lel: 70000, toxic: 0.016, idlh: 20 },
+        "Nitromethane": { lel: 73000, toxic: "N/A", idlh: "N/A" },
+        "Mineral Spirits": { lel: 7000, toxic: "N/A", idlh: "N/A" }
+    };
+
+    const meters = {
+        multirae: [{s:"O₂", l:"19.5%", h:"23.5%"}, {s:"LEL", l:"10%", h:"20%"}, {s:"CO", l:"35 ppm", h:"200 ppm"}, {s:"H₂S", l:"10 ppm", h:"20 ppm"}],
+        altair: [{s:"O₂", l:"19.5%", h:"23.0%"}, {s:"LEL", l:"10%", h:"20%"}, {s:"CO", l:"25 ppm", h:"100 ppm"}, {s:"H₂S", l:"10 ppm", h:"15 ppm"}],
+        pid: [{s:"VOC", l:"10 ppm", h:"100 ppm"}],
+        ppb: [{s:"VOC (Low)", l:"500 ppb", h:"5000 ppb"}],
+        sensit: [{s:"Combustible", l:"10% LEL", h:"25% LEL"}],
+        nh3: [{s:"Ammonia", l:"25 ppm", h:"50 ppm"}],
+        cl2: [{s:"Chlorine", l:"0.5 ppm", h:"1.0 ppm"}],
+        hcn: [{s:"Cyanide", l:"4.7 ppm", h:"10 ppm"}],
+        prd: [{s:"Gamma", l:"50 µR/hr", h:"2 mR/hr"}],
+        ludlum: [{s:"Alpha/Beta", l:"Check Bkg", h:"2x Bkg"}, {s:"Gamma", l:"0.5 mR/hr", h:"5 mR/hr"}]
+    };
+
+    const reactMatrix = { 
+        "Acid+Base": "🔥 VIOLENT NEUTRALIZATION: Produces intense heat & splatter risk.",
+        "Base+Acid": "🔥 VIOLENT NEUTRALIZATION: Produces intense heat & splatter risk.",
+        "Acid+Cyanide": "💀 LETHAL GAS: Generates Hydrogen Cyanide (HCN) gas! Immediate evacuation!",
+        "Cyanide+Acid": "💀 LETHAL GAS: Generates Hydrogen Cyanide (HCN) gas! Immediate evacuation!",
+        "Oxidizer+Flammable": "💥 EXPLOSION RISK: Violent deflagration or detonation possible.",
+        "Flammable+Oxidizer": "💥 EXPLOSION RISK: Violent deflagration or detonation possible.",
+        "Acid+Oxidizer": "⚠️ FIRE RISK: May ignite combustibles; produces heat.",
+        "Oxidizer+Acid": "⚠️ FIRE RISK: May ignite combustibles; produces heat.",
+        "Explosive+Flammable": "💥 EXTREME HAZARD: Fire or heat source can initiate detonation of explosive material.",
+        "Flammable+Explosive": "💥 EXTREME HAZARD: Fire or heat source can initiate detonation of explosive material.",
+        "Explosive+Oxidizer": "💥 EXTREME HAZARD: Oxidizer may sensitize or initiate explosive material. Do NOT co-locate.",
+        "Oxidizer+Explosive": "💥 EXTREME HAZARD: Oxidizer may sensitize or initiate explosive material. Do NOT co-locate.",
+        "Explosive+Acid": "💥 EXTREME HAZARD: Acid contact with explosive material may cause decomposition, fire, or detonation.",
+        "Acid+Explosive": "💥 EXTREME HAZARD: Acid contact with explosive material may cause decomposition, fire, or detonation.",
+        "Explosive+Explosive": "💥 SYMPATHETIC DETONATION RISK: One explosive detonating can initiate another. Maintain maximum separation distance."
+    };
+
+    const containmentData = {
+        "Acid": {
+            compatible: [
+                "<strong>Overpacks:</strong> Poly drums (HDPE), Glass carboys (if intact)",
+                "<strong>Plugs:</strong> Teflon, EPDM rubber, Acid-resistant epoxy",
+                "<strong>Patches:</strong> Acid-resistant putty, Specialized tape",
+                "<strong>Absorbents:</strong> Acid neutralizers (soda ash), Poly pads"
+            ],
+            avoid: [
+                "Steel or aluminum containers (corrosion)",
+                "Natural rubber seals (degradation)",
+                "Reactive bases nearby (neutralization hazard)",
+                "Cyanide salts (HCN gas generation)"
+            ],
+            tips: [
+                "Acids heavier than water generally sink - check SG",
+                "Dilute acid into water, NEVER water into acid",
+                "Neutralize with soda ash or lime before disposal",
+                "Monitor vapor generation - use wet towels for suppression"
+            ]
+        },
+        "Base": {
+            compatible: [
+                "<strong>Overpacks:</strong> Poly drums, Stainless steel (for some bases)",
+                "<strong>Plugs:</strong> Neoprene, Viton, EPDM rubber",
+                "<strong>Patches:</strong> Base-resistant epoxy, Specialized tape",
+                "<strong>Absorbents:</strong> Base neutralizers (citric acid), Poly pads"
+            ],
+            avoid: [
+                "Aluminum (reacts violently with NaOH)",
+                "Acids nearby (neutralization hazard)",
+                "Glass containers (etching risk with strong bases)",
+                "Natural fibers (cellulose degradation)"
+            ],
+            tips: [
+                "Bases usually heavier than water - will sink",
+                "Slippery when wet - indicates contamination",
+                "Neutralize with citric acid or vinegar before disposal",
+                "Protective eyewear critical - causes blindness"
+            ]
+        },
+        "Oxidizer": {
+            compatible: [
+                "<strong>Containers:</strong> Stainless steel, Specialized poly (verify compatibility)",
+                "<strong>Patches:</strong> Metal patches only - no organics",
+                "<strong>Handling:</strong> Keep cool, prevent contamination"
+            ],
+            avoid: [
+                "All combustibles (paper, wood, cloth)",
+                "Flammable liquids or gases",
+                "Reducing agents",
+                "Heat sources"
+            ],
+            tips: [
+                "Oxidizers don't burn - they make other things burn BETTER",
+                "Even a small amount on cloth can cause spontaneous combustion",
+                "Decon with copious water - dilution is key",
+                "Keep away from ALL organic materials"
+            ]
+        },
+        "Flammable": {
+            compatible: [
+                "<strong>Containers:</strong> Steel drums (grounded), Approved safety cans",
+                "<strong>Patches:</strong> Metal patches, Nonsparking tools",
+                "<strong>Absorbents:</strong> Vermiculite, Poly pads, Sand"
+            ],
+            avoid: [
+                "Ignition sources (flames, sparks, static)",
+                "Oxidizers",
+                "Heat or direct sunlight",
+                "Plastic containers (static buildup)"
+            ],
+            tips: [
+                "Ground all containers before transfer",
+                "Vapor density > 1 means vapors sink and travel",
+                "Eliminate ignition sources 50+ feet away",
+                "Use explosion-proof equipment only"
+            ]
+        },
+        "Poison": {
+            compatible: [
+                "<strong>Overpacks:</strong> Poly drums (HDPE), Compatible steel drums with poly liners",
+                "<strong>Plugs:</strong> Teflon, Viton, Chemical-resistant rubber (verify against specific product)",
+                "<strong>Patches:</strong> Chemical-resistant epoxy, Leak-sealing putty (verify compatibility)",
+                "<strong>Absorbents:</strong> Activated charcoal, Specialized hazmat absorbent pads"
+            ],
+            avoid: [
+                "Permeable containers (wood, cardboard, fabric)",
+                "Unlined metal containers if product is corrosive",
+                "Co-storage with food, medical, or animal products",
+                "Absorbents that could react with the product (acids, oxidizers)"
+            ],
+            tips: [
+                "Always verify the specific chemical — 'Poison' covers a wide range of products",
+                "Check SDS for the exact containment material compatibility",
+                "Double-bag and overpack all leaking containers",
+                "Decon personnel AND equipment — many poisons are skin-absorbable",
+                "Cyanide antidote kits on-scene if cyanide compounds are involved"
+            ]
+        },
+        "Cyanide": {
+            compatible: [
+                "<strong>Containers:</strong> Poly drums, Stainless steel",
+                "<strong>Handling:</strong> Cyanide antidote kit on-scene",
+                "<strong>Decon:</strong> Sodium hypochlorite solution (pH >10)"
+            ],
+            avoid: [
+                "ALL acids (generates HCN gas)",
+                "Heat (accelerates HCN release)",
+                "Moisture with dry cyanides (vapor generation)"
+            ],
+            tips: [
+                "CRITICAL: Keep away from all acids - fatal gas risk",
+                "Have cyanide antidote kit on-scene (amyl nitrite, sodium nitrite)",
+                "Wet cyanide salts can generate HCN vapor",
+                "Alkaline conditions stabilize cyanides",
+                "Oxidize with bleach solution (pH >10) for decon"
+            ]
+        },
+        "Solvent": {
+            compatible: [
+                "<strong>Containers:</strong> Stainless steel drums, Glass carboys, Compatible poly (HDPE — verify against specific solvent)",
+                "<strong>Plugs:</strong> Teflon, Viton — most standard rubbers will dissolve on contact",
+                "<strong>Absorbents:</strong> Vermiculite, Specialized solvent pillows, Sand",
+                "<strong>Transfer:</strong> Grounded stainless steel pumps with Teflon seals"
+            ],
+            avoid: [
+                "Standard plastics (PE, PP, PVC) — most chlorinated solvents dissolve plastics",
+                "Natural rubber, Buna-N, and neoprene seals (rapid degradation)",
+                "Standard absorbent pads — many will dissolve and fail to hold product",
+                "Open flames or sparks — some chlorinated solvents decompose into phosgene gas when heated"
+            ],
+            tips: [
+                "CRITICAL: Chlorinated solvents can generate phosgene gas (COCl₂) when heated or exposed to flame — treat any fire involving chlorinated solvents as a toxic gas event",
+                "Most chlorinated solvents are heavier than water (SG > 1) and heavier than air (VD > 1) — they sink in both water and air",
+                "Vapors accumulate in low-lying areas, basements, and confined spaces — monitor accordingly",
+                "Many are suspected carcinogens (e.g., Trichloroethylene, Carbon Tetrachloride) — minimize all exposure",
+                "Teflon and Viton are the go-to seal materials for chlorinated solvents"
+            ]
+        },
+        "Explosive": {
+            compatible: [
+                "<strong>Containers:</strong> DOT-approved explosives magazines, Original shipping containers (if intact)",
+                "<strong>Barriers:</strong> Sandbags, Earth berms, Blast-resistant barricades",
+                "<strong>Handling:</strong> Nonsparking tools ONLY, Static grounding required"
+            ],
+            avoid: [
+                "ANY impact, friction, or compression on the product",
+                "Heat sources, open flames, sparks, static discharge",
+                "Unauthorized movement — do NOT move explosive materials without EOD/bomb squad authorization",
+                "Metal-on-metal contact (sparking hazard)",
+                "Oxidizers, acids, or flammable liquids in the same area (sensitization risk)",
+                "Radio/RF transmissions within the posted exclusion zone (EED sensitivity)"
+            ],
+            tips: [
+                "CRITICAL: Do NOT attempt to contain, plug, or patch explosive materials — establish standoff and request EOD/bomb squad",
+                "Refer to the ATF/DHS Bomb Threat Standoff Chart for evacuation distances based on estimated net explosive weight",
+                "Primary explosives (Lead Azide, Lead Styphnate) are extremely sensitive to shock, friction, and heat — maximum standoff, zero handling",
+                "Secondary explosives (TNT, RDX, C-4) are more stable but still require EOD-only handling",
+                "Wet explosives may be LESS stable than dry — do not assume moisture makes them safer",
+                "Monitor for secondary devices before approaching any explosive scene"
+            ]
+        },
+        "Inert": {
+            compatible: [
+                "<strong>Overpacks:</strong> Any - Steel, Poly, Fiber drums all acceptable",
+                "<strong>Plugs:</strong> Wood, Rubber, Plastic - most materials work",
+                "<strong>Patches:</strong> Duct tape, Epoxy, Rubber patches"
+            ],
+            avoid: [
+                "Over-complicating simple solutions"
+            ],
+            tips: [
+                "Standard spill response procedures apply",
+                "Good opportunity for training new team members",
+                "Still use PPE - 'inert' doesn't mean 'safe'"
+            ]
+        },
+        "Cryogenic": {
+            compatible: [
+                "<strong>Containers:</strong> Dewar flasks, Cryogenic cylinders only",
+                "<strong>Handling:</strong> Cryogenic gloves, Face shields"
+            ],
+            avoid: [
+                "Regular containers - will crack/shatter",
+                "Direct skin contact - instant frostbite",
+                "Sealed containers - pressure buildup"
+            ],
+            tips: [
+                "Liquid expands 700x when warming - asphyxiation hazard",
+                "Allow controlled venting - don't seal",
+                "O₂ deficiency monitoring critical",
+                "LOX + organics = fire/explosion risk"
+            ]
+        },
+        "Radioactive": {
+            compatible: [
+                "<strong>Containers:</strong> Lead pigs, Steel drums with lead lining",
+                "<strong>Shielding:</strong> Lead sheets, Concrete barriers",
+                "<strong>Containment:</strong> Double-bag in poly"
+            ],
+            avoid: [
+                "Unshielded handling",
+                "Unnecessary time near source",
+                "Contamination spread"
+            ],
+            tips: [
+                "Time, Distance, Shielding - apply all three",
+                "Continuous dose monitoring required",
+                "Establish contamination control zones",
+                "Medical isotopes: Usually low energy, short half-life"
+            ]
+        }
+    };
+
+    /* TIMER FUNCTIONS */
+    let timerInt, secs = 0, running = false;
+    function toggleTimer() {
+        const b = document.getElementById('timerCtrl');
+        if(!running){
+            timerInt = setInterval(() => {
+                secs++;
+                let h=Math.floor(secs/3600).toString().padStart(2,'0');
+                let m=Math.floor((secs%3600)/60).toString().padStart(2,'0');
+                let s=(secs%60).toString().padStart(2,'0');
+                document.getElementById('timerDisplay').innerText = `${h}:${m}:${s}`;
+                
+                if(secs === 600) alert("⚠️ 10 minutes elapsed - Check air supply!");
+                if(secs === 1200) alert("⚠️ 20 minutes elapsed - Consider exit!");
+                if(secs === 1500) alert("🚨 25 minutes elapsed - EXIT NOW!");
+            }, 1000);
+            b.innerText = "STOP ENTRY"; running = true;
+        } else { 
+            clearInterval(timerInt); 
+            b.innerText = "RESUME"; 
+            running = false; 
+        }
+    }
+    
+    function resetTimer() { 
+        clearInterval(timerInt); 
+        secs=0; 
+        running=false; 
+        document.getElementById('timerDisplay').innerText="00:00:00"; 
+        document.getElementById('timerCtrl').innerText="START ENTRY"; 
+    }
+
+    /* SEARCH FUNCTIONS */
+    let currentMatch = null;
+    let searchResults = [];
+    
+    function processSearch() {
+        const q = document.getElementById('chemSearch').value.toLowerCase().trim();
+        const resultsDiv = document.getElementById('searchResults');
+        const area = document.getElementById('resultArea');
+        
+        if(q.length < 2) { 
+            resultsDiv.style.display = 'none'; 
+            area.style.display = 'none'; 
+            searchResults = [];
+            return; 
+        }
+        
+        searchResults = chemicals.filter(c => 
+            c.name.toLowerCase().includes(q) || 
+            c.un.includes(q)
+        );
+        
+        if(searchResults.length === 0) {
+            resultsDiv.style.display = 'none';
+            area.style.display = 'none';
+        } else if(searchResults.length === 1) {
+            selectChemical(searchResults[0]);
+            resultsDiv.style.display = 'none';
+        } else {
+            resultsDiv.innerHTML = searchResults.map(c => 
+                `<div class="search-item" onclick="selectChemical(chemicals.find(ch => ch.un === '${c.un}'))">${c.name} (UN ${c.un})</div>`
+            ).join('');
+            resultsDiv.style.display = 'block';
+            area.style.display = 'none';
+        }
+    }
+    
+    function selectChemical(chem) {
+        currentMatch = chem;
+        document.getElementById('searchResults').style.display = 'none';
+        document.getElementById('resultArea').style.display = 'block';
+        
+        document.getElementById('outName').innerText = chem.name;
+        document.getElementById('outUN').innerText = chem.un;
+        document.getElementById('outType').innerText = chem.type;
+        document.getElementById('outREL').innerText = chem.rel;
+        document.getElementById('outTWA').innerText = chem.twa || "N.D.";
+        document.getElementById('outSTEL').innerText = chem.stel || "N.D.";
+        document.getElementById('outIDLH').innerText = chem.idlh;
+        document.getElementById('outVD').innerText = chem.vd === "N/A" ? "N/A" : chem.vd;
+        document.getElementById('outSG').innerText = chem.sg === "N/A" ? "N/A" : chem.sg;
+        document.getElementById('ppeBadge').innerText = "PPE: " + chem.ppe;
+        
+        if(chem.vd === "N/A") {
+            document.getElementById('airBadge').className = "badge";
+            document.getElementById('airBadge').innerText = "VD: N/A";
+            document.getElementById('airBadge').style.background = "#444";
+        } else if(chem.vd > 1) {
+            document.getElementById('airBadge').className = "badge badge-sink";
+            document.getElementById('airBadge').innerText = "VD: Sinks";
+        } else {
+            document.getElementById('airBadge').className = "badge badge-float";
+            document.getElementById('airBadge').innerText = "VD: Rises";
+        }
+        
+        if(chem.sg === "N/A") {
+            document.getElementById('waterBadge').className = "badge";
+            document.getElementById('waterBadge').innerText = "SG: N/A";
+            document.getElementById('waterBadge').style.background = "#444";
+        } else if(chem.sg > 1) {
+            document.getElementById('waterBadge').className = "badge badge-sink";
+            document.getElementById('waterBadge').innerText = "SG: Sinks";
+        } else {
+            document.getElementById('waterBadge').className = "badge badge-float";
+            document.getElementById('waterBadge').innerText = "SG: Floats";
+        }
+        
+        updateIso();
+        runBehavior();
+    }
+
+    function updateIso() {
+        if(!currentMatch) return;
+        const spill = document.getElementById('spillSize').value;
+        const time = document.getElementById('timeDay').value;
+        const d = spill === 'small' ? currentMatch.smallIso : currentMatch.largeIso;
+        
+        document.getElementById('isoInitDisp').innerText = "INIT: " + d[0];
+        
+        // Update info overlay
+        document.getElementById('infoChemName').innerText = currentMatch.name;
+        document.getElementById('infoSpillType').innerText = spill === 'large' ? 'Large spill' : 'Small spill';
+        document.getElementById('infoTime').innerText = time === 'day' ? 'Daytime' : 'Nighttime';
+        document.getElementById('infoIso').innerText = d[0];
+        document.getElementById('infoDown').innerText = time === 'day' ? d[1] : d[2];
+        
+        drawPlume();
+    }
+
+    function updatePlume() {
+        document.getElementById('windDeg').innerText = document.getElementById('windSlider').value;
+        drawPlume();
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //  PLUME CANVAS DRAWING
+    // ═══════════════════════════════════════════════════════════
+
+    function parseDistanceFt(str) {
+        if (!str || str === 'N/A' || str === 'See Rad' || str === '--') return 0;
+        str = str.trim();
+        if (str.includes('mi')) {
+            const val = parseFloat(str);
+            return isNaN(val) ? 0 : val * 5280;
+        }
+        if (str.includes('ft')) {
+            const val = parseFloat(str);
+            return isNaN(val) ? 0 : val;
+        }
+        return parseFloat(str) || 0;
+    }
+
+    function formatDistance(ft) {
+        if (ft <= 0) return 'N/A';
+        if (ft < 1000) return ft + ' ft';
+        const mi = ft / 5280;
+        return mi.toFixed(1) + ' mi';
+    }
+
+    function scaleCanvas() {
+        const canvas = document.getElementById('plumeCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+    }
+
+    function drawPlume() {
+        const canvas = document.getElementById('plumeCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const rect = canvas.getBoundingClientRect();
+        const W = rect.width;
+        const H = rect.height;
+        if (W === 0 || H === 0) return;
+
+        scaleCanvas();
+
+        const windFrom = parseInt(document.getElementById('windSlider').value) || 180;
+        const downwindDeg = (windFrom + 180) % 360;
+        const downwindRad = (downwindDeg - 90) * Math.PI / 180;
+
+        // Get isolation data from current chemical
+        let isoFt = 150, downFt = 0;
+        if (currentMatch) {
+            const spill = document.getElementById('spillSize').value;
+            const time = document.getElementById('timeDay').value;
+            const d = spill === 'small' ? currentMatch.smallIso : currentMatch.largeIso;
+            isoFt = parseDistanceFt(d[0]) || 150;
+            downFt = parseDistanceFt(time === 'day' ? d[1] : d[2]);
+        }
+
+        const cx = W / 2;
+        const cy = H / 2;
+
+        // Determine scale — fit the largest distance into ~42% of canvas
+        const maxDist = Math.max(isoFt, downFt, 300);
+        const maxVisualRadius = Math.min(W, H) * 0.42;
+        const scale = maxVisualRadius / maxDist;
+        const isoRadius = isoFt * scale;
+        const downRadius = downFt > 0 ? downFt * scale : 0;
+
+        ctx.clearRect(0, 0, W, H);
+
+        // ── Background grid ──
+        plumeDrawGrid(ctx, W, H, cx, cy);
+
+        // ── Cardinal directions ──
+        plumeDrawCardinals(ctx, W, H, cx, cy);
+
+        // ── Distance rings ──
+        plumeDrawDistanceRings(ctx, cx, cy, isoFt, downFt, scale);
+
+        // ── ERG Plume (only if downwind > 0) ──
+        if (downRadius > 0) {
+            drawERGPlume(ctx, cx, cy, isoRadius, downRadius, downwindRad, isoFt, downFt);
+        }
+
+        // ── Source point (on top of plume) ──
+        ctx.beginPath();
+        ctx.arc(cx, cy, 7, 0, Math.PI * 2);
+        ctx.fillStyle = '#0a1628';
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(cx, cy, 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#dc2626';
+        ctx.fill();
+
+        // ── Wind compass ──
+        plumeDrawWindArrow(ctx, cx, cy, windFrom, W, H);
+
+        // ── Isolation label (when no downwind data) ──
+        if (downFt <= 0) {
+            const isoLabelAngle = downwindRad + Math.PI * 0.75;
+            const ilx = cx + Math.cos(isoLabelAngle) * (isoRadius + 22);
+            const ily = cy + Math.sin(isoLabelAngle) * (isoRadius + 22);
+            plumeDrawLabel(ctx, ilx, ily, 'ISOLATION: ' + formatDistance(isoFt), 'rgba(220,38,38,0.9)');
+            ctx.font = '500 12px Barlow, sans-serif';
+            ctx.fillStyle = 'rgba(139, 149, 168, 0.6)';
+            ctx.textAlign = 'center';
+            ctx.fillText('No downwind protective action distance for this chemical', cx, cy + isoRadius + 36);
+        }
+    }
+
+    function plumeDrawGrid(ctx, W, H, cx, cy) {
+        ctx.strokeStyle = 'rgba(42, 49, 68, 0.4)';
+        ctx.lineWidth = 0.5;
+        const spacing = 40;
+        for (let x = cx % spacing; x < W; x += spacing) {
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+        }
+        for (let y = cy % spacing; y < H; y += spacing) {
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+        }
+    }
+
+    function plumeDrawCardinals(ctx, W, H, cx, cy) {
+        const labels = [
+            { text: 'N', x: cx, y: 18 },
+            { text: 'S', x: cx, y: H - 8 },
+            { text: 'E', x: W - 12, y: cy + 4 },
+            { text: 'W', x: 12, y: cy + 4 }
+        ];
+        ctx.font = '700 13px Barlow Condensed, sans-serif';
+        ctx.textAlign = 'center';
+        labels.forEach(l => {
+            ctx.fillStyle = 'rgba(139, 149, 168, 0.5)';
+            ctx.fillText(l.text, l.x, l.y);
+        });
+    }
+
+    function plumeDrawDistanceRings(ctx, cx, cy, isoFt, downFt, scale) {
+        const maxFt = Math.max(isoFt, downFt, 300);
+        const steps = [];
+
+        if (maxFt <= 500) {
+            for (let d = 100; d <= maxFt; d += 100) steps.push({ ft: d, label: d + ' ft' });
+        } else if (maxFt <= 5280) {
+            steps.push({ ft: isoFt, label: formatDistance(isoFt) });
+            if (maxFt > 1320) steps.push({ ft: 1320, label: '0.25 mi' });
+            if (maxFt > 2640) steps.push({ ft: 2640, label: '0.5 mi' });
+            if (downFt > 0) steps.push({ ft: downFt, label: formatDistance(downFt) });
+        } else {
+            steps.push({ ft: isoFt, label: formatDistance(isoFt) });
+            steps.push({ ft: 2640, label: '0.5 mi' });
+            const maxMi = maxFt / 5280;
+            for (let mi = 1; mi <= maxMi; mi += 1) steps.push({ ft: mi * 5280, label: mi + ' mi' });
+            if (downFt > 0 && !steps.find(s => Math.abs(s.ft - downFt) < 100)) {
+                steps.push({ ft: downFt, label: formatDistance(downFt) });
+            }
+        }
+
+        ctx.setLineDash([3, 6]);
+        ctx.lineWidth = 0.7;
+        steps.forEach(s => {
+            const r = s.ft * scale;
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(139, 149, 168, 0.15)';
+            ctx.stroke();
+            ctx.font = '500 9px Barlow Condensed, sans-serif';
+            ctx.fillStyle = 'rgba(139, 149, 168, 0.35)';
+            ctx.textAlign = 'center';
+            ctx.fillText(s.label, cx, cy - r - 4);
+        });
+        ctx.setLineDash([]);
+    }
+
+
+    // ═══════════════════════════════════════════════════════════
+    //  ERG PLUME MODEL — Initial Isolation + Protective Action Zone
+    //  Source: ERG 2024 — crosswind each side = ½ downwind distance
+    // ═══════════════════════════════════════════════════════════
+    function drawERGPlume(ctx, cx, cy, isoR, downR, angle, isoFt, downFt) {
+        const c0 = Math.cos(angle), s0 = Math.sin(angle);
+        const cP = Math.cos(angle + Math.PI / 2), sP = Math.sin(angle + Math.PI / 2);
+
+        // ERG standard: each crosswind side = ½ downwind distance
+        const crossR = downR * 0.5;
+
+        // Perpendicular tangent points on isolation circle
+        const t1x = cx + cP * isoR,  t1y = cy + sP * isoR;
+        const t2x = cx - cP * isoR,  t2y = cy - sP * isoR;
+
+        // Far-end geometry
+        const farCx = cx + c0 * downR, farCy = cy + s0 * downR;
+        const f1x = farCx + cP * crossR, f1y = farCy + sP * crossR;
+        const f2x = farCx - cP * crossR, f2y = farCy - sP * crossR;
+
+        // Arc angles for the upwind semicircle boundary
+        const arcA1 = Math.atan2(t1y - cy, t1x - cx);
+        const arcA2 = Math.atan2(t2y - cy, t2x - cx);
+
+        // ── Protective Action Zone ────────────────────────────────────────
+        ctx.beginPath();
+        ctx.moveTo(t1x, t1y);
+        ctx.lineTo(f1x, f1y);
+        // Rounded far end (matches ERG diagram)
+        ctx.quadraticCurveTo(
+            farCx + c0 * crossR * 0.35,
+            farCy + s0 * crossR * 0.35,
+            f2x, f2y
+        );
+        ctx.lineTo(t2x, t2y);
+        // Upwind arc through the isolation circle
+        ctx.arc(cx, cy, isoR, arcA2, arcA1, true);
+        ctx.closePath();
+
+        const gPA = ctx.createLinearGradient(cx, cy, farCx, farCy);
+        gPA.addColorStop(0,   'rgba(245,158,11,0.22)');
+        gPA.addColorStop(0.5, 'rgba(245,158,11,0.12)');
+        gPA.addColorStop(1,   'rgba(245,158,11,0.04)');
+        ctx.fillStyle = gPA;
+        ctx.fill();
+
+        ctx.strokeStyle = 'rgba(245,158,11,0.85)';
+        ctx.lineWidth = 1.8;
+        ctx.setLineDash([10, 6]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // ── Initial Isolation Zone (full circle, darker) ──────────────────
+        ctx.beginPath();
+        ctx.arc(cx, cy, isoR, 0, Math.PI * 2);
+        const gIso = ctx.createRadialGradient(cx, cy, 0, cx, cy, isoR);
+        gIso.addColorStop(0,   'rgba(220,38,38,0.35)');
+        gIso.addColorStop(0.7, 'rgba(220,38,38,0.22)');
+        gIso.addColorStop(1,   'rgba(220,38,38,0.10)');
+        ctx.fillStyle = gIso;
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(220,38,38,0.90)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([7, 4]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // ── Dashed center axis line ───────────────────────────────────────
+        ctx.beginPath();
+        ctx.moveTo(cx + c0 * isoR, cy + s0 * isoR);
+        ctx.lineTo(farCx, farCy);
+        ctx.strokeStyle = 'rgba(245,158,11,0.22)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 6]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // ── Crosswind extent tick marks at far end ────────────────────────
+        ctx.strokeStyle = 'rgba(148,163,184,0.45)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 5]);
+        ctx.beginPath();
+        ctx.moveTo(farCx, farCy);
+        ctx.lineTo(f1x, f1y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(farCx, farCy);
+        ctx.lineTo(f2x, f2y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+    }
+
+    // Wind compass indicator — bottom-left corner
+    function plumeDrawWindArrow(ctx, cx, cy, windFromDeg, W, H) {
+        const bx = 56, by = H - 58;
+        const r = 28;
+
+        ctx.beginPath();
+        ctx.arc(bx, by, r + 7, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(10,22,40,0.90)';
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(245,158,11,0.40)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Cardinal ticks
+        ctx.strokeStyle = 'rgba(148,163,184,0.30)';
+        ctx.lineWidth = 1;
+        for (let d = 0; d < 360; d += 45) {
+            const rad = (d - 90) * Math.PI / 180;
+            ctx.beginPath();
+            ctx.moveTo(bx + Math.cos(rad) * (r - 4), by + Math.sin(rad) * (r - 4));
+            ctx.lineTo(bx + Math.cos(rad) * r, by + Math.sin(rad) * r);
+            ctx.stroke();
+        }
+
+        // Cardinal labels
+        [['N',-90],['E',0],['S',90],['W',180]].forEach(([t,a]) => {
+            const rad = a * Math.PI / 180;
+            ctx.font = '700 8px Barlow Condensed, sans-serif';
+            ctx.fillStyle = 'rgba(148,163,184,0.55)';
+            ctx.textAlign = 'center';
+            ctx.fillText(t, bx + Math.cos(rad)*(r+3), by + Math.sin(rad)*(r+3) + 3);
+        });
+
+        // Wind direction arrow (FROM direction)
+        const fromRad   = (windFromDeg - 90) * Math.PI / 180;
+        const towardRad = fromRad + Math.PI;
+        const tailX = bx + Math.cos(fromRad)   * (r - 5);
+        const tailY = by + Math.sin(fromRad)   * (r - 5);
+        const headX = bx + Math.cos(towardRad) * (r - 5);
+        const headY = by + Math.sin(towardRad) * (r - 5);
+
+        ctx.beginPath();
+        ctx.moveTo(tailX, tailY);
+        ctx.lineTo(headX, headY);
+        ctx.strokeStyle = 'rgba(245,158,11,0.90)';
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        const hLen = 8, hAng = 0.48;
+        ctx.beginPath();
+        ctx.moveTo(headX, headY);
+        ctx.lineTo(headX - Math.cos(towardRad - hAng)*hLen, headY - Math.sin(towardRad - hAng)*hLen);
+        ctx.lineTo(headX - Math.cos(towardRad + hAng)*hLen, headY - Math.sin(towardRad + hAng)*hLen);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(245,158,11,0.90)';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(bx, by, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(245,158,11,0.70)';
+        ctx.fill();
+
+        ctx.font = '700 9px Barlow Condensed, sans-serif';
+        ctx.fillStyle = 'rgba(245,158,11,0.85)';
+        ctx.textAlign = 'center';
+        ctx.fillText('WIND FROM', bx, by + r + 17);
+        ctx.fillText(windFromDeg + '°', bx, by + r + 27);
+    }
+
+    function plumeDrawLabel(ctx, x, y, text, color) {
+        ctx.font = '700 11px Barlow Condensed, sans-serif';
+        ctx.textAlign = 'center';
+        const metrics = ctx.measureText(text);
+        const pw = metrics.width + 16;
+        const ph = 20;
+
+        ctx.fillStyle = 'rgba(10, 14, 26, 0.85)';
+        ctx.beginPath();
+        plumeRoundRect(ctx, x - pw / 2, y - ph / 2, pw, ph, 4);
+        ctx.fill();
+
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        plumeRoundRect(ctx, x - pw / 2, y - ph / 2, pw, ph, 4);
+        ctx.stroke();
+
+        ctx.fillStyle = color;
+        ctx.fillText(text, x, y + 4);
+    }
+
+    function plumeRoundRect(ctx, x, y, w, h, r) {
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w - r, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx.lineTo(x + w, y + h - r);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        ctx.lineTo(x + r, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+        ctx.lineTo(x, y + r);
+        ctx.quadraticCurveTo(x, y, x + r, y);
+    }
+
+    function runBehavior() {
+        if(!currentMatch) return;
+        const stress = document.getElementById('stressType').value;
+        const out = document.getElementById('behaviorResult');
+        if(!stress) { out.style.display = 'none'; return; }
+        
+        out.style.display = 'block';
+        let msg = `[BEHAVIOR] For ${currentMatch.name}: `;
+        
+        if(currentMatch.vd !== "N/A") {
+            if(currentMatch.vd > 1) msg += "Vapors will pool in low areas/basements. ";
+            else msg += "Vapors will rise and dissipate upward. ";
+        }
+        
+        if(stress === 'thermal') {
+            msg += "Thermal stress will increase internal pressure, risking BLEVE or rapid catastrophic breach.";
+        } else if(stress === 'mechanical') {
+            msg += "Mechanical damage suggests localized breach; expect stream or spray release.";
+        } else if(stress === 'chemical') {
+            msg += "Chemical attack may cause corrosion or material weakening; monitor for unusual degradation.";
+        }
+        out.innerText = msg;
+    }
+
+    function updateMeter() {
+        const m = document.getElementById('meterSel').value;
+        const b = document.getElementById('meterBody');
+        const d = document.getElementById('meterDisplay');
+        if(!m || !meters[m]) { d.style.display = 'none'; return; }
+        
+        b.innerHTML = "";
+        meters[m].forEach(i => { 
+            b.innerHTML += `<tr style="border-bottom:1px solid var(--border);"><td style="padding:12px; font-weight:600;">${i.s}</td><td style="padding:12px;">${i.l}</td><td style="padding:12px;">${i.h}</td></tr>`; 
+        });
+        d.style.display = 'block';
+    }
+
+    function updateRadMode() {
+        const mode = document.getElementById('radMode').value;
+        const inputsDiv = document.getElementById('radInputs');
+        const helpDiv = document.getElementById('radHelp');
+        
+        if(mode === 'distance') {
+            inputsDiv.innerHTML = `
+                <div class="grid-2">
+                    <div>
+                        <label>Measured Dose (mR/hr)</label>
+                        <input type="number" id="radInput1" placeholder="e.g. 100" oninput="calcRadMode()" min="0" step="0.1">
+                    </div>
+                    <div>
+                        <label>At Distance (feet)</label>
+                        <input type="number" id="radInput2" placeholder="e.g. 2" oninput="calcRadMode()" min="0" step="0.1">
+                    </div>
+                </div>
+                <label>Target Safe Dose (mR/hr)</label>
+                <input type="number" id="radInput3" placeholder="e.g. 5" oninput="calcRadMode()" min="0" step="0.1">
+            `;
+            helpDiv.innerHTML = `<strong>Example:</strong> I measured 100 mR/hr at 2 feet. To get down to 5 mR/hr, how far back? → Answer: 8.9 feet`;
+        } else if(mode === 'dose') {
+            inputsDiv.innerHTML = `
+                <div class="grid-2">
+                    <div>
+                        <label>Known Dose (mR/hr)</label>
+                        <input type="number" id="radInput1" placeholder="e.g. 10" oninput="calcRadMode()" min="0" step="0.1">
+                    </div>
+                    <div>
+                        <label>Current Distance (feet)</label>
+                        <input type="number" id="radInput2" placeholder="e.g. 20" oninput="calcRadMode()" min="0" step="0.1">
+                    </div>
+                </div>
+                <label>New Distance (feet)</label>
+                <input type="number" id="radInput3" placeholder="e.g. 5" oninput="calcRadMode()" min="0" step="0.1">
+            `;
+            helpDiv.innerHTML = `<strong>Example:</strong> I'm at 20 feet reading 10 mR/hr. If I move to 5 feet, what dose? → Answer: 160 mR/hr`;
+        } else if(mode === 'source') {
+            inputsDiv.innerHTML = `
+                <div class="grid-2">
+                    <div>
+                        <label>Measured Dose (mR/hr)</label>
+                        <input type="number" id="radInput1" placeholder="e.g. 10" oninput="calcRadMode()" min="0" step="0.1">
+                    </div>
+                    <div>
+                        <label>At Distance (feet)</label>
+                        <input type="number" id="radInput2" placeholder="e.g. 20" oninput="calcRadMode()" min="0" step="0.1">
+                    </div>
+                </div>
+            `;
+            helpDiv.innerHTML = `<strong>Example:</strong> I measured 10 mR/hr at 20 feet. What's the source strength? → Answer: 4000 mR/hr at 1 ft`;
+        }
+        
+        document.getElementById('radResult').innerText = "Enter values to calculate";
+    }
+    
+    function calcRadMode() {
+        const mode = document.getElementById('radMode').value;
+        const val1 = parseFloat(document.getElementById('radInput1').value);
+        const val2 = parseFloat(document.getElementById('radInput2').value);
+        const out = document.getElementById('radResult');
+        
+        if(mode === 'distance') {
+            const val3 = parseFloat(document.getElementById('radInput3').value);
+            
+            if(val1 && val2 && val3 && val1 > 0 && val2 > 0 && val3 > 0) {
+                if(val3 > val1) {
+                    out.innerText = "⚠️ Target dose cannot exceed measured dose!";
+                    out.className = "status-box meter-alert";
+                    return;
+                }
+                const result = Math.sqrt((val1 * Math.pow(val2, 2)) / val3);
+                out.innerText = `✓ Safe Distance: ${result.toFixed(1)} feet`;
+                out.className = "status-box behavior-out";
+            }
+        } else if(mode === 'dose') {
+            const val3 = parseFloat(document.getElementById('radInput3').value);
+            
+            if(val1 && val2 && val3 && val1 > 0 && val2 > 0 && val3 > 0) {
+                const result = (val1 * Math.pow(val2, 2)) / Math.pow(val3, 2);
+                out.innerText = `📊 Dose at ${val3} ft: ${result.toFixed(1)} mR/hr`;
+                
+                if(result > 100) {
+                    out.className = "status-box meter-alert";
+                } else {
+                    out.className = "status-box behavior-out";
+                }
+            }
+        } else if(mode === 'source') {
+            if(val1 && val2 && val1 > 0 && val2 > 0) {
+                const result = val1 * Math.pow(val2, 2);
+                let category = "";
+                
+                if(result < 100) category = " (Low - likely medical isotope)";
+                else if(result < 1000) category = " (Medium - medical/industrial)";
+                else if(result < 10000) category = " (High - industrial source)";
+                else category = " (Very High - major source!)";
+                
+                out.innerText = `🎯 Source Strength at 1 ft: ${result.toFixed(0)} mR/hr${category}`;
+                out.className = "status-box behavior-out";
+            }
+        }
+    }
+    
+    window.addEventListener('DOMContentLoaded', function() {
+        updateRadMode();
+        
+        // Initialize plume canvas
+        scaleCanvas();
+        drawPlume();
+        
+        // Populate VOC correction factor dropdown
+        const vocSelect = document.getElementById('vocChemical');
+        Object.keys(vocCorrectionFactors).sort().forEach(chem => {
+            const option = document.createElement('option');
+            option.value = chem;
+            option.textContent = chem;
+            vocSelect.appendChild(option);
+        });
+        
+        // Populate LEL converter dropdown
+        const lelSelect = document.getElementById('lelChemical');
+        Object.keys(lelValues).sort().forEach(chem => {
+            const option = document.createElement('option');
+            option.value = chem;
+            option.textContent = chem;
+            lelSelect.appendChild(option);
+        });
+    });
+
+    window.addEventListener('resize', function() {
+        scaleCanvas();
+        drawPlume();
+    });
+
+    function updateVocCalc() {
+        const chemical = document.getElementById('vocChemical').value;
+        const reading = parseFloat(document.getElementById('pidReading').value);
+        const resultDiv = document.getElementById('vocResult');
+        const correctedSpan = document.getElementById('vocCorrected');
+        const calcShow = document.getElementById('vocCalcShow');
+        
+        if(!chemical || !reading || reading <= 0) {
+            resultDiv.style.display = 'none';
+            return;
+        }
+        
+        const cf = vocCorrectionFactors[chemical];
+        
+        if(cf === "use PID") {
+            resultDiv.style.display = 'block';
+            correctedSpan.innerText = reading.toFixed(1);
+            calcShow.innerText = `No correction needed - use PID reading as-is`;
+            return;
+        }
+        
+        const corrected = reading * cf;
+        resultDiv.style.display = 'block';
+        correctedSpan.innerText = corrected.toFixed(1);
+        calcShow.innerText = `${reading} ppm × ${cf} = ${corrected.toFixed(1)} ppm`;
+    }
+
+    function updateLelCalc() {
+        const chemical = document.getElementById('lelChemical').value;
+        const lelPercent = parseFloat(document.getElementById('lelReading').value);
+        const resultDiv = document.getElementById('lelResult');
+        const actualSpan = document.getElementById('lelActual');
+        const calcShow = document.getElementById('lelCalcShow');
+        const warningDiv = document.getElementById('lelToxicWarning');
+        const warningText = document.getElementById('lelToxicText');
+        
+        if(!chemical || !lelPercent || lelPercent <= 0) {
+            resultDiv.style.display = 'none';
+            return;
+        }
+        
+        const data = lelValues[chemical];
+        const actualPpm = (lelPercent / 100) * data.lel;
+        
+        resultDiv.style.display = 'block';
+        actualSpan.innerText = actualPpm.toFixed(0);
+        calcShow.innerText = `${lelPercent}% × ${data.lel.toLocaleString()} ppm = ${actualPpm.toFixed(0)} ppm`;
+        
+        // Check if concentration exceeds toxic threshold
+        if(data.toxic !== "N/A" && actualPpm > data.toxic) {
+            warningDiv.style.display = 'block';
+            const ratio = (actualPpm / data.toxic).toFixed(1);
+            warningText.innerHTML = `This concentration (${actualPpm.toFixed(0)} ppm) is <strong>${ratio}x higher</strong> than the typical toxic threshold (${data.toxic} ppm).<br>Serious health hazard even though still below explosive range!`;
+        } else if(data.toxic === "N/A") {
+            warningDiv.style.display = 'none';
+        } else {
+            warningDiv.style.display = 'block';
+            warningDiv.style.background = 'rgba(0, 255, 136, 0.1)';
+            warningDiv.style.borderColor = 'var(--success)';
+            warningText.innerHTML = `This concentration (${actualPpm.toFixed(0)} ppm) is below the toxic threshold (${data.toxic} ppm). Still monitor closely!`;
+            warningText.style.color = 'var(--success)';
+        }
+    }
+
+    function checkReact() {
+        const aName = document.getElementById('chemA').value;
+        const bName = document.getElementById('chemB').value;
+        const o = document.getElementById('reactOut');
+        
+        if(!aName || !bName || aName === bName) { 
+            o.style.display = 'none'; 
+            return; 
+        }
+        
+        const chemA = chemicals.find(c => c.name === aName);
+        const chemB = chemicals.find(c => c.name === bName);
+        
+        if(!chemA || !chemB) {
+            o.style.display = 'none';
+            return;
+        }
+        
+        const typeA = chemA.type;
+        const typeB = chemB.type;
+        
+        const key1 = typeA + "+" + typeB;
+        const key2 = typeB + "+" + typeA;
+        const hazard = reactMatrix[key1] || reactMatrix[key2];
+        
+        o.style.display = 'block';
+        if(hazard) {
+            o.innerText = hazard;
+            o.className = "status-box meter-alert";
+        } else {
+            o.innerText = `✓ No major incompatibility noted between ${typeA} and ${typeB}.`;
+            o.className = "status-box behavior-out";
+        }
+    }
+
+    function updateContainment() {
+        const type = document.getElementById('containType').value;
+        const resultDiv = document.getElementById('containResult');
+        
+        if(!type || !containmentData[type]) {
+            resultDiv.style.display = 'none';
+            return;
+        }
+        
+        const data = containmentData[type];
+        resultDiv.style.display = 'block';
+        
+        document.getElementById('containCompatible').innerHTML = data.compatible.join('<br>');
+        document.getElementById('containAvoid').innerHTML = data.avoid.map(item => '• ' + item).join('<br>');
+        document.getElementById('containTips').innerHTML = data.tips.map(item => '• ' + item).join('<br>');
+    }
+
+    /* POPULATE REACTIVITY DROPDOWNS */
+    const cA = document.getElementById('chemA');
+    const cB = document.getElementById('chemB');
+    chemicals.forEach(c => {
+        const optA = document.createElement('option');
+        optA.value = c.name;
+        optA.textContent = `${c.name} (${c.type})`;
+        cA.appendChild(optA);
+        
+        const optB = document.createElement('option');
+        optB.value = c.name;
+        optB.textContent = `${c.name} (${c.type})`;
+        cB.appendChild(optB);
+    });
+</script>
+</body>
+</html>
