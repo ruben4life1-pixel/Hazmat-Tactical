@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HazMat Core Concepts: Reading the Scene</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&amp;family=Source+Sans+3:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #0b1120;
+    --bg-card: #111827;
+    --bg-elevated: #1a2236;
+    --border: #2a3350;
+    --text: #e2e8f0;
+    --text-dim: #8494a7;
+    --amber: #f59e0b;
+    --amber-dim: rgba(245,158,11,0.12);
+    --red: #ef4444;
+    --green: #22c55e;
+    --green-dim: rgba(34,197,94,0.12);
+    --cyan: #06b6d4;
+    --cyan-dim: rgba(6,182,212,0.1);
+    --rose: #f43f5e;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: 'Source Sans 3', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.7; }
+.app { max-width: 780px; margin: 0 auto; padding: 20px; }
+
+.module-header { text-align: center; padding: 40px 20px 30px; border-bottom: 2px solid var(--amber); margin-bottom: 32px; position: relative; }
+.module-header::after { content: ''; position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%); width: 50px; height: 3px; background: var(--amber); box-shadow: 0 0 12px rgba(245,158,11,0.4); }
+.module-badge { display: inline-block; background: var(--amber); color: var(--bg); font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; padding: 4px 16px; margin-bottom: 14px; }
+.module-header h1 { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: clamp(24px, 5vw, 36px); letter-spacing: 2px; text-transform: uppercase; color: #fff; margin-bottom: 6px; }
+.module-header p { font-size: 14px; color: var(--text-dim); letter-spacing: 0.5px; }
+
+.progress-bar { position: sticky; top: 0; z-index: 50; background: var(--bg); padding: 12px 0; border-bottom: 1px solid var(--border); }
+.progress-track { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--amber), var(--green)); border-radius: 2px; width: 0%; transition: width 0.5s ease; }
+.progress-label { font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin-top: 6px; text-align: center; }
+
+.section { display: none; animation: fadeIn 0.4s ease; }
+.section.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.section-num { font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--amber); margin-bottom: 6px; }
+.section h2 { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 22px; letter-spacing: 1.5px; text-transform: uppercase; color: #fff; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+
+.concept { background: var(--cyan-dim); border: 1px solid rgba(6,182,212,0.25); border-left: 3px solid var(--cyan); padding: 18px 20px; border-radius: 4px; margin-bottom: 24px; font-size: 15px; color: var(--text); }
+.tool-callout { background: var(--amber-dim); border: 1px solid rgba(245,158,11,0.3); border-left: 3px solid var(--amber); padding: 14px 18px; border-radius: 4px; margin: 16px 0; font-size: 13px; color: var(--text); }
+.tool-callout strong { color: var(--amber); }
+
+.scene { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 22px 24px; margin-bottom: 20px; font-size: 15px; font-style: italic; color: var(--text); line-height: 1.8; position: relative; }
+.scene::before { content: '📋 SCENE'; display: block; font-style: normal; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 2px; color: var(--amber); margin-bottom: 10px; }
+
+/* ── QUESTION BLOCKS (Section 1) ── */
+.question-block { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 20px 22px; margin-bottom: 16px; }
+.question-block.answered { border-color: var(--green); }
+.question-cat { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--amber); margin-bottom: 8px; }
+.question-hint { font-size: 15px; font-style: italic; color: var(--text); margin-bottom: 12px; line-height: 1.6; padding: 10px 14px; background: rgba(0,0,0,0.2); border-radius: 4px; }
+.question-prompt { font-size: 14px; font-weight: 600; color: var(--cyan); margin-bottom: 12px; }
+.q-option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+@media (max-width: 500px) { .q-option-grid { grid-template-columns: 1fr; } }
+.q-option-grid.two-col { grid-template-columns: 1fr 1fr; }
+
+.option-btn { background: var(--bg-elevated); border: 1px solid var(--border); color: var(--text); padding: 14px; border-radius: 4px; font-family: 'Source Sans 3', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: left; }
+.option-btn:hover:not(.selected):not(.wrong):not(.disabled) { border-color: var(--amber); background: var(--amber-dim); }
+.option-btn.selected { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+.option-btn.wrong { border-color: var(--rose); background: rgba(244,63,94,0.08); color: var(--rose); opacity: 0.6; }
+.option-btn.disabled { pointer-events: none; }
+
+.reasoning { display: none; background: var(--bg-card); border: 1px solid var(--green); border-left: 3px solid var(--green); padding: 18px 20px; border-radius: 4px; margin-top: 12px; font-size: 14px; line-height: 1.7; }
+.reasoning.visible { display: block; animation: fadeIn 0.3s ease; }
+.reasoning::before { content: '✓ WHY THIS IS CORRECT'; display: block; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 11px; letter-spacing: 2px; color: var(--green); margin-bottom: 8px; }
+
+/* ── DIAGRAM ── */
+.diagram { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0; }
+.diagram-cell { background: var(--bg-elevated); border: 2px solid var(--border); border-radius: 6px; padding: 20px 14px; text-align: center; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s; }
+.diagram-cell .cell-icon { font-size: 24px; display: block; margin-bottom: 6px; }
+.diagram-cell:hover { border-color: var(--cyan); }
+.diagram-cell.correct { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+.diagram-cell.incorrect { border-color: var(--rose); background: rgba(244,63,94,0.08); opacity: 0.5; }
+.diagram-cell.disabled { pointer-events: none; }
+
+/* ── METER PANEL ── */
+.meter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
+@media (max-width: 500px) { .meter-grid { grid-template-columns: 1fr; } }
+.meter-card { background: var(--bg-elevated); border: 2px solid var(--border); border-radius: 6px; padding: 18px; text-align: center; cursor: pointer; transition: all 0.2s; }
+.meter-card:hover { border-color: var(--amber); }
+.meter-card .meter-icon { font-size: 28px; margin-bottom: 8px; display: block; }
+.meter-card .meter-name { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; }
+.meter-card .meter-desc { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+.meter-card.selected { border-color: var(--green); background: var(--green-dim); }
+.meter-card.dimmed { opacity: 0.4; pointer-events: none; }
+
+/* ── ZONE PLACEMENT (FIXED visibility) ── */
+.zone-map { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 20px; margin: 20px 0; }
+.zone-map-title { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 14px; }
+.zone-row { display: grid; grid-template-columns: 100px 1fr; gap: 10px; align-items: center; margin-bottom: 10px; }
+.zone-label { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; padding: 8px 12px; border-radius: 4px; text-align: center; }
+.zone-label.hot { background: rgba(239,68,68,0.2); color: var(--red); }
+.zone-label.warm { background: rgba(245,158,11,0.2); color: var(--amber); }
+.zone-label.cold { background: var(--green-dim); color: var(--green); }
+.zone-options { display: flex; gap: 8px; flex-wrap: wrap; }
+.zone-opt { background: #1e293b; border: 1px solid #475569; padding: 8px 14px; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; color: #f1f5f9; }
+.zone-opt:hover { border-color: var(--cyan); background: #334155; }
+.zone-opt.selected-hot { border-color: var(--red); background: rgba(239,68,68,0.2); color: #fca5a5; }
+.zone-opt.selected-warm { border-color: var(--amber); background: rgba(245,158,11,0.15); color: #fcd34d; }
+.zone-opt.selected-cold { border-color: var(--green); background: rgba(34,197,94,0.15); color: #86efac; }
+.zone-opt.disabled { pointer-events: none; opacity: 0.5; }
+
+/* ── PRACTICE CARDS ── */
+.practice-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 20px; margin-bottom: 14px; }
+.practice-statement { font-size: 15px; font-weight: 600; margin-bottom: 14px; line-height: 1.6; }
+.practice-btns { display: flex; gap: 10px; }
+.practice-btn { flex: 1; padding: 10px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text); font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s; }
+.practice-btn:hover { border-color: var(--amber); }
+.practice-btn.correct { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+.practice-btn.incorrect { border-color: var(--rose); background: rgba(244,63,94,0.08); color: var(--rose); }
+.practice-btn.disabled { pointer-events: none; opacity: 0.5; }
+.practice-explain { display: none; margin-top: 12px; padding: 12px 14px; background: rgba(0,0,0,0.2); border-radius: 3px; font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+.practice-explain.open { display: block; }
+
+.closing { background: var(--bg-card); border: 1px solid var(--amber); border-radius: 6px; padding: 28px; text-align: center; margin: 24px 0; }
+.closing p { font-size: 16px; line-height: 1.8; color: var(--text); margin-bottom: 12px; }
+.closing p:last-child { margin-bottom: 0; }
+
+.nav-row { display: flex; justify-content: space-between; gap: 10px; margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--border); }
+.nav-btn { padding: 12px 28px; border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text); font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; border-radius: 4px; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+.nav-btn:hover { border-color: var(--amber); color: var(--amber); }
+.nav-btn.primary { background: var(--amber); color: var(--bg); border-color: var(--amber); }
+.nav-btn.primary:hover { background: #fbbf24; }
+.nav-btn:disabled { opacity: 0.3; pointer-events: none; }
+.nav-btn.secondary { border-color: var(--cyan); color: var(--cyan); }
+.nav-btn.secondary:hover { background: var(--cyan-dim); }
+.btn-reset { display: block; margin: 20px auto; padding: 10px 24px; background: transparent; border: 1px solid var(--text-dim); color: var(--text-dim); font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; border-radius: 3px; cursor: pointer; }
+.btn-reset:hover { border-color: var(--text); color: var(--text); }
+.tool-link { display: block; text-align: center; margin: 20px 0; padding: 14px 20px; background: var(--amber-dim); border: 1px solid rgba(245,158,11,0.35); border-radius: 6px; color: var(--amber); font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; transition: all 0.2s; }
+.tool-link:hover { background: rgba(245,158,11,0.2); border-color: var(--amber); }
+.module-footer { text-align: center; padding: 24px; margin-top: 16px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-dim); }
+</style>
+</head>
+<body>
+<div class="app">
+    <div class="module-header">
+        <div class="module-badge">Interactive Training Module — Dynamic Edition</div>
+        <h1>HazMat Core Concepts</h1>
+        <p>Reading the Scene — Decision-Based Learning for Hazmat Responders</p>
+    </div>
+
+    <div class="progress-bar">
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-label" id="progressLabel">Section 1 of 6</div>
+    </div>
+
+    <!-- SECTION 1: Question-based clue analysis -->
+    <div class="section active" id="sec1">
+        <div class="section-num">Section 1</div>
+        <h2>Reading the Scene</h2>
+        <div class="concept">
+            Experienced hazmat responders do not rush to identify a chemical. They <strong>read the scene</strong> — examining containers, vapors, the occupancy, and wind behavior. Each clue narrows the possibilities. Work through the clues below and identify the hazard step by step.
+        </div>
+        <div class="scene" id="sec1scene"></div>
+        <div id="sec1questions"></div>
+        <div class="nav-row">
+            <button class="nav-btn secondary" onclick="startNewScenario()">🔄 New Scenario</button>
+            <button class="nav-btn primary" onclick="goSection(2)">Continue →</button>
+        </div>
+    </div>
+
+    <!-- SECTION 2 -->
+    <div class="section" id="sec2">
+        <div class="section-num">Section 2</div>
+        <h2>Understanding Vapor Behavior</h2>
+        <div class="concept">
+            Some gases are lighter than air and rise. Others are heavier than air and collect in low areas. Understanding <strong>vapor density</strong> helps responders predict where hazards will travel — and where people are most at risk.
+        </div>
+        <div class="scene" id="sec2scene"></div>
+        <p style="font-size:14px; color:var(--text-dim); margin-bottom:12px;">Click the locations where vapor is <strong>most likely to accumulate</strong>:</p>
+        <div class="diagram" id="vaporDiagram">
+            <div class="diagram-cell" data-index="0"><span class="cell-icon">🕳️</span>Drainage Ditch</div>
+            <div class="diagram-cell" data-index="1"><span class="cell-icon">🔲</span>Sewer Grate</div>
+            <div class="diagram-cell" data-index="2"><span class="cell-icon">🚪</span>Building Doorway</div>
+            <div class="diagram-cell" data-index="3"><span class="cell-icon">⛰️</span>Hillside (top)</div>
+            <div class="diagram-cell" data-index="4"><span class="cell-icon">🏗️</span>Rooftop</div>
+            <div class="diagram-cell" data-index="5"><span class="cell-icon">🅿️</span>Basement Garage</div>
+        </div>
+        <div class="reasoning" id="q2reason"></div>
+        <div class="nav-row">
+            <button class="nav-btn" onclick="goSection(1)">← Back</button>
+            <button class="nav-btn primary" onclick="goSection(3)">Continue →</button>
+        </div>
+    </div>
+
+    <!-- SECTION 3 -->
+    <div class="section" id="sec3">
+        <div class="section-num">Section 3</div>
+        <h2>Meter Awareness</h2>
+        <div class="concept">
+            Meters are powerful tools — but only if responders understand their <strong>limitations</strong>. No single meter detects everything. Selecting the right instrument for the situation is a critical skill.
+        </div>
+        <div class="scene" id="sec3scene"></div>
+        <p style="font-size:14px; color:var(--text-dim); margin-bottom:12px;">Which meter should you deploy <strong>first</strong> to assess this scene?</p>
+        <div class="meter-grid" id="meterGrid"></div>
+        <div class="reasoning" id="q3reason"></div>
+        <div class="tool-callout">
+            <strong>💡 Need help?</strong> The <strong>Hazmat Tactical Tool</strong> includes meter alarm setpoints and sensor capabilities for common detection instruments.
+        </div>
+        <div class="nav-row">
+            <button class="nav-btn" onclick="goSection(2)">← Back</button>
+            <button class="nav-btn primary" onclick="goSection(4)">Continue →</button>
+        </div>
+    </div>
+
+    <!-- SECTION 4 -->
+    <div class="section" id="sec4">
+        <div class="section-num">Section 4</div>
+        <h2>Isolation Thinking</h2>
+        <div class="concept">
+            Isolation distance protects responders and civilians from exposure. The ERG provides initial isolation guidance — but terrain, wind, and drainage must be factored in.
+        </div>
+        <div class="scene" id="sec4scene"></div>
+        <p style="font-size:14px; color:var(--text-dim); margin-bottom:12px;">Place each safety zone at the correct distance / location:</p>
+        <div class="zone-map">
+            <div class="zone-map-title">Zone Placement</div>
+            <div class="zone-row"><div class="zone-label hot">Hot Zone</div><div class="zone-options" id="zoneHot"></div></div>
+            <div class="zone-row"><div class="zone-label warm">Warm Zone</div><div class="zone-options" id="zoneWarm"></div></div>
+            <div class="zone-row"><div class="zone-label cold">Cold Zone</div><div class="zone-options" id="zoneCold"></div></div>
+        </div>
+        <div class="reasoning" id="q4reason"></div>
+        <div class="tool-callout">
+            <strong>💡 Need isolation distances?</strong> Use the <strong>Hazmat Tactical Tool</strong> — search by chemical name or UN number to find ERG isolation and downwind protection distances.
+        </div>
+        <div class="nav-row">
+            <button class="nav-btn" onclick="goSection(3)">← Back</button>
+            <button class="nav-btn primary" onclick="goSection(5)">Continue →</button>
+        </div>
+    </div>
+
+    <!-- SECTION 5 -->
+    <div class="section" id="sec5">
+        <div class="section-num">Section 5</div>
+        <h2>The Most Common Mistakes</h2>
+        <div class="concept">
+            Many hazmat injuries occur due to <strong>predictable, preventable mistakes</strong>. Recognizing dangerous practices is as important as knowing the right procedures.
+        </div>
+        <div id="practiceContainer"></div>
+        <div class="nav-row">
+            <button class="nav-btn" onclick="goSection(4)">← Back</button>
+            <button class="nav-btn primary" onclick="goSection(6)">Continue →</button>
+        </div>
+    </div>
+
+    <!-- SECTION 6 -->
+    <div class="section" id="sec6">
+        <div class="section-num">Section 6</div>
+        <h2>The Technician Mindset</h2>
+        <div class="closing" id="mindsetClosing"></div>
+        <div class="nav-row">
+            <button class="nav-btn" onclick="goSection(5)">← Back</button>
+            <button class="nav-btn primary" onclick="startNewScenario()">🔄 Run Another Scenario</button>
+        </div>
+        <button class="btn-reset" onclick="resetModule()">Reset All Progress</button>
+    </div>
+
+    <a class="tool-link" href="#" onclick="alert('Link to your hosted Hazmat Tactical Tool Basic page. Replace this href with the actual URL.'); return false;">
+        🔥 Open the Hazmat Tactical Tool — Basic
+    </a>
+    <div class="module-footer">
+        <strong>HazMat Core Concepts: Reading the Scene — Dynamic Edition</strong><br>
+        © 2026 Hazmat Tactical LLC. All Rights Reserved.<br>
+        For Training Use Only — Not for operational field decisions.
+    </div>
+</div>
+
+<script>
+const chemicals = [
+    {
+        name: "Chlorine",
+        vaporBehavior: "heavier", vaporCorrect: [0,1,2,5], bestMeter: "fourgas",
+        meterReason: {
+            fourgas: "<strong>Correct — strong starting choice.</strong> The 4-gas meter will detect O₂ displacement (chlorine pushes out oxygen). However, chlorine is best confirmed with a chemical-specific sensor or colorimetric tubes.",
+            pid: "<strong>Not ideal.</strong> PIDs are calibrated for VOCs. Chlorine is inorganic — most PIDs won't detect it reliably.",
+            rad: "<strong>Wrong tool.</strong> This is a chemical release, not radiological.",
+            colorimetric: "<strong>Excellent confirmation tool.</strong> Chlorine-specific tubes give concentration readings. But start with a 4-gas for baseline O₂/LEL first.",
+            ammonia: "<strong>Wrong sensor.</strong> An ammonia meter won't detect chlorine.",
+            cgid: "<strong>Good for ID but not first.</strong> You need atmospheric hazard data before chemical classification."
+        },
+        sceneText: "A tractor trailer has overturned outside a water treatment facility. You observe a yellow-green vapor cloud drifting slowly across the parking lot. Several one-ton cylinders are mounted inside the trailer frame.",
+        skillQuestions: [
+            { cat: "📦 CONTAINER RECOGNITION", hint: "You observe several one-ton cylinders mounted on saddles inside the trailer frame. The cylinders are pressure vessels with valve assemblies on top.",
+              prompt: "What hazard category does this container type suggest?",
+              options: ["Toxic or oxidizing compressed gas", "Flammable liquid in bulk", "Radioactive transport cask", "Corrosive liquid in carboys"],
+              correct: 0,
+              why: "One-ton cylinders are <strong>pressure vessels</strong> designed for compressed or liquefied gases. Their saddle-mounting and valve assemblies are distinctive. On any call, when you see pressurized cylindrical containers, think compressed gas — then narrow down by occupancy and other clues." },
+            { cat: "🌫️ VAPOR ASSESSMENT", hint: "The vapor cloud is yellow-green in color and clearly visible. It is drifting low across the parking lot — not rising.",
+              prompt: "What do these vapor characteristics tell you about the product?",
+              options: ["Visible colored gas, heavier than air — settles low", "Invisible gas — what you see is condensed moisture only", "Smoke from combustion — product is on fire", "Steam from a water line break — not a chemical release"],
+              correct: 0,
+              why: "A <strong>colored, visible gas hugging the ground</strong> tells you two critical things: (1) the product has a visible color (rare — most gases are invisible), and (2) it's heavier than air. On any call, visible vapor color is one of your strongest identification clues." },
+            { cat: "🏭 OCCUPANCY ANALYSIS", hint: "The incident is at a water treatment facility with treatment basins, pumping equipment, and chemical injection systems.",
+              prompt: "What product family is most likely stored at this type of facility?",
+              options: ["Disinfection chemicals — toxic oxidizing gases or liquids", "Petroleum fuels and lubricants", "Agricultural fertilizers and pesticides", "Compressed breathing air and medical gases"],
+              correct: 0,
+              why: "Water treatment plants use <strong>disinfection chemicals</strong> — chlorine gas, sodium hypochlorite, chlorine dioxide, or chloramines. On any call, ask yourself: 'What does this business DO?' The answer tells you what products are on site." },
+            { cat: "💨 HAZARD TRAVEL PREDICTION", hint: "The cloud is flowing along the ground, filling a drainage ditch, and moving toward a storm drain opening.",
+              prompt: "Based on this vapor movement, where should you expect the greatest hazard concentration?",
+              options: ["Low areas: basements, sewers, ditches, and ground-floor doorways", "Rooftops, upper floors, and elevated walkways", "Only at the immediate release point — it won't travel far", "Evenly distributed at all elevations within 100 feet"],
+              correct: 0,
+              why: "Heavy vapors <strong>flow like water</strong> — downhill, into ditches, through storm drains, and into basements. On any call where you see vapor hugging the ground, immediately think about what's downhill and what low-lying spaces are nearby. That's where your victims will be." }
+        ],
+        synthesisWhy: "The converging clues — one-ton cylinders (compressed gas), yellow-green visible vapor (rare, distinctive color), water treatment facility (disinfection chemicals), and ground-hugging behavior (heavier than air) — all point to <strong>Chlorine</strong>. No single clue was definitive, but together they form an unmistakable picture. This is how experienced technicians work: layer the clues until the answer becomes clear.",
+        vaporSceneText: "A pipeline rupture is releasing chlorine near an industrial site. The terrain includes a drainage ditch, a sewer grate, an open building doorway, and a hillside. Chlorine has a vapor density of 2.5 — heavier than air.",
+        vaporReasoning: "<strong>Chlorine</strong> (VD 2.5) is heavier than air. It accumulates in low-lying areas — ditches, sewers, basements, and doorways at ground level.",
+        meterSceneText: "You're approaching a water treatment facility where workers reported a strong bleach-like odor and eye irritation. A faint yellow-green haze is visible near ground level.",
+        isolation: {
+            hot: { correct: "200 ft radius from spill", options: ["200 ft radius from spill", "50 ft radius from spill", "500 ft upwind only", "1,000 ft all directions"] },
+            warm: { correct: "Decon corridor at 300 ft", options: ["Decon corridor at 300 ft", "At the spill perimeter", "1 mile downwind", "50 ft from Hot Zone"] },
+            cold: { correct: "Upwind / uphill, 500+ ft", options: ["Upwind / uphill, 500+ ft", "Downwind at 200 ft", "Adjacent parking lot", "Downhill staging area"] }
+        },
+        isolationSceneText: "A tanker labeled UN 1017 (Chlorine) has a valve leak near a residential neighborhood. Wind from the northwest at 12 mph. Terrain slopes southeast toward a school.",
+        isolationReasoning: "<strong>Chlorine</strong> (VD 2.5) flows downhill and downwind toward the school. Hot Zone 200 ft around the spill. Decon at 300 ft buffer. Cold Zone upwind and uphill. Use the <strong>Hazmat Tactical Tool</strong> for ERG distances on UN 1017."
+    },
+    {
+        name: "Anhydrous Ammonia",
+        vaporBehavior: "lighter", vaporCorrect: [3,4], bestMeter: "ammonia",
+        meterReason: {
+            fourgas: "<strong>Useful but limited.</strong> Shows O₂ displacement at high concentrations, but doesn't measure ammonia directly.",
+            pid: "<strong>Poor choice.</strong> PIDs have very low sensitivity to ammonia.",
+            rad: "<strong>Wrong tool entirely.</strong> Chemical release, not radiological.",
+            ammonia: "<strong>Excellent choice.</strong> Direct ppm readings. IDLH is 300 ppm — you need precise measurements.",
+            colorimetric: "<strong>Good confirmation.</strong> Ammonia tubes give concentration data, but slower than a direct-reading instrument.",
+            cgid: "<strong>Not the priority.</strong> You likely know it's ammonia. You need concentration data."
+        },
+        sceneText: "A nurse tank has ruptured at a fertilizer facility. You observe a white vapor cloud rising quickly from the site. Several large agricultural tanks are visible.",
+        skillQuestions: [
+            { cat: "📦 CONTAINER RECOGNITION", hint: "You see a ruptured nurse tank — a horizontal cylindrical vessel on wheels with a drawbar for towing. Large stationary tanks nearby have similar construction.",
+              prompt: "What hazard category does this container type suggest?",
+              options: ["Pressurized liquefied gas — agricultural chemical", "Atmospheric liquid storage — low-hazard material", "Radioactive waste drum", "Flammable solid in a fiber drum"],
+              correct: 0,
+              why: "Nurse tanks are <strong>portable pressure vessels</strong> designed to be towed behind vehicles. Their horizontal cylindrical shape with a drawbar is unmistakable. On any call, a pressure vessel at an agricultural site narrows your possibilities dramatically — the most common product is a liquefied gas used as fertilizer." },
+            { cat: "🌫️ VAPOR ASSESSMENT", hint: "A white cloud is forming where the vapor meets the ambient air. The cloud is rising rapidly — not settling to the ground.",
+              prompt: "What do these vapor characteristics tell you about the product?",
+              options: ["Gas reacts with atmospheric moisture and is lighter than air", "Product is burning — the white cloud is smoke", "Heavy vapor forming ice crystals as it settles", "Water vapor from a ruptured steam line"],
+              correct: 0,
+              why: "A <strong>white cloud that rises</strong> tells you two things: (1) the gas is reacting with moisture in the air (forming visible aerosol), and (2) it's lighter than air. On any call, rising white clouds from a pressurized source indicate a lighter-than-air gas that becomes visible on contact with humidity." },
+            { cat: "🏭 OCCUPANCY ANALYSIS", hint: "The incident is at a farm co-op and fertilizer facility with grain bins, farm equipment, and chemical application tanks.",
+              prompt: "What product family is most likely stored at this type of facility?",
+              options: ["Nitrogen-based fertilizer chemicals", "Petroleum refining products", "Chlorinated disinfection chemicals", "Medical and pharmaceutical supplies"],
+              correct: 0,
+              why: "<strong>Agricultural fertilizer facilities</strong> store nitrogen-based chemicals for crop production. On any call at a farm or co-op, your first thought should be: What do farmers need? Fertilizers, pesticides, and fuel. The container type and application equipment narrow it further." },
+            { cat: "💨 HAZARD TRAVEL PREDICTION", hint: "The cloud is rising rapidly and drifting with the wind away from ground level. Workers at the base of the tank are exposed, but the cloud is moving upward.",
+              prompt: "Based on this vapor movement, where should you expect the greatest hazard concentration?",
+              options: ["Downwind at elevated positions — upper floors, hilltops, rooftops", "In basements, sewers, and drainage ditches", "Only at the immediate release point", "Underground in tunnels and pipe chases"],
+              correct: 0,
+              why: "Lighter-than-air gases <strong>rise and drift with the wind</strong>. The greatest concentration away from the source will be at elevated downwind positions. On any call, if you see vapor rising, think about what's above and downwind — that's your evacuation priority. Note: near the source, concentrations are dangerous at ALL levels." }
+        ],
+        synthesisWhy: "The clues converge: nurse tanks (pressurized agricultural chemical), white rising cloud (moisture-reactive, lighter than air), fertilizer facility (nitrogen chemicals), and upward vapor travel. This is <strong>Anhydrous Ammonia</strong> — the most common agricultural chemical emergency. Each clue alone could match several products, but together they're unmistakable.",
+        vaporSceneText: "A pipeline rupture is releasing anhydrous ammonia near an industrial site. The terrain includes a drainage ditch, a sewer grate, an open building doorway, and a hillside. Ammonia has a vapor density of 0.6 — lighter than air.",
+        vaporReasoning: "<strong>Anhydrous Ammonia</strong> (VD 0.6) is lighter than air. It rises and accumulates at elevated locations.",
+        meterSceneText: "A white vapor cloud is rising from a damaged nurse tank at a farm co-op. Pungent odor overwhelming downwind. Multiple workers report eye and respiratory irritation.",
+        isolation: {
+            hot: { correct: "100 ft radius + downwind 300 ft", options: ["100 ft radius + downwind 300 ft", "50 ft from the tank only", "Entire facility fenced area", "1,000 ft all directions"] },
+            warm: { correct: "Decon at 500 ft crosswind", options: ["Decon at 500 ft crosswind", "Adjacent to the tank", "1 mile upwind", "Inside the facility office"] },
+            cold: { correct: "Upwind, 500+ ft from source", options: ["Upwind, 500+ ft from source", "Downwind at 300 ft", "Rooftop of adjacent building", "50 ft from warm zone"] }
+        },
+        isolationSceneText: "A nurse tank labeled UN 1005 (Anhydrous Ammonia) has a catastrophic valve failure. Wind from south at 8 mph. Cloud drifting north toward residential area 0.5 miles away.",
+        isolationReasoning: "<strong>Ammonia</strong> (VD 0.6) rises but drifts with wind. Hot Zone extends downwind. Decon crosswind. Cold Zone upwind. Use the <strong>Hazmat Tactical Tool</strong> for UN 1005."
+    },
+    {
+        name: "Gasoline",
+        vaporBehavior: "heavier", vaporCorrect: [0,1,2,5], bestMeter: "fourgas",
+        meterReason: {
+            fourgas: "<strong>Essential first tool.</strong> LEL sensor detects explosive range. Remember: gasoline is TOXIC before EXPLOSIVE — 10% LEL = ~1,400 ppm.",
+            pid: "<strong>Excellent companion.</strong> PID with CF 2.1 gives true VOC concentration. But start with 4-gas for explosive hazard first.",
+            rad: "<strong>Wrong tool.</strong> Flammable liquid spill, no radiological component.",
+            colorimetric: "<strong>Not practical.</strong> Too slow for a dynamic vapor cloud.",
+            ammonia: "<strong>Wrong sensor.</strong> Ammonia meters don't detect hydrocarbons.",
+            cgid: "<strong>Not priority.</strong> You can identify gasoline by occupancy and odor. Need LEL data."
+        },
+        sceneText: "A cargo tank truck has overturned at a fuel terminal. You observe a clear liquid spill with strong fuel odor spreading into a drainage ditch. Shimmering heat waves are visible above the liquid surface.",
+        skillQuestions: [
+            { cat: "📦 CONTAINER RECOGNITION", hint: "A large oval-cross-section cargo tank truck (MC-306/DOT-406) is overturned. No external stiffening rings. An aluminum shell with compartment baffles is visible through a tear.",
+              prompt: "What hazard category does this container type suggest?",
+              options: ["Flammable or combustible liquid in bulk transport", "Compressed gas under high pressure", "Corrosive acid in a lined tank", "Cryogenic liquefied gas"],
+              correct: 0,
+              why: "MC-306/DOT-406 tanks have a distinctive <strong>oval cross-section with no external rings</strong> — designed for low-pressure flammable liquids. On any call, learn to recognize the four main cargo tank types: MC-306 (flammable liquids), MC-307 (low-pressure chemicals), MC-312 (corrosives), and MC-331 (compressed gases). The shape tells the story." },
+            { cat: "🌫️ VAPOR ASSESSMENT", hint: "The liquid is clear and pooling in a ditch. Visible shimmering (heat distortion) is present above the surface. No colored cloud, but a strong petroleum odor is detectable from 200 feet.",
+              prompt: "What do these vapor characteristics tell you about the product?",
+              options: ["Volatile liquid producing invisible flammable vapors — heavier than air", "Non-volatile liquid with no vapor hazard", "Gas leak condensing into liquid form", "Water-based solution with no atmospheric hazard"],
+              correct: 0,
+              why: "The <strong>shimmering above a liquid surface</strong> is your visual indicator of active vaporization — even when the vapors themselves are invisible. On any call, visible shimmer + petroleum odor = volatile flammable liquid producing a vapor cloud you can't see. Don't let 'invisible' fool you into thinking 'safe.'" },
+            { cat: "🏭 OCCUPANCY ANALYSIS", hint: "The incident is at a fuel terminal with loading racks, underground storage tanks, and delivery truck staging areas.",
+              prompt: "What product family is most likely handled at this type of facility?",
+              options: ["Petroleum fuels — gasoline, diesel, jet fuel", "Industrial solvents and degreasers", "Agricultural chemicals and fertilizers", "Water treatment chemicals"],
+              correct: 0,
+              why: "<strong>Fuel terminals</strong> are the distribution hub between refineries and gas stations. On any call, the presence of loading racks, multiple cargo tanks, and underground storage points to petroleum products. The specific product matters for PPE and ignition control." },
+            { cat: "💨 HAZARD TRAVEL PREDICTION", hint: "The liquid is flowing downhill along the ditch. The shimmer follows the liquid. You notice the odor is strongest at ground level near sewer grates.",
+              prompt: "Based on this behavior, where is the greatest explosion risk?",
+              options: ["Downhill confined spaces: storm drains, sewers, basements", "Rooftops and upper floors of nearby buildings", "Only directly above the liquid pool", "Upwind areas at higher elevation"],
+              correct: 0,
+              why: "Flammable vapors heavier than air <strong>flow like water</strong> — downhill, into drains, through sewer systems, and into basements. On any flammable liquid call, your first action should be: What's downhill? Where are the storm drains? Where are the basements? A spark in a sewer 500 feet from the spill can cause a catastrophic explosion." }
+        ],
+        synthesisWhy: "MC-306 cargo tank (flammable liquid), clear volatile liquid with shimmer (invisible heavy vapors), fuel terminal (petroleum products), and downhill vapor flow into drains — this is <strong>Gasoline</strong>. The key teaching point: even though the vapors are invisible, the shimmer and odor told you they were there. Invisible doesn't mean absent.",
+        vaporSceneText: "A pipeline rupture is releasing gasoline vapors near an industrial site. The terrain includes a drainage ditch, a sewer grate, an open building doorway, and a hillside. Gasoline vapor density is ~3.4 — heavier than air.",
+        vaporReasoning: "<strong>Gasoline</strong> vapors are heavier than air and collect in low-lying areas. A single spark far from the visible spill can cause an explosion.",
+        meterSceneText: "A fuel tanker has overturned and liquid is pooling in a roadside ditch. Strong gasoline odor from 200 feet. Shimmering vapor visible above liquid.",
+        isolation: {
+            hot: { correct: "330 ft radius, all ignition sources eliminated", options: ["330 ft radius, all ignition sources eliminated", "50 ft from the liquid pool only", "100 ft upwind", "Inside the drainage ditch"] },
+            warm: { correct: "Decon at 500 ft, crosswind", options: ["Decon at 500 ft, crosswind", "Immediately adjacent to spill", "At the overturned truck", "1 mile downwind"] },
+            cold: { correct: "Upwind, 500+ ft, uphill", options: ["Upwind, 500+ ft, uphill", "Downwind at 200 ft", "Inside nearby buildings", "Downhill staging area"] }
+        },
+        isolationSceneText: "A tanker labeled UN 1203 (Gasoline) overturned on a highway. Fuel running into a storm drain. Wind from west at 5 mph. Terrain slopes east toward a strip mall with HVAC units.",
+        isolationReasoning: "<strong>Gasoline</strong> vapors (VD 3.4) flow into storm drains — explosion risk in confined drainage. Hot Zone eliminates ALL ignition sources. Cold Zone upwind and uphill. Use the <strong>Hazmat Tactical Tool</strong> for UN 1203."
+    },
+    {
+        name: "Hydrogen Sulfide",
+        vaporBehavior: "heavier", vaporCorrect: [0,1,2,5], bestMeter: "fourgas",
+        meterReason: {
+            fourgas: "<strong>Perfect first choice.</strong> Dedicated H₂S sensor — low alarm 10 ppm, high alarm 20 ppm. IDLH is 100 ppm.",
+            pid: "<strong>Can detect but not ideal.</strong> PID CF 3.2 — the dedicated H₂S sensor is more accurate.",
+            rad: "<strong>Wrong tool.</strong> Toxic gas release, not radiological.",
+            colorimetric: "<strong>Good confirmation.</strong> H₂S tubes give concentration, but 4-gas is faster.",
+            ammonia: "<strong>Wrong sensor.</strong> Ammonia meters don't detect H₂S.",
+            cgid: "<strong>Not priority.</strong> You likely know it's H₂S. Need concentration data."
+        },
+        sceneText: "A wastewater plant valve has failed. Workers reported a rotten-egg smell that has since disappeared. Two workers are dizzy near a sewer grate. The gas is colorless.",
+        skillQuestions: [
+            { cat: "📦 CONTAINER RECOGNITION", hint: "The release is coming from a failed valve on underground wastewater infrastructure — piping, pumps, and a collection manhole.",
+              prompt: "What hazard category does this infrastructure suggest?",
+              options: ["Toxic gas byproduct from biological decomposition", "Flammable liquid storage leak", "Radioactive waste piping", "Compressed breathing air system failure"],
+              correct: 0,
+              why: "Wastewater infrastructure doesn't 'contain' a product intentionally — the hazard is a <strong>byproduct of biological decomposition</strong>. On any call involving sewers, manholes, lift stations, or treatment plants, assume toxic gas is present even if the system wasn't designed to store it." },
+            { cat: "🌫️ VAPOR ASSESSMENT", hint: "The gas is completely colorless and invisible. Workers initially smelled rotten eggs, but the odor has DISAPPEARED even though workers are getting sicker.",
+              prompt: "What does the disappearance of a rotten-egg odor while symptoms worsen tell you?",
+              options: ["Olfactory fatigue — concentration increased past the detection threshold", "The gas has dissipated and is no longer present", "Workers are imagining symptoms — the odor is gone so the hazard is gone", "A different, odorless chemical has replaced the original gas"],
+              correct: 0,
+              why: "This is one of the most critical lessons in hazmat: <strong>olfactory fatigue</strong> means your nose STOPS detecting the gas at higher concentrations. The disappearing smell is a DANGER signal, not an all-clear. On any call where an odor disappears but symptoms persist or worsen — EVACUATE IMMEDIATELY and rely on meters." },
+            { cat: "🏭 OCCUPANCY ANALYSIS", hint: "The incident is at a wastewater treatment plant with aeration basins, holding tanks, and sewer collection systems.",
+              prompt: "What toxic hazard is most commonly generated at wastewater facilities?",
+              options: ["Toxic gases from anaerobic decomposition of organic matter", "Explosive vapors from petroleum contamination", "Radiation from medical waste in the sewer", "Nerve agents from industrial discharge"],
+              correct: 0,
+              why: "<strong>Anaerobic decomposition</strong> (bacteria breaking down organic matter without oxygen) produces toxic gases as a natural byproduct. On any call at wastewater, sewer, or landfill facilities, this process is always generating toxic gas — the question is whether it's accumulating to dangerous levels." },
+            { cat: "💨 HAZARD TRAVEL PREDICTION", hint: "The gas is settling near sewer grates, in drainage ditches, and near ground-floor openings. It is NOT rising — it stays low.",
+              prompt: "Based on this behavior, where are the highest-risk areas for victims?",
+              options: ["Confined low spaces: manholes, basements, trenches, low rooms", "Open rooftops and elevated platforms", "Only within 10 feet of the valve", "Evenly distributed throughout the entire facility"],
+              correct: 0,
+              why: "Slightly heavier-than-air gases <strong>pool in confined low spaces</strong> — this is why sewer workers, trench workers, and basement occupants are the most common victims. On any call with ground-level gas accumulation, immediately assess: Who is in a low, confined space nearby? They are your priority." }
+        ],
+        synthesisWhy: "Wastewater infrastructure (decomposition byproduct), disappearing rotten-egg odor (olfactory fatigue at high concentrations), anaerobic decomposition source, and ground-level pooling in confined spaces — this is <strong>Hydrogen Sulfide</strong>. The key lesson: the disappearing odor was the most dangerous clue. When a smell goes away but people get sicker, the concentration went UP, not down.",
+        vaporSceneText: "A pipeline rupture is releasing hydrogen sulfide near an industrial site. The terrain includes a drainage ditch, a sewer grate, an open building doorway, and a hillside. H₂S has a vapor density of 1.19 — heavier than air.",
+        vaporReasoning: "<strong>Hydrogen sulfide</strong> (VD 1.19) is heavier than air. It accumulates in low-lying areas. Trust your meter — not your nose.",
+        meterSceneText: "Workers at a wastewater plant report a rotten-egg smell that suddenly disappeared. Two workers are dizzy. The smell disappearing is NOT good — concentrations likely exceeded olfactory fatigue threshold (~100 ppm).",
+        isolation: {
+            hot: { correct: "500 ft radius including all low areas", options: ["500 ft radius including all low areas", "100 ft from the valve only", "Upwind side only", "Inside the plant building"] },
+            warm: { correct: "Decon corridor at 700 ft, crosswind", options: ["Decon corridor at 700 ft, crosswind", "Adjacent to Hot Zone downwind", "At the plant entrance gate", "50 ft from the valve"] },
+            cold: { correct: "Upwind, 1,000+ ft, elevated ground", options: ["Upwind, 1,000+ ft, elevated ground", "Downwind at 500 ft", "In the parking lot (low area)", "Inside the plant control room"] }
+        },
+        isolationSceneText: "A valve failure at a wastewater plant releasing H₂S (UN 1053). Wind from east at 6 mph. Plant in a river valley — low terrain on three sides. Two workers down near a sewer grate.",
+        isolationReasoning: "<strong>H₂S</strong> (VD 1.19) pools in low areas — the river valley is extremely dangerous. Hot Zone includes all low-lying areas. Cold Zone on elevated ground AND upwind. Use the <strong>Hazmat Tactical Tool</strong> for UN 1053."
+    },
+    {
+        name: "Propane",
+        vaporBehavior: "heavier", vaporCorrect: [0,1,2,5], bestMeter: "fourgas",
+        meterReason: {
+            fourgas: "<strong>Essential.</strong> LEL sensor detects propane in explosive range. Above 10% LEL = evacuate.",
+            pid: "<strong>Very poor choice.</strong> PIDs have almost no response to propane. You'd read zero in an explosive atmosphere.",
+            rad: "<strong>Wrong tool.</strong> Flammable gas, not radiological.",
+            colorimetric: "<strong>Too slow.</strong> Need real-time continuous LEL readings.",
+            ammonia: "<strong>Wrong sensor.</strong> Ammonia meters don't detect propane.",
+            cgid: "<strong>Not priority.</strong> You know it's propane. Need LEL data."
+        },
+        sceneText: "A residential propane tank has been struck by a vehicle. Frost is forming on the tank body and a loud hissing sound is audible from the damaged valve. The odorant (mercaptan) is strong.",
+        skillQuestions: [
+            { cat: "📦 CONTAINER RECOGNITION", hint: "A large white horizontal pressure vessel in a residential yard, approximately 500 gallons. Frost is forming on the exterior surface near a damaged valve.",
+              prompt: "What does frost forming on a pressurized container tell you?",
+              options: ["Rapid pressure release of a liquefied gas — Joule-Thomson cooling effect", "Container is refrigerated and working normally", "Container is empty and collecting condensation", "Ice formation from a water leak inside the vessel"],
+              correct: 0,
+              why: "Frost on a pressure vessel indicates <strong>rapid gas expansion</strong> — the Joule-Thomson effect cools the container surface below the dew point. On any call, frost on a tank means active pressure release of a liquefied gas. The faster the frost forms, the larger the release rate." },
+            { cat: "🌫️ VAPOR ASSESSMENT", hint: "A faint white mist is visible at the valve. No color to the gas itself. A strong 'rotten egg' odorant (mercaptan) smell is detectable from far away.",
+              prompt: "What does a strong mercaptan (rotten-egg additive) odor near a residential pressure vessel tell you?",
+              options: ["Fuel gas leak — mercaptan is added to odorless gases for leak detection", "Hydrogen sulfide release from underground pipes", "Sewer gas backup through a floor drain", "Chemical reaction producing sulfur compounds"],
+              correct: 0,
+              why: "<strong>Mercaptan is intentionally added</strong> to otherwise odorless fuel gases (propane, natural gas) specifically so leaks can be detected by smell. On any call, the presence of mercaptan odor from a residential pressure vessel immediately tells you: fuel gas leak. However, at very high concentrations, even mercaptan can overwhelm your senses." },
+            { cat: "🏭 OCCUPANCY ANALYSIS", hint: "The incident is at a single-family home in a rural area. The large white tank is in the side yard connected to the house by underground piping.",
+              prompt: "A pressurized white tank with piping to a rural residence most commonly provides:",
+              options: ["Heating and cooking fuel (liquefied petroleum gas)", "Well water pressure storage", "Fire suppression system supply", "Solar thermal energy storage"],
+              correct: 0,
+              why: "Rural and suburban homes commonly use <strong>LPG (propane) for heating and cooking</strong> when natural gas lines aren't available. On any call at a rural residence with an exterior pressure vessel, propane is the default assumption until proven otherwise." },
+            { cat: "💨 HAZARD TRAVEL PREDICTION", hint: "The vapor is settling along the ground. You notice the mercaptan odor is strongest at the home's foundation, near basement window wells, and in a low-lying garden bed.",
+              prompt: "Based on this travel pattern, what is the most immediate life-safety risk?",
+              options: ["Vapor migration into the home through foundation cracks — explosion risk from pilot lights", "Vapor rising into the attic space", "Contamination of the drinking water supply", "Only an outdoor hazard — no risk inside structures"],
+              correct: 0,
+              why: "Heavier-than-air fuel gas <strong>seeps into basements through foundation cracks, utility penetrations, and window wells</strong>. Once inside, any ignition source — pilot light, light switch, furnace igniter — can cause a catastrophic explosion. On any fuel gas call, think: Where are the basement entries? Where are the pilot lights? That's your immediate evacuation zone." }
+        ],
+        synthesisWhy: "Frost on a pressure vessel (rapid gas release), mercaptan odorant (intentional fuel gas additive), rural residential tank (LPG heating), and ground-level vapor migration toward the foundation — this is <strong>Propane</strong>. The critical teaching point: the vapor is flowing INTO the home through the foundation. The explosion risk is INSIDE the house, not outside at the tank.",
+        vaporSceneText: "A pipeline rupture is releasing propane near an industrial site. The terrain includes a drainage ditch, a sewer grate, an open building doorway, and a hillside. Propane has a vapor density of 1.5 — heavier than air.",
+        vaporReasoning: "<strong>Propane</strong> vapors are heavier than air and collect in low-lying areas. BLEVE risk if tank is flame-impinged.",
+        meterSceneText: "A 500-gallon residential propane tank struck by a vehicle. Frost on tank, loud hissing. Strong mercaptan odor.",
+        isolation: {
+            hot: { correct: "330 ft all directions, no ignition sources", options: ["330 ft all directions, no ignition sources", "50 ft from the tank", "100 ft downwind only", "Inside the home adjacent"] },
+            warm: { correct: "Decon at 500 ft, crosswind", options: ["Decon at 500 ft, crosswind", "At the property line", "150 ft upwind", "Adjacent driveway"] },
+            cold: { correct: "Upwind, 700+ ft, uphill from source", options: ["Upwind, 700+ ft, uphill from source", "Downhill at 300 ft", "200 ft downwind", "Across the street (60 ft)"] }
+        },
+        isolationSceneText: "A 500-gallon residential propane tank (UN 1075) struck by a vehicle. Hissing with visible frost. Wind from north at 4 mph. Home 30 ft from tank.",
+        isolationReasoning: "<strong>Propane</strong> (VD 1.5) hugs the ground. BLEVE risk if fire impinges. Hot Zone eliminates ALL ignition sources including pilot lights. Use the <strong>Hazmat Tactical Tool</strong> for UN 1075."
+    },
+    {
+        name: "Lithium-Ion Batteries",
+        vaporBehavior: "rises", vaporCorrect: [3,4], bestMeter: "fourgas",
+        meterReason: {
+            fourgas: "<strong>Good starting choice.</strong> Thermal runaway produces CO, HCN, HF. 4-gas detects CO and O₂ depletion. Won't detect HF.",
+            pid: "<strong>Useful companion.</strong> Detects some volatile organics. But start with 4-gas.",
+            rad: "<strong>Wrong tool.</strong> Li-ion batteries are not radioactive.",
+            colorimetric: "<strong>Useful for HF.</strong> HF-specific tubes confirm hydrofluoric acid — but start with real-time monitoring.",
+            ammonia: "<strong>Wrong sensor.</strong> Thermal runaway doesn't produce ammonia.",
+            cgid: "<strong>Not priority.</strong> You know it's a battery fire. Need atmospheric data."
+        },
+        sceneText: "An electric vehicle in a parking garage is in thermal runaway. White smoke and popping sounds are coming from the battery pack. The smoke has an acrid, metallic quality.",
+        skillQuestions: [
+            { cat: "📦 CONTAINER RECOGNITION", hint: "Smoke and popping sounds are coming from underneath an electric vehicle — the flat battery pack mounted to the vehicle's undercarriage. Individual cells are venting sequentially.",
+              prompt: "Sequential popping from a sealed battery pack with escalating smoke indicates:",
+              options: ["Cascading cell failure — thermal runaway spreading through the pack", "Normal vehicle operation under heavy load", "Exhaust system backfiring", "Tire blowout sequence"],
+              correct: 0,
+              why: "<strong>Sequential popping</strong> is individual battery cells rupturing as thermal runaway cascades from cell to cell. Each pop is a cell venting its electrolyte as flammable, toxic gas. On any call involving EVs or battery storage, popping sounds + escalating smoke = thermal runaway in progress with potential for violent escalation." },
+            { cat: "🌫️ VAPOR ASSESSMENT", hint: "Dense white smoke with an acrid, metallic, chemical quality is filling the garage level. The smoke is rising and accumulating at the ceiling. Heat from the vehicle is intense.",
+              prompt: "What does acrid, metallic-smelling white smoke from a battery fire tell you?",
+              options: ["Toxic off-gassing including CO, HCN, and HF — not ordinary smoke", "Ordinary combustion smoke — treat as a standard structure fire", "Water vapor from the fire suppression system activating", "Harmless battery coolant evaporating from heat"],
+              correct: 0,
+              why: "Li-ion thermal runaway produces <strong>CO (carbon monoxide), HCN (hydrogen cyanide), and HF (hydrofluoric acid vapor)</strong> — all of which are far more dangerous than ordinary fire smoke. On any call involving battery fires, treat the smoke as TOXIC GAS, not just smoke. Standard firefighting SCBA is mandatory; structural turnout gear provides limited protection from HF." },
+            { cat: "🏭 OCCUPANCY ANALYSIS", hint: "The incident is in a multi-level enclosed parking garage with EV charging stations. The structure has limited ventilation — small openings on one side only.",
+              prompt: "What makes an enclosed parking structure particularly dangerous for this type of incident?",
+              options: ["Toxic gas accumulation on multiple levels with poor ventilation", "The structure will collapse from battery fire heat", "Fuel vapors from other vehicles will create a secondary explosion", "The charging stations will electrocute responding crews"],
+              correct: 0,
+              why: "<strong>Enclosed structures trap toxic off-gases</strong> from thermal runaway on multiple levels. Unlike outdoor fires where gases dissipate, a parking garage concentrates CO, HCN, and HF. On any call in an enclosed space with battery fire, ventilation is your primary tactical concern. The toxics will fill floor by floor." },
+            { cat: "💨 HAZARD TRAVEL PREDICTION", hint: "Smoke is rising from the vehicle, filling the ceiling of Level 2, then migrating up stairwells and through floor penetrations to Level 3 and Level 4.",
+              prompt: "Based on this vertical migration pattern, which areas require immediate evacuation?",
+              options: ["All levels above the fire — toxic gases rise through vertical pathways", "Only the level with the vehicle — upper floors are safe", "Only the level below — gases sink after cooling", "Only the stairwell — the parking levels are ventilated"],
+              correct: 0,
+              why: "Hot toxic gases <strong>rise through stairwells, elevator shafts, and floor penetrations</strong> — contaminating every level above the fire. On any call in a multi-story structure, think vertically: What's above the fire? What vertical pathways connect the floors? Everyone above is at risk." }
+        ],
+        synthesisWhy: "Sequential cell venting (cascading thermal runaway), toxic white smoke containing CO/HCN/HF (not ordinary smoke), enclosed garage trapping gases (poor ventilation), and vertical migration through stairwells — this is a <strong>Lithium-Ion Battery</strong> thermal runaway event. The key lesson: this is NOT a standard vehicle fire. The toxics in the smoke are far more dangerous than the fire itself.",
+        vaporSceneText: "A warehouse containing lithium-ion battery racks is showing signs of thermal runaway. Smoke is visible. The terrain includes a drainage ditch, a sewer grate, an open building doorway, and a hillside.",
+        vaporReasoning: "Smoke and toxic off-gassing from lithium-ion thermal runaway <strong>rises</strong> due to heat. In enclosed spaces, toxic gases accumulate at all levels. HF vapor is a major concern.",
+        meterSceneText: "An EV in a parking garage has entered thermal runaway. White smoke from undercarriage. Popping/hissing. Two levels filling with smoke.",
+        isolation: {
+            hot: { correct: "Entire affected level + level above/below", options: ["Entire affected level + level above/below", "10 ft radius around the vehicle", "Just the parking space", "50 ft radius on same level only"] },
+            warm: { correct: "Garage entrance + adjacent levels", options: ["Garage entrance + adjacent levels", "Street level only", "Inside the stairwell", "Across the garage on same level"] },
+            cold: { correct: "Outside, upwind, 300+ ft from openings", options: ["Outside, upwind, 300+ ft from openings", "Inside the garage lobby", "Rooftop of the garage", "Adjacent building entrance"] }
+        },
+        isolationSceneText: "An EV on level 2 of a 4-story parking garage in thermal runaway. White smoke from stairwells. Wind from west. Hospital entrance 100 ft from east opening.",
+        isolationReasoning: "<strong>Li-Ion thermal runaway</strong> produces CO, HCN, and HF. Enclosed garage traps toxic gases on multiple levels. Cold Zone outside, upwind, far from openings — especially the hospital entrance."
+    },
+    {
+        name: "Hydrogen Cyanide",
+        vaporBehavior: "lighter", vaporCorrect: [3,4], bestMeter: "cgid",
+        meterReason: {
+            fourgas: "<strong>Important but incomplete.</strong> Standard 4-gas lacks HCN sensor. IDLH is only 50 ppm — your 4-gas will miss it.",
+            pid: "<strong>Can detect but unreliable.</strong> PID response to HCN is inconsistent.",
+            rad: "<strong>Wrong tool.</strong> Toxic gas release, not radiological.",
+            colorimetric: "<strong>Excellent for confirmation.</strong> HCN-specific tubes give direct concentration. Critical given low IDLH.",
+            ammonia: "<strong>Wrong sensor.</strong> Ammonia meters don't detect cyanide.",
+            cgid: "<strong>Strong choice.</strong> HCN-specific detector gives ID and concentration. IDLH only 50 ppm — need reliable detection."
+        },
+        sceneText: "A plating shop cylinder has ruptured. Some workers report a faint bitter-almond odor near ceiling vents, but other workers smell nothing at all. One worker has collapsed with seizures.",
+        skillQuestions: [
+            { cat: "📦 CONTAINER RECOGNITION", hint: "A compressed gas cylinder in a storage rack has catastrophically failed at the valve. The rack is inside a metal plating facility near electroplating bath equipment.",
+              prompt: "What does the combination of compressed gas cylinders and electroplating equipment suggest?",
+              options: ["Extremely toxic industrial process gas — likely cyanide-based", "Medical oxygen supply system", "Compressed air for pneumatic tools", "Fire suppression system gas (CO₂ or Halon)"],
+              correct: 0,
+              why: "<strong>Compressed gas + electroplating</strong> is a critical recognition pattern. Plating operations use hydrogen cyanide gas and cyanide salt solutions. On any call at a metal finishing facility, cyanide should be at the top of your threat list. This is one of the highest-lethality industrial chemicals you'll encounter." },
+            { cat: "🌫️ VAPOR ASSESSMENT", hint: "The gas is completely invisible. Some workers report a faint bitter-almond odor. Others standing right next to them smell NOTHING. One worker is seizing on the floor.",
+              prompt: "What does it mean when some people detect an odor but others nearby cannot?",
+              options: ["Genetic variation — some humans physically cannot detect this chemical", "Workers who smell nothing are wearing better PPE", "The gas has a variable concentration that comes and goes", "Workers who smell nothing arrived later and the gas has dissipated"],
+              correct: 0,
+              why: "Approximately <strong>40% of the population is genetically unable to smell HCN</strong>. This is not about concentration or timing — it's genetic. On any call, NEVER use human odor detection as your primary assessment tool. If some people smell it and others don't, consider genetic anosmia and treat the area as contaminated regardless." },
+            { cat: "🏭 OCCUPANCY ANALYSIS", hint: "The facility contains electroplating baths, chemical mixing stations, metal finishing lines, and cylinder storage for process gases.",
+              prompt: "What makes metal plating operations one of the highest-risk industrial occupancies?",
+              options: ["Extremely toxic chemicals (cyanides, acids, heavy metals) in daily use", "High fire load from flammable metals", "Radiation sources for quality testing", "Biological hazards from worker contamination"],
+              correct: 0,
+              why: "<strong>Metal plating/finishing</strong> is one of the most chemically hazardous industrial occupancies. Cyanide compounds, strong acids (chromic, sulfuric, hydrochloric), and heavy metal solutions are all used in the same facility. On any call at a plating shop, expect multiple incompatible chemical hazards." },
+            { cat: "💨 HAZARD TRAVEL PREDICTION", hint: "Workers report the odor is strongest near ceiling vents and on the mezzanine level. The worker who collapsed was on an elevated platform.",
+              prompt: "The gas concentrating at ceiling level and affecting elevated workers tells you:",
+              options: ["Gas is lighter than air — it rises and concentrates at higher elevations", "Gas is heavier than air but pushed up by HVAC", "Building ventilation is pulling gas upward artificially", "The gas only exists at the ceiling because it was released from roof-mounted equipment"],
+              correct: 0,
+              why: "HCN (VD 0.94) is <strong>slightly lighter than air</strong> and rises. Highest concentrations will be at ceiling level, mezzanines, and upper floors. On any call where elevated workers are the sickest, consider a lighter-than-air gas. In enclosed spaces, however, concentrations can be lethal at all levels." }
+        ],
+        synthesisWhy: "Compressed gas at a plating facility (cyanide process chemical), some workers unable to smell it (40% genetic anosmia for HCN), extremely toxic occupancy (cyanides + acids), and ceiling-level accumulation (lighter than air) — this is <strong>Hydrogen Cyanide</strong>. The critical lesson: the workers who couldn't smell anything were in just as much danger as the ones who could. You cannot rely on human senses for this chemical.",
+        vaporSceneText: "A plating facility release of hydrogen cyanide. The terrain includes a drainage ditch, a sewer grate, an open building doorway, and a hillside. HCN vapor density is 0.94 — lighter than air.",
+        vaporReasoning: "<strong>Hydrogen Cyanide</strong> is lighter than air and rises. ~40% of the population cannot smell it.",
+        meterSceneText: "Workers at a plating facility report bitter-almond odor near ceiling vents. One collapsed with seizures. IDLH only 50 ppm.",
+        isolation: {
+            hot: { correct: "500 ft radius from source", options: ["500 ft radius from source", "Inside the plating shop only", "100 ft downwind", "25 ft from the cylinder"] },
+            warm: { correct: "Decon at 700 ft with cyanide antidote kits", options: ["Decon at 700 ft with cyanide antidote kits", "At the facility parking lot", "Adjacent to Hot Zone downwind", "Inside the facility office"] },
+            cold: { correct: "Upwind, 1,000+ ft from source", options: ["Upwind, 1,000+ ft from source", "200 ft downwind on high ground", "Across the street (100 ft)", "Inside neighboring business"] }
+        },
+        isolationSceneText: "A cylinder labeled UN 1051 (HCN) ruptured inside a plating shop. Wind from south at 10 mph. One worker down. Light industrial park with businesses within 200 ft.",
+        isolationReasoning: "<strong>HCN</strong> (VD 0.94) rises but lethal at 50 ppm. Hot Zone 500 ft. Cyanide antidote kits MUST be at decon. Use the <strong>Hazmat Tactical Tool</strong> for UN 1051."
+    },
+    {
+        name: "Sulfur Dioxide",
+        vaporBehavior: "heavier", vaporCorrect: [0,1,2,5], bestMeter: "fourgas",
+        meterReason: {
+            fourgas: "<strong>Good starting tool.</strong> Some 4-gas meters cross-sense SO₂ on the H₂S channel. You'll detect O₂ displacement.",
+            pid: "<strong>Limited.</strong> PIDs have variable sensitivity to SO₂.",
+            rad: "<strong>Wrong tool.</strong> Chemical release, not radiological.",
+            colorimetric: "<strong>Excellent for confirmation.</strong> SO₂-specific tubes give accurate readings.",
+            ammonia: "<strong>Wrong sensor.</strong> Ammonia meters don't detect SO₂.",
+            cgid: "<strong>Good for ID.</strong> If truly unknown, classifier helps."
+        },
+        sceneText: "A rail car at a paper mill is leaking a pungent gas. A yellowish haze is visible near ground level. Workers are coughing violently and retreating uphill.",
+        skillQuestions: [
+            { cat: "📦 CONTAINER RECOGNITION", hint: "A single-unit rail tank car on a mill siding is leaking from a crack in the shell. The car is a pressurized vessel — no visible baffles, smooth cylindrical shape.",
+              prompt: "A pressurized rail tank car (no baffles, single-unit) at an industrial mill most likely carries:",
+              options: ["Compressed or liquefied industrial gas for manufacturing", "Grain or dry bulk commodity", "Crude oil for refining", "Drinking water for the facility"],
+              correct: 0,
+              why: "<strong>Pressurized rail tank cars</strong> (smooth cylindrical shape, no visible baffles or compartments) carry compressed or liquefied gases. At a paper mill, the most likely products are sulfur dioxide (bleaching), chlorine (bleaching), or similar industrial process chemicals. The container shape narrows your options before you read a single placard." },
+            { cat: "🌫️ VAPOR ASSESSMENT", hint: "A yellowish haze is visible at ground level. The gas has a strong, choking, suffocating quality that immediately irritates the eyes and throat. Workers can't tolerate it even briefly.",
+              prompt: "A visible yellowish haze with immediate choking/eye irritation tells you:",
+              options: ["Highly irritating corrosive gas — causes tissue damage on contact", "Flammable vapor cloud about to ignite", "Harmless condensation from temperature change", "Dust particles being stirred up by wind"],
+              correct: 0,
+              why: "Immediate, severe <strong>irritation on contact</strong> is the hallmark of corrosive gases. The yellow tint adds another data point — you're dealing with a reactive gas that attacks mucous membranes. On any call where people can't tolerate even brief exposure, assume the product is highly corrosive to human tissue." },
+            { cat: "🏭 OCCUPANCY ANALYSIS", hint: "The facility is a pulp and paper mill with bleaching operations, chemical storage, and wood processing lines.",
+              prompt: "What chemical process at a paper mill would require a bulk industrial gas delivery by rail?",
+              options: ["Chemical bleaching of wood pulp — requires oxidizing or reducing agents", "Paper printing — ink delivery by rail", "Wood drying — compressed air delivery", "Packaging — plastic wrap manufacturing"],
+              correct: 0,
+              why: "<strong>Pulp bleaching</strong> is the chemical-intensive step in paper manufacturing. It requires bulk quantities of bleaching agents — SO₂, chlorine, or chlorine dioxide — delivered by rail or truck. On any call at a paper mill, the chemical storage area near the bleaching department is your highest-risk zone." },
+            { cat: "💨 HAZARD TRAVEL PREDICTION", hint: "The yellowish haze is flowing along the road surface away from the rail car. Workers who ran uphill are recovering; those who went to the parking lot (lower elevation) are sicker.",
+              prompt: "Workers at lower elevations getting sicker while those uphill recover tells you:",
+              options: ["Heavy gas — flows downhill like water, concentrates in low terrain", "Gas follows wind only — terrain doesn't matter", "Uphill workers have natural immunity", "Lower workers were exposed longer and terrain is coincidental"],
+              correct: 0,
+              why: "This is <strong>real-world confirmation of vapor density</strong> at work. Heavy gases don't just pool — they FLOW downhill along terrain, concentrating in valleys, low parking lots, and depressions. On any call, watch what the gas does AND listen to victim reports about where symptoms are worse. The terrain is telling you where the gas is going." }
+        ],
+        synthesisWhy: "Pressurized rail car at a paper mill (industrial bleaching gas), yellow choking corrosive haze (visible irritant), pulp bleaching operations (bulk chemical process), and downhill flow concentrating in low areas — this is <strong>Sulfur Dioxide</strong>. The teaching point: the workers' symptoms told you the terrain story — those who ran downhill got sicker because the heavy gas followed them.",
+        vaporSceneText: "A rail car release of sulfur dioxide near an industrial site. The terrain includes a drainage ditch, a sewer grate, an open building doorway, and a hillside.",
+        vaporReasoning: "<strong>Sulfur Dioxide</strong> (VD 2.26) is heavier than air and collects in low-lying areas. Reacts with moisture in lungs to form sulfuric acid.",
+        meterSceneText: "A rail tank car at a paper mill has a crack releasing a choking gas. Yellowish haze at ground level extending 50 ft. Workers coughing and retreating uphill.",
+        isolation: {
+            hot: { correct: "1,000 ft radius from rail car", options: ["1,000 ft radius from rail car", "100 ft from the crack", "Inside the paper mill", "50 ft upwind only"] },
+            warm: { correct: "Decon at 1,500 ft, perpendicular to wind", options: ["Decon at 1,500 ft, perpendicular to wind", "At the mill parking lot", "300 ft downwind", "Adjacent to the rail car"] },
+            cold: { correct: "Upwind, uphill, 2,000+ ft", options: ["Upwind, uphill, 2,000+ ft", "500 ft downwind", "Inside the mill office", "Downhill at 1,000 ft"] }
+        },
+        isolationSceneText: "A rail car labeled UN 1079 (SO₂) has a crack. Wind from northwest at 15 mph. Mill in a valley. Town of 5,000 is 1.5 miles southeast (downwind, downhill).",
+        isolationReasoning: "<strong>SO₂</strong> (VD 2.26) flows downhill through the valley toward town. Large spill ERG distances can exceed 2 miles at night. Use the <strong>Hazmat Tactical Tool</strong> for UN 1079."
+    },
+    {
+        name: "Benzene",
+        vaporBehavior: "heavier", vaporCorrect: [0,1,2,5], bestMeter: "pid",
+        meterReason: {
+            fourgas: "<strong>Important but insufficient.</strong> LEL sensor detects explosive range, but benzene is a carcinogen at 0.1 ppm. 4-gas can't measure that low.",
+            pid: "<strong>Excellent choice.</strong> PID with 10.6 eV lamp detects benzene (CF 2.2). Gives sensitivity needed for the 0.1 ppm threshold.",
+            rad: "<strong>Wrong tool.</strong> Chemical hazard, not radiological.",
+            colorimetric: "<strong>Good confirmation.</strong> Benzene-specific tubes confirm identity.",
+            ammonia: "<strong>Wrong sensor.</strong>",
+            cgid: "<strong>Helpful for ID.</strong> PID is primary for concentration data."
+        },
+        sceneText: "A refinery drum has ruptured. A clear liquid with a sweet aromatic odor is spreading across the ground. Shimmering vapors are visible above the liquid surface flowing toward a floor drain.",
+        skillQuestions: [
+            { cat: "📦 CONTAINER RECOGNITION", hint: "A 55-gallon steel drum with a Class 3 (flammable liquid) diamond label has ruptured at a chemical storage area inside a refinery complex.",
+              prompt: "A Class 3 diamond label on a 55-gallon drum tells you the primary hazard is:",
+              options: ["Flammable liquid — ignition control is immediate priority", "Toxic gas — respiratory protection needed", "Radioactive material — distance and shielding required", "Corrosive — chemical-resistant PPE needed"],
+              correct: 0,
+              why: "The <strong>DOT hazard class diamond</strong> is one of your fastest field identification tools. Class 3 = Flammable Liquid. On any call, read the diamond first: Class 1 = Explosive, 2 = Gas, 3 = Flammable Liquid, 4 = Flammable Solid, 5 = Oxidizer, 6 = Toxic, 7 = Radioactive, 8 = Corrosive, 9 = Miscellaneous. This skill works on every container, every call." },
+            { cat: "🌫️ VAPOR ASSESSMENT", hint: "The liquid is clear and has a distinctly sweet, aromatic chemical smell — pleasant but chemical in nature. Vapors shimmer above the surface but are invisible.",
+              prompt: "A sweet aromatic odor from a clear industrial liquid at a refinery suggests:",
+              options: ["Aromatic hydrocarbon solvent — may be a carcinogen with low exposure limits", "Sugar-based industrial cleaner — low hazard", "Alcohol-based fuel — moderate hazard", "Perfume manufacturing ingredient — no chemical hazard"],
+              correct: 0,
+              why: "The <strong>sweet aromatic odor</strong> is the signature of benzene-ring chemicals (benzene, toluene, xylene, styrene). These are among the most dangerous industrial solvents — benzene in particular is a confirmed carcinogen at very low concentrations. On any call, 'sweet chemical smell' at a refinery or chemical plant should immediately trigger a high-alert posture." },
+            { cat: "🏭 OCCUPANCY ANALYSIS", hint: "The incident is inside a petroleum refinery complex with distillation towers, tank farms, and chemical processing units.",
+              prompt: "What unique health hazard should you consider with aromatic solvents at a refinery?",
+              options: ["Chronic toxicity — known carcinogens even at trace exposure levels", "Only an acute fire/explosion hazard — no long-term health concern", "Radiation exposure from refinery catalysts", "Biological hazards from petroleum-eating bacteria"],
+              correct: 0,
+              why: "<strong>Aromatic hydrocarbons like benzene are confirmed carcinogens.</strong> The NIOSH REL for benzene is just 0.1 ppm — far below what your nose can detect. On any call involving aromatic solvents, the health hazard may be invisible and undetectable without a PID. Chronic exposure causes leukemia. This changes your PPE and monitoring requirements." },
+            { cat: "💨 HAZARD TRAVEL PREDICTION", hint: "The liquid is flowing across concrete toward a floor drain. Shimmering vapors are following the liquid flow path. The odor is strongest at knee level and below.",
+              prompt: "Vapors concentrating at knee level and flowing toward drains tells you:",
+              options: ["Heavy vapors following the liquid — drainage system is a vapor migration pathway", "Vapors are rising but you're detecting residual odor on the ground", "No atmospheric hazard — only the liquid is dangerous", "Ventilation is pushing vapors downward artificially"],
+              correct: 0,
+              why: "Benzene vapors (VD 2.77) are <strong>much heavier than air</strong>. They follow the liquid into drains, creating a vapor migration pathway through the entire drainage system. On any call with a flammable liquid reaching a drain, the entire connected sewer/drain system becomes an explosion risk. A spark in a drain 300 feet away can flash back to the spill." }
+        ],
+        synthesisWhy: "Class 3 flammable drum at a refinery, sweet aromatic odor (aromatic hydrocarbon signature), chronic carcinogen risk (requires PID-level detection), and heavy vapors migrating through drains — this is <strong>Benzene</strong>. The critical teaching point: your LEL meter can't protect you from the cancer risk. Benzene is dangerous at concentrations 14,000× below its explosive range. You need a PID.",
+        vaporSceneText: "A refinery release of benzene vapors. The terrain includes a drainage ditch, a sewer grate, an open building doorway, and a hillside.",
+        vaporReasoning: "<strong>Benzene</strong> vapors are heavier than air and collect in low-lying areas. Confirmed carcinogen.",
+        meterSceneText: "A 55-gallon drum at a refinery ruptured. Clear liquid with sweet smell spreading toward a drain. Need explosive AND toxic hazard levels.",
+        isolation: {
+            hot: { correct: "150 ft radius from spill + all drains", options: ["150 ft radius from spill + all drains", "At the drum only", "50 ft downwind", "Inside the refinery unit"] },
+            warm: { correct: "Decon at 330 ft, crosswind", options: ["Decon at 330 ft, crosswind", "At the refinery gate", "150 ft downwind", "Adjacent to the drum"] },
+            cold: { correct: "Upwind, 500+ ft from source", options: ["Upwind, 500+ ft from source", "Downwind at 200 ft", "Inside the control room", "100 ft crosswind"] }
+        },
+        isolationSceneText: "A drum labeled UN 1114 (Benzene) ruptured at a refinery. Liquid spreading toward a floor drain. Wind from north at 8 mph. Control room 150 ft south.",
+        isolationReasoning: "<strong>Benzene</strong> (VD 2.77) vapors sink into drains. Explosion AND cancer hazard. Hot Zone includes all drains. Use the <strong>Hazmat Tactical Tool</strong> for UN 1114."
+    },
+    {
+        name: "Phosphine",
+        vaporBehavior: "heavier", vaporCorrect: [0,1,2,5], bestMeter: "colorimetric",
+        meterReason: {
+            fourgas: "<strong>Limited.</strong> Standard 4-gas lacks phosphine sensor. IDLH is 50 ppm — your 4-gas will miss it.",
+            pid: "<strong>Very poor.</strong> PID response is unreliable for phosphine.",
+            rad: "<strong>Wrong tool.</strong> Toxic gas, not radiological.",
+            colorimetric: "<strong>Best available.</strong> Phosphine-specific tubes give direct concentration. Critical for this chemical.",
+            ammonia: "<strong>Wrong sensor.</strong>",
+            cgid: "<strong>Helpful for ID.</strong> Phosphine tubes are best for concentration."
+        },
+        sceneText: "A grain elevator fumigation operation has gone wrong. Workers evacuated after smelling garlic near the base of a silo. One worker has collapsed at the entrance. First-arriving engine company 4-gas meters are showing all normal readings.",
+        skillQuestions: [
+            { cat: "📦 CONTAINER RECOGNITION", hint: "Small cylinders and sealed containers of fumigation pellets are stored near the silo base. A partially opened pellet container is visible near the downed worker.",
+              prompt: "Fumigation pellets at a grain storage facility generate hazardous gas through:",
+              options: ["Chemical reaction with moisture — pellets release toxic gas on contact with humidity", "Heating in a furnace — gas is released at high temperatures only", "Dissolving in water — requires intentional mixing", "UV light exposure — gas is released outdoors in sunlight only"],
+              correct: 0,
+              why: "<strong>Aluminum phosphide pellets react with atmospheric moisture</strong> to generate phosphine gas. This reaction is PASSIVE — it happens automatically once the container is opened and pellets are exposed to humidity. On any call involving fumigation, the gas generation begins the moment the seal is broken and continues until the pellets are consumed." },
+            { cat: "🌫️ VAPOR ASSESSMENT", hint: "The gas is completely invisible. A garlic or decaying-fish odor is detectable near ground level. The first-arriving 4-gas meters show O₂: 20.9%, LEL: 0%, CO: 0 ppm, H₂S: 0 ppm — ALL NORMAL. But a worker is unconscious.",
+              prompt: "Normal 4-gas readings with an unconscious worker tells you:",
+              options: ["A toxic gas is present that your standard meters CANNOT detect — critical detection gap", "The atmosphere is safe — the worker's collapse is from a medical condition", "The meters are malfunctioning and need recalibration", "The gas was present earlier but has fully dissipated"],
+              correct: 0,
+              why: "This is one of the most important lessons in hazmat: <strong>normal meter readings do NOT mean a safe atmosphere.</strong> Your 4-gas meter detects only O₂, LEL, CO, and H₂S. Hundreds of lethal chemicals will produce a 'normal' reading. On any call where victims are down but meters read normal, STOP — you have a detection gap. Bring specialized equipment." },
+            { cat: "🏭 OCCUPANCY ANALYSIS", hint: "The facility is a grain elevator with large silos, conveyor systems, and a fumigation operation in progress. Warning signs about fumigation are posted.",
+              prompt: "What makes grain storage fumigation one of the most under-recognized hazmat risks?",
+              options: ["The toxic gas produced is invisible, nearly undetectable by standard meters, and lethal at low concentrations", "The grain itself becomes explosive", "Fumigation chemicals are radioactive", "The silos produce methane from grain fermentation"],
+              correct: 0,
+              why: "<strong>Fumigation incidents are deadly because the gas bypasses standard detection.</strong> Phosphine is invisible, lethal at 50 ppm, and most fire department meters can't detect it. On any call at a grain elevator with fumigation signs, your standard 4-gas meter is USELESS for the primary hazard. You need chemical-specific detection." },
+            { cat: "💨 HAZARD TRAVEL PREDICTION", hint: "The garlic odor is strongest at the silo base and near ground-level openings. It is NOT detected on the elevated catwalk above the silo. The downed worker was at ground level.",
+              prompt: "Gas concentrated at ground level but absent at elevated catwalks confirms:",
+              options: ["Gas is heavier than air — it pools at the base of structures and in low areas", "Gas is lighter than air but trapped by the silo structure", "Gas only exists inside the silo — outside is safe", "Wind is pushing all gas to ground level temporarily"],
+              correct: 0,
+              why: "Phosphine (VD 1.18) is <strong>heavier than air</strong> — it settles at the base of structures and pools in low areas. The catwalk above is clear because the gas hasn't risen that high. On any call where ground-level workers are affected but elevated workers are not, you've confirmed a heavier-than-air gas. Predict where it will travel: downhill, into buildings at ground level, and into any enclosed low space." }
+        ],
+        synthesisWhy: "Fumigation pellets reacting with moisture (passive gas generation), normal 4-gas readings with an unconscious worker (CRITICAL detection gap), grain elevator fumigation (under-recognized hazard), and ground-level concentration (heavier than air) — this is <strong>Phosphine</strong>. The most important lesson: the 4-gas meter read NORMAL while a worker was dying. Standard meters have blind spots. Know what your equipment CAN'T detect.",
+        vaporSceneText: "A grain elevator release of phosphine. The terrain includes a drainage ditch, a sewer grate, an open building doorway, and a hillside.",
+        vaporReasoning: "<strong>Phosphine</strong> (VD 1.18) is heavier than air and accumulates in low-lying areas. Also pyrophoric at high concentrations.",
+        meterSceneText: "A fumigation operation gone wrong at a grain elevator. Workers evacuated after smelling garlic. One worker collapsed. Standard 4-gas reading NORMAL — but worker in distress.",
+        isolation: {
+            hot: { correct: "200 ft radius from source, all low areas", options: ["200 ft radius from source, all low areas", "Inside the grain silo only", "50 ft from the cylinder", "100 ft upwind"] },
+            warm: { correct: "Decon at 500 ft, crosswind", options: ["Decon at 500 ft, crosswind", "At the elevator office", "Adjacent to Hot Zone downwind", "Inside the equipment shed"] },
+            cold: { correct: "Upwind, uphill, 700+ ft", options: ["Upwind, uphill, 700+ ft", "300 ft downwind", "Inside the grain office", "Adjacent property (100 ft)"] }
+        },
+        isolationSceneText: "Fumigation cylinders (UN 2199, Phosphine) failed at a grain elevator. Wind from west at 7 mph. Flat terrain. Highway 300 ft east. Homes 0.5 miles east.",
+        isolationReasoning: "<strong>Phosphine</strong> (VD 1.18) spreads on flat ground. Standard 4-gas shows NORMAL while lethal levels exist — major detection gap. Use the <strong>Hazmat Tactical Tool</strong> for UN 2199."
+    }
+];
+
+const practiceScenarios = [
+    {s:"Responders relied on odor to identify the product and determine if the area was safe.",safe:false,exp:"<strong>Dangerous.</strong> Odor fatigue (olfactory fatigue) makes smell unreliable. H₂S becomes undetectable at dangerous concentrations. HCN cannot be smelled by ~40% of the population. Many chemicals have no odor at all. Meters are the only reliable way to assess atmospheric hazards."},
+    {s:"The entry team entered a vapor cloud wearing structural turnout gear and SCBA because 'it was just a small leak.'",safe:false,exp:"<strong>Dangerous.</strong> Structural turnout gear is NOT chemical-protective. Many toxic gases and liquids penetrate or permeate through turnout gear. Vapor clouds require chemical-protective suits (Level A or B). SCBA protects the lungs but not the skin."},
+    {s:"Before entering, the team conducted a 360° size-up from a safe distance using binoculars and the ERG.",safe:true,exp:"<strong>Safe.</strong> Remote assessment is the foundation of hazmat response. Binoculars allow reading placards, labels, and container markings from a safe distance. The ERG provides initial isolation distances. Maximum information, minimum exposure."},
+    {s:"The LEL meter showed 8%, so the team reported the atmosphere was safe and removed respiratory protection.",safe:false,exp:"<strong>Dangerous.</strong> 8% LEL means the atmosphere contains 8% of the concentration needed to explode — but it may already be well above the toxic threshold. Chemicals are TOXIC before they are EXPLOSIVE. Gasoline at 8% LEL = ~1,120 ppm — nearly 4× the health hazard level."},
+    {s:"The team established a decon corridor before any entry team member crossed into the Hot Zone.",safe:true,exp:"<strong>Safe.</strong> Decon must be operational before entry. If a team member is contaminated and needs emergency decon, you can't make them wait. This is both an OSHA requirement and basic operational discipline."},
+    {s:"A technician tasted a white powder to try to identify it as sugar vs. a hazardous substance.",safe:false,exp:"<strong>Dangerous.</strong> Never taste, touch, or directly smell unknown substances. Even tiny amounts of some chemicals (ricin, fentanyl, cyanide salts) can be lethal through ingestion or mucous membrane absorption. Use detection equipment."},
+    {s:"The IC established command upwind and uphill of the release before committing any resources.",safe:true,exp:"<strong>Safe.</strong> Command post placement upwind and uphill protects the IC and support personnel from vapor exposure. It also provides a better vantage point for observing the incident."},
+    {s:"Responders assumed the absence of meter readings meant the atmosphere was safe.",safe:false,exp:"<strong>Dangerous.</strong> No reading does NOT mean no hazard. Your meter may not detect the specific chemical present. PIDs don't detect all chemicals. 4-gas meters only measure 4 gases. Always consider what your meter CAN'T detect."},
+    {s:"The entry team communicated their air supply levels every 5 minutes during entry operations.",safe:true,exp:"<strong>Safe.</strong> Regular air supply communication is critical for accountability and emergency planning. It allows the Entry Group Supervisor to track consumption rates and order exits before emergency levels."},
+    {s:"A firefighter removed their SCBA mask briefly in the Warm Zone because 'it smelled fine.'",safe:false,exp:"<strong>Dangerous.</strong> The Warm Zone is the contamination reduction corridor — residual contaminants may be present. Many toxic chemicals are odorless or cause olfactory fatigue. SCBA stays on until you are in the Cold Zone and cleared through decon."},
+    {s:"The team grounded and bonded all containers before transferring a flammable liquid.",safe:true,exp:"<strong>Safe.</strong> Static electricity during liquid transfer can ignite flammable vapors. Grounding connects containers to earth; bonding equalizes charge between containers. This is a mandatory safety step for all flammable liquid transfers."},
+    {s:"Responders used their personal cell phones inside the Hot Zone near a flammable vapor release.",safe:false,exp:"<strong>Dangerous.</strong> Cell phones are NOT intrinsically safe. They can produce sparks sufficient to ignite flammable vapor atmospheres. Only intrinsically safe (IS) rated electronics should be used inside the Hot Zone during flammable events."},
+    {s:"The team conducted a pre-entry briefing covering objectives, communication signals, and emergency withdrawal procedures.",safe:true,exp:"<strong>Safe.</strong> Pre-entry briefings ensure every team member understands the mission, communication protocols, and emergency procedures. This reduces confusion and prevents freelancing during operations."},
+    {s:"A single technician entered the Hot Zone alone to 'just take a quick reading.'",safe:false,exp:"<strong>Dangerous.</strong> The buddy system is mandatory. Two-person entry teams with a backup team standing by is the minimum. A lone entry creates zero rescue capability if the technician goes down."},
+    {s:"The team used pH paper to test an unknown liquid before committing to a specific PPE ensemble.",safe:true,exp:"<strong>Safe.</strong> pH paper is a simple, fast field test that can immediately identify whether a substance is acidic or basic. This information drives PPE selection and containment material choices. Smart field testing."},
+    {s:"Responders assumed a labeled container actually contained what the label said.",safe:false,exp:"<strong>Dangerous.</strong> Labels can be wrong, outdated, or intentionally misleading (especially in clandestine lab settings). Containers may have been reused for a different product. Always verify with detection equipment and consider the possibility that the label is inaccurate."},
+    {s:"The IC ordered all personnel to stage upwind before any approach to an unknown odor call.",safe:true,exp:"<strong>Safe.</strong> Upwind staging protects all responders from vapor exposure during the initial assessment phase. This is basic wind discipline and should be automatic on every hazmat response."},
+    {s:"The team patched a leaking drum with a standard duct tape repair in a high-heat environment.",safe:false,exp:"<strong>Dangerous.</strong> Duct tape adhesive fails at elevated temperatures and may react with certain chemicals. Use chemically compatible patching materials rated for the specific product and conditions. Always check compatibility."},
+    {s:"Before approaching, the team confirmed wind direction using a simple wind indicator (wet finger, wind sock, dust throw).",safe:true,exp:"<strong>Safe.</strong> Confirming wind direction before approach is critical for positioning. Simple methods work. Wind shifts can change the entire hazard picture — continue monitoring throughout the incident."},
+    {s:"Responders washed acid contamination off a victim using a high-pressure fire hose.",safe:false,exp:"<strong>Dangerous.</strong> High-pressure water can drive contaminants into the skin and cause additional injury. Decon should use gentle, low-pressure water flow (shower-like). This is especially critical for acid burns and corrosive contamination."},
+    {s:"The team set up emergency decon (a charged hose line and a means of runoff containment) before making entry.",safe:true,exp:"<strong>Safe.</strong> Emergency decon provides immediate wash-down capability for a contaminated or injured responder. It doesn't replace formal technical decon but provides a life-safety backup. Always have it ready before entry."},
+    {s:"A responder ate lunch in the Warm Zone during an extended operation.",safe:false,exp:"<strong>Dangerous.</strong> Eating, drinking, or smoking in the Warm Zone creates ingestion exposure risk from residual contaminants. All eating and drinking must occur in the Cold Zone after proper decon and hand washing."},
+    {s:"The team photographed placards, labels, and container markings from a distance before approach.",safe:true,exp:"<strong>Safe.</strong> Photographic documentation from a safe distance preserves critical information and allows others to analyze it without entering the hazard area. Modern phone cameras with zoom make this easier than ever."},
+    {s:"Responders poured water directly into a smoking container of an unknown reactive material.",safe:false,exp:"<strong>Dangerous.</strong> Many reactive materials react violently with water — water-reactive metals (sodium, lithium, magnesium), concentrated sulfuric acid, and some oxidizers can explode or generate toxic gases when water is added. Always identify the product first."},
+    {s:"The team verified their meters were bump-tested and calibrated before departing the station.",safe:true,exp:"<strong>Safe.</strong> Bump testing confirms sensor response; calibration confirms accuracy. A meter that hasn't been verified may read incorrectly — either giving false confidence or false alarms. This is a critical pre-deployment check."},
+    {s:"The IC assumed the incident was over because the visible vapor cloud dissipated.",safe:false,exp:"<strong>Dangerous.</strong> Many toxic chemicals are invisible. A dissipating cloud may mean the release stopped — or it may mean the chemical evaporated and is now present as an invisible toxic vapor. Only meter readings confirm the atmosphere is safe."},
+    {s:"The team established separate entry and exit points for the Hot Zone with accountability tracking.",safe:true,exp:"<strong>Safe.</strong> Separate entry/exit prevents cross-contamination and ensures every person entering and exiting is tracked. Accountability is a fundamental principle — you must always know who is in the Hot Zone."},
+    {s:"A technician used a cigarette lighter to test if a gas was flammable.",safe:false,exp:"<strong>Dangerous.</strong> Open flame near a potentially flammable or explosive atmosphere is an invitation to catastrophe. Use LEL meters — they exist specifically so you don't have to introduce ignition sources. This seems obvious but has actually happened."},
+    {s:"The team used a systematic monitoring sweep pattern — high, middle, and low — inside the structure.",safe:true,exp:"<strong>Safe.</strong> Monitoring at multiple heights accounts for vapor density differences. Heavy vapors settle low; light gases rise. A single-height reading can completely miss the hazard layer. Sweep high, middle, and low every time."},
+    {s:"Responders entered a confined space with only an LEL meter and no O₂ monitoring.",safe:false,exp:"<strong>Dangerous.</strong> Confined spaces can be oxygen-deficient (asphyxiation) or oxygen-enriched (fire hazard) without any combustible gas present. O₂ monitoring is mandatory for confined space entry. Always use a 4-gas minimum."},
+    {s:"The team marked the Hot Zone boundary with physical barriers (cones, tape) that were clearly visible.",safe:true,exp:"<strong>Safe.</strong> Physical zone marking prevents accidental entry by unprotected personnel. Verbal-only zones are easily forgotten or misunderstood. Tape, cones, and signs make the boundary unmistakable."},
+    {s:"A responder cross-contaminated the Cold Zone by walking from the Hot Zone directly to the command post.",safe:false,exp:"<strong>Dangerous.</strong> Bypassing decon spreads contamination to clean areas and exposes unprotected personnel. Every person leaving the Hot Zone MUST go through decon. No exceptions, no shortcuts."},
+    {s:"The team identified an escape route and rally point before entering the Hot Zone.",safe:true,exp:"<strong>Safe.</strong> Knowing your way out before you go in is fundamental. If conditions deteriorate (explosion, fire, wind shift), the team must be able to withdraw immediately to a predetermined safe location."},
+    {s:"Responders used the same gloves to handle both the contaminated product and their clean radio.",safe:false,exp:"<strong>Dangerous.</strong> Cross-contamination through shared equipment is a common exposure pathway. Contaminated gloves transfer chemicals to anything touched — radios, door handles, faces. Use a clean outer glove or designate a clean team member for communications."},
+    {s:"The team consulted SDS sheets and the ERG before selecting their PPE ensemble.",safe:true,exp:"<strong>Safe.</strong> SDS sheets provide specific chemical resistance data, and the ERG gives initial isolation guidance. Together they inform PPE selection. Never guess at PPE — always reference available data."},
+    {s:"The team decided to 'let it burn' when a pressurized flammable gas cylinder was fully involved in fire.",safe:true,exp:"<strong>Safe.</strong> For fully involved pressurized gas cylinders, a defensive strategy (protect exposures, let it burn, evacuate the area) is often safer than aggressive attack. Cooling an impinged cylinder risks BLEVE if the fire is extinguished but the tank remains heated."},
+    {s:"A responder removed their chemical suit in the Hot Zone because they were overheating.",safe:false,exp:"<strong>Dangerous.</strong> Heat stress is real, but removing PPE in the Hot Zone exposes you to the hazard you're protecting against. The correct response is to exit the Hot Zone, go through decon, and rehab in the Cold Zone. Plan for heat stress — shorter entries, more rotation."},
+    {s:"The team used nonsparking tools (brass, beryllium copper) when working near flammable vapors.",safe:true,exp:"<strong>Safe.</strong> Standard steel tools can generate sparks when struck against hard surfaces. Nonsparking tools minimize ignition risk in flammable atmospheres. This includes wrenches, hammers, and pry bars."},
+    {s:"Responders flushed a victim's eyes with water for 30 seconds then stopped because the victim said they felt better.",safe:false,exp:"<strong>Dangerous.</strong> Chemical eye contamination requires minimum 15-20 minutes of continuous flushing (some chemicals require longer). Pain relief does NOT mean the chemical is neutralized. Stopping early can result in permanent eye damage."},
+    {s:"The team established dedicated radio channels for entry operations and command operations separately.",safe:true,exp:"<strong>Safe.</strong> Separate radio channels prevent communication overload. Entry teams need clear, uninterrupted communication with the Entry Group Supervisor. Command-level traffic on a separate channel keeps strategic and tactical communications organized."},
+    {s:"A responder walked through a liquid spill to get a closer look at the placard on a container.",safe:false,exp:"<strong>Dangerous.</strong> Walking through a spill creates direct contact exposure and can spread contamination. Many chemicals absorb through boot materials. Use binoculars to read placards from a distance — never walk through the product."},
+    {s:"The team tested their decon procedures with clean water before any contaminated personnel went through.",safe:true,exp:"<strong>Safe.</strong> A dry run of decon ensures the setup works — adequate water pressure, proper drainage, sufficient supplies, and team coordination. Finding problems during a test run is far better than discovering them with a contaminated responder."},
+    {s:"The IC released units from the scene without conducting any air monitoring to verify the area was clear.",safe:false,exp:"<strong>Dangerous.</strong> Termination requires confirmation that the atmosphere is safe. Residual contamination, off-gassing from absorbed product, or underground migration can create ongoing hazards. Monitor before declaring the scene safe."},
+    {s:"The team double-checked chemical compatibility before selecting absorbent materials for spill containment.",safe:true,exp:"<strong>Safe.</strong> Not all absorbents work on all chemicals. Some absorbents react with certain products (e.g., cellulose-based absorbents with strong oxidizers). Always verify compatibility — the Hazmat Tactical Tool's containment compatibility section can help."},
+    {s:"Responders assumed all clear liquids were water.",safe:false,exp:"<strong>Dangerous.</strong> Many extremely dangerous chemicals are clear liquids — methanol, benzene, hydrofluoric acid, many nerve agents. Appearance is NOT identification. Use meters, pH paper, and detection equipment. Never assume."},
+    {s:"The team established a medical monitoring station in the Cold Zone for all entry team personnel.",safe:true,exp:"<strong>Safe.</strong> Pre-entry and post-entry medical monitoring catches signs of exposure or heat stress early. Vital signs, symptoms, and overall condition should be documented for every entry team member."},
+    {s:"A responder neutralized an acid spill with a base without considering the heat of reaction.",safe:false,exp:"<strong>Dangerous.</strong> Acid-base neutralization is exothermic — it generates heat. Rapid neutralization of concentrated acids can produce violent boiling, spattering, and steam that spreads contamination. Neutralize slowly with dilute agents, or use containment and professional cleanup."},
+    {s:"The team used a reference source to verify the flash point and autoignition temperature before beginning hot work near a spill.",safe:true,exp:"<strong>Safe.</strong> Knowing the flash point tells you at what temperature vapors can ignite. The autoignition temperature tells you when the product ignites without a spark. These values determine whether hot work (cutting, welding) can be safely performed near the area."},
+    {s:"Responders mixed bleach with ammonia during decontamination procedures.",safe:false,exp:"<strong>Dangerous.</strong> Bleach (sodium hypochlorite) + ammonia = chloramine gas, which is toxic. This reaction has injured and killed responders and civilians. Never mix decon chemicals without understanding their compatibility."},
+    {s:"The team assigned a dedicated Safety Officer who had the authority to halt operations if conditions became unsafe.",safe:true,exp:"<strong>Safe.</strong> A Safety Officer with stop-work authority is an ICS requirement and a critical safety net. The SO monitors conditions, PPE integrity, and team fatigue that the IC may miss while focused on operations."},
+    {s:"A technician touched a corroded container without gloves to check if it was leaking.",safe:false,exp:"<strong>Dangerous.</strong> Corroded containers may have chemical residue on external surfaces. Many chemicals absorb through skin contact. Always wear appropriate gloves when handling any container in a hazmat environment."},
+    {s:"The team used continuous air monitoring during the entire transfer operation, not just at the start.",safe:true,exp:"<strong>Safe.</strong> Conditions change during operations. Agitation during transfer can release additional vapors. Temperature changes affect off-gassing rates. Continuous monitoring catches changes that a single initial reading would miss."},
+    {s:"Responders assumed a faded or unreadable placard meant the product was not dangerous.",safe:false,exp:"<strong>Dangerous.</strong> Faded placards indicate age and weather exposure, not reduced hazard. The product inside hasn't changed. Treat unreadable placards as unknown hazards and use detection equipment to identify the product."},
+    {s:"The team documented all meter readings with timestamps and locations throughout the incident.",safe:true,exp:"<strong>Safe.</strong> Documentation creates a record of conditions at each point in the operation. This data supports after-action reviews, regulatory compliance, medical follow-up for exposed workers, and potential legal proceedings."},
+    {s:"A responder diluted concentrated sulfuric acid by pouring water into the acid.",safe:false,exp:"<strong>Dangerous.</strong> Always add acid to water, never water to acid. Adding water to concentrated sulfuric acid causes a violent exothermic reaction that can boil instantly and splatter acid. The rule: 'Do as you oughta — add acid to water.'"},
+    {s:"The team conducted a thorough after-action review within 48 hours of the incident.",safe:true,exp:"<strong>Safe.</strong> Timely AARs capture lessons while memory is fresh. They identify what worked, what didn't, and what to train on next. This is how teams improve. NFPA 475 requires AAR documentation."},
+    {s:"Responders used a garden hose nozzle on fog pattern for emergency decontamination of a chemical burn victim.",safe:true,exp:"<strong>Safe.</strong> In an emergency, any low-pressure water source in a fog/shower pattern is acceptable for gross decon. Don't delay decon searching for the perfect setup — speed matters more than equipment perfection for chemical burns."},
+    {s:"The team stored contaminated PPE in the back of a clean apparatus without bagging it.",safe:false,exp:"<strong>Dangerous.</strong> Contaminated PPE off-gasses and can expose personnel in the vehicle. All contaminated equipment must be double-bagged, labeled, and transported separately. Cross-contamination of clean apparatus is a real risk."},
+    {s:"The IC ensured all personnel were accounted for before allowing the scene to be released.",safe:true,exp:"<strong>Safe.</strong> Personnel accountability is critical throughout the incident and especially at termination. Missing personnel could indicate someone is still in the Hot Zone, injured, or bypassed decon."},
+    {s:"A responder used their bare hands to wipe a chemical splash off their face shield.",safe:false,exp:"<strong>Dangerous.</strong> Bare skin contact with contaminated PPE transfers the chemical directly to your hands and potentially to your face. Use a designated wipe material with appropriate protection, or go through decon."},
+    {s:"The team practiced donning and doffing procedures at the station before the call, which allowed smooth operations on scene.",safe:true,exp:"<strong>Safe.</strong> Regular PPE practice ensures teams can suit up quickly and correctly under stress. Doffing is equally important — improper removal is a common contamination pathway. Practice both regularly."},
+    {s:"Responders left a leaking container upright when it would have been safer tipped onto its damaged side to slow the leak.",safe:false,exp:"<strong>Dangerous.</strong> Not necessarily — this requires assessment. Sometimes repositioning a container can slow or stop a leak (e.g., rotating a drum so the leak is above the liquid level). A blanket 'don't touch it' rule ignores practical mitigation options. Evaluate risk vs. benefit."},
+    {s:"The team verified radio communication between the entry team and the Entry Group Supervisor before entering the Hot Zone.",safe:true,exp:"<strong>Safe.</strong> Lost communication in the Hot Zone can be life-threatening. Verify comms before entry — including backup communication methods (hand signals, backup radio). If comms fail during entry, teams should withdraw."},
+    {s:"A technician reused a colorimetric tube that had already been opened for a previous test.",safe:false,exp:"<strong>Dangerous.</strong> Colorimetric tubes are single-use. Once opened, they react with ambient air and lose accuracy. Reusing them gives unreliable readings — potentially showing 'safe' when the atmosphere is dangerous."},
+    {s:"The team used the Hazmat Tactical Tool to verify correction factors before interpreting PID readings.",safe:true,exp:"<strong>Safe.</strong> PID readings are calibrated to isobutylene. Without applying the correct correction factor for the actual chemical present, you could be significantly underestimating the real concentration. Always correct your readings."},
+    {s:"Responders attempted to cap a leaking chlorine cylinder using standard pipe fittings from the engine company.",safe:false,exp:"<strong>Dangerous.</strong> Chlorine cylinders require specific chlorine emergency kits (Chlorine Institute Kit A, B, or C depending on container type). Standard pipe fittings are not compatible and may fail under pressure, worsening the release."},
+    {s:"The team marked wind direction at the scene and monitored it for shifts throughout the operation.",safe:true,exp:"<strong>Safe.</strong> Wind direction determines safe approach, zone boundaries, and evacuation paths. Wind shifts during an operation can suddenly put the command post or staging area in the plume. Continuous monitoring is essential."},
+    {s:"A responder sealed a leaking container inside a plastic garbage bag for transport.",safe:false,exp:"<strong>Dangerous.</strong> Garbage bags are not chemically rated containers. They may dissolve, off-gas inside the bag creating pressure, or allow vapor migration. Use compatible overpacks and containers rated for the specific product."},
+    {s:"The team limited Hot Zone entry time based on air supply, heat stress, and chemical exposure calculations.",safe:true,exp:"<strong>Safe.</strong> Entry time limits should consider all three factors — whichever is most restrictive becomes the operational limit. Running out of air, overheating, or exceeding exposure limits are all life-threatening."},
+    {s:"Responders applied a foam blanket over a flammable liquid spill to suppress vapor generation before transfer operations.",safe:true,exp:"<strong>Safe.</strong> Foam blanket suppresses vapor generation from flammable liquid surfaces, reducing explosion risk during operations. This is standard practice for large flammable liquid spills where ignition control is needed."},
+    {s:"A technician assumed that because they couldn't see a vapor cloud, no hazardous atmosphere existed.",safe:false,exp:"<strong>Dangerous.</strong> Most toxic and flammable gases are invisible. You cannot see carbon monoxide, hydrogen cyanide, benzene vapors, propane, hydrogen sulfide (at most concentrations), or hundreds of other lethal chemicals. Visibility is not safety."},
+    {s:"The team staged cyanide antidote kits at decon when responding to a suspected HCN release.",safe:true,exp:"<strong>Safe.</strong> Cyanide exposure requires immediate antidote administration. Having kits staged at decon — where victims exit the Hot Zone — puts treatment at the first point of contact. Delay in cyanide treatment can be fatal."},
+    {s:"Responders used water fog to knock down a chlorine gas cloud.",safe:true,exp:"<strong>Safe.</strong> Water fog can effectively absorb and knock down chlorine gas clouds. Chlorine is water-soluble and reacts with water. However, the resulting runoff will be acidic (hydrochloric acid) and must be contained."},
+    {s:"A responder assumed their chemical suit would protect against all chemicals indefinitely.",safe:false,exp:"<strong>Dangerous.</strong> No single chemical suit material resists all chemicals. Permeation and degradation rates vary by chemical and suit material. Always check the manufacturer's chemical resistance guide. Suits also have maximum wear times based on the chemical threat."},
+    {s:"The team overpacked a leaking drum into a compatible, larger salvage drum with absorbent material.",safe:true,exp:"<strong>Safe.</strong> Overpacking is a standard containment technique — placing a damaged container inside a larger, compatible container with absorbent. Verify chemical compatibility of the overpack material before use."},
+    {s:"Responders performed decon on an ambulatory victim by having them stand under a ladder truck master stream.",safe:false,exp:"<strong>Dangerous.</strong> Master stream pressure can cause physical injury (knockdown force), hypothermia, and actually drive contaminants into the skin. Decon requires low-pressure water (shower-like) in a controlled corridor with runoff containment."},
+    {s:"The team established an exclusion zone around a suspected meth lab and waited for a specialized team.",safe:true,exp:"<strong>Safe.</strong> Clandestine labs contain multiple incompatible chemicals, booby trap potential, and volatile environments. Establishing exclusion zones and waiting for specialized hazmat/law enforcement teams is the correct response."},
+    {s:"A responder ignored a low battery warning on their 4-gas meter and continued entry operations.",safe:false,exp:"<strong>Dangerous.</strong> Low battery conditions cause inaccurate sensor readings. A dying meter may underreport or stop detecting hazards entirely. When you get a low battery warning, exit and replace the meter. Your life depends on accurate readings."},
+    {s:"The team used the ERG's Table 1 (Initial Isolation and Protective Action Distances) to establish initial zones before product identification was complete.",safe:true,exp:"<strong>Safe.</strong> The ERG's orange-bordered pages provide initial isolation distances based on UN number. Using these distances before full identification gives you a defensible starting point while further assessment continues."},
+    {s:"Responders drove their apparatus through a visible vapor cloud to reach victims on the other side.",safe:false,exp:"<strong>Dangerous.</strong> Vehicle engines are ignition sources. Driving through flammable or unknown vapor clouds risks explosion and exposes crew to toxic atmospheres. Approach from upwind, not through the cloud. Victims on the other side require a flanking approach."},
+    {s:"The team established a backup team in full PPE ready to make an immediate rescue if the entry team got into trouble.",safe:true,exp:"<strong>Safe.</strong> A backup (RIT/FAST) team in full PPE with rescue equipment ready is mandatory. If the entry team goes down, the backup team can enter immediately without suiting-up delay. This is a non-negotiable safety requirement."},
+    {s:"A responder washed contaminated equipment off in a nearby creek to avoid dealing with containment.",safe:false,exp:"<strong>Dangerous.</strong> Decon wastewater is contaminated and must be contained, not released into waterways. This creates environmental contamination, potential criminal liability, and downstream exposure to communities. Contain all decon runoff."},
+    {s:"The team identified the wind direction, vapor density, and terrain slope before establishing any zones.",safe:true,exp:"<strong>Safe.</strong> These three factors determine where the hazard will travel. Wind moves the plume, vapor density determines if it rises or sinks, and terrain slope channels heavy vapors. All three must be assessed before zone placement makes sense."},
+    {s:"Responders assumed that a 'Class 9' (Miscellaneous Dangerous Goods) placard meant the product was not very hazardous.",safe:false,exp:"<strong>Dangerous.</strong> Class 9 includes lithium batteries (thermal runaway/toxic gases), environmentally hazardous substances, elevated temperature materials, and other products that don't fit neatly into other classes. 'Miscellaneous' does not mean 'harmless.'"},
+    {s:"The team cross-referenced the UN number, placard, container type, and occupancy before committing to an identification.",safe:true,exp:"<strong>Safe.</strong> Multiple data points reduce the chance of misidentification. A single clue can be misleading — but when the UN number, placard class, container type, and occupancy all point to the same product, your confidence increases dramatically."},
+    {s:"A technician used a pH meter calibrated three weeks ago without recalibrating before field use.",safe:false,exp:"<strong>Dangerous.</strong> pH meters drift over time and require regular calibration. A three-week-old calibration may give inaccurate readings. Always calibrate pH meters before field use with known buffer solutions."},
+    {s:"The team wore appropriate respiratory protection during the overhaul and cleanup phase after the active release was controlled.",safe:true,exp:"<strong>Safe.</strong> Residual contamination persists after the active release stops. Surfaces, soil, and enclosed areas may still off-gas. Respiratory protection during overhaul prevents the 'cleanup exposure' that has sickened many responders."},
+    {s:"Responders placed containment dikes downstream of a spill but not upstream, allowing continued product flow into the contained area.",safe:false,exp:"<strong>Dangerous.</strong> While downstream dikes are important, failing to control the source allows continuous product accumulation. Address the source first (shut valves, plug leaks, divert flow) while also containing what has already escaped."},
+    {s:"The team used a systematic approach: identify, isolate, deny entry, then develop an action plan.",safe:true,exp:"<strong>Safe.</strong> This is the core hazmat response sequence. Identify the hazard, establish isolation perimeter, deny entry to unprotected personnel, then develop a plan. Rushing to action without this sequence leads to freelancing and exposure."},
+    {s:"A responder assumed their APR (Air-Purifying Respirator) cartridge would protect against an unknown gas.",safe:false,exp:"<strong>Dangerous.</strong> APR cartridges are chemical-specific — they only filter what they're rated for. Unknown atmospheres require supplied air (SCBA or SAR). An APR in an unknown atmosphere provides zero protection against unfiltered chemicals and no protection in oxygen-deficient environments."},
+    {s:"The team conducted a post-incident medical evaluation for all entry team members within 24 hours.",safe:true,exp:"<strong>Safe.</strong> Some chemical exposures have delayed symptoms. Post-incident medical evaluation catches effects that weren't immediately apparent. Documentation also creates a baseline for any future health claims."},
+    {s:"Responders stored a recovered sample in a food container (glass jar) without proper labeling.",safe:false,exp:"<strong>Dangerous.</strong> Unlabeled hazardous material samples in food containers create poisoning risk for anyone who encounters them later. All samples must be in appropriate containers with proper hazmat labeling, chain of custody, and storage protocols."},
+    {s:"The team checked chemical resistance charts for their suit material against the identified product before entry.",safe:true,exp:"<strong>Safe.</strong> Different suit materials resist different chemicals. Butyl rubber excels against some chemicals but fails against others. Viton, Teflon, and other materials each have strengths and weaknesses. Always verify before entry."},
+    {s:"A technician disconnected a pressurized line without first verifying it was isolated and depressurized.",safe:false,exp:"<strong>Dangerous.</strong> Pressurized lines contain stored energy. Disconnecting under pressure can cause whipping lines, projectile fittings, and sudden releases of hazardous materials. Always verify isolation and bleed pressure before disconnecting."},
+    {s:"The team established a Unified Command structure when law enforcement arrived at a suspected intentional release.",safe:true,exp:"<strong>Safe.</strong> Intentional releases involve both hazmat response AND criminal investigation. Unified Command ensures both missions are coordinated — evidence preservation during decon, witness management, and scene security."},
+    {s:"Responders used regular garden-variety kitty litter to absorb a concentrated oxidizer spill.",safe:false,exp:"<strong>Dangerous.</strong> Many kitty litters contain organic clay that can react with strong oxidizers, potentially causing ignition. Use only compatible, inert absorbent materials verified against the specific product. Check the Hazmat Tactical Tool's containment compatibility section."},
+    {s:"The team implemented Time, Distance, and Shielding principles when approaching a suspected radiological source.",safe:true,exp:"<strong>Safe.</strong> TDS is the foundation of radiation protection: minimize Time near the source, maximize Distance from it, and use Shielding materials between you and the source. These three principles apply to every radiological response."},
+    {s:"A responder assumed a natural gas leak was safe because 'natural gas just rises and dissipates.'",safe:false,exp:"<strong>Dangerous.</strong> While methane (natural gas) is lighter than air, in enclosed spaces it accumulates and can reach explosive concentrations. Additionally, natural gas pipelines operate at significant pressure — a major leak can create a large explosive zone even outdoors."},
+    {s:"The team ensured wastewater containment was in place before beginning decontamination operations.",safe:true,exp:"<strong>Safe.</strong> Decon runoff is contaminated water. Allowing it to enter storm drains, waterways, or soil creates environmental contamination and potential liability. Kiddie pools, portable berms, or engineered collection systems contain the runoff."},
+    {s:"A technician applied the VOC correction factor from the Hazmat Tactical Tool before reporting PID readings to the IC.",safe:true,exp:"<strong>Safe.</strong> PID instruments are calibrated to isobutylene. Without applying the correction factor for the actual chemical, you could be underreporting the real concentration by 2-3x. Correcting readings before reporting ensures the IC gets accurate data for decision-making."},
+];
+
+const mindsetMessages = [
+    {main:"Hazmat response is not about memorizing chemicals.", detail:"It is about <strong>reading containers, understanding chemistry, predicting hazard behavior, and using meters intelligently.</strong>", sub:"Every incident is a puzzle. The clues are in the containers, the placards, the terrain, the weather, and the behavior of the product. Your job is to read those clues — and act on them before anyone gets hurt."},
+    {main:"The best hazmat technicians are not the bravest.", detail:"They are the most <strong>disciplined</strong>. They follow the process every single time — even when the call seems routine.", sub:"Routine is where complacency lives. The technician who survives a 30-year career is the one who treats every unknown as genuinely unknown."},
+    {main:"Your meter is only as good as your understanding of its limitations.", detail:"Every instrument has <strong>blind spots</strong>. Knowing what your meter CAN'T detect is just as important as knowing what it can.", sub:"A PID won't detect methane. A 4-gas won't detect phosphine. A radiation detector won't detect nerve agents. Layer your detection strategy."},
+    {main:"Speed kills in hazmat response.", detail:"The pressure to 'do something' is real — but the <strong>fastest way to solve a hazmat problem is to slow down</strong> and think before you act.", sub:"A two-minute size-up saves a two-hour decontamination. A five-minute plan prevents a five-day cleanup. Invest time early."},
+    {main:"Chemicals don't read the textbook.", detail:"Real-world releases are <strong>messy, unpredictable, and complicated</strong> by weather, terrain, container damage, and mixed loads.", sub:"The scenario that matches the textbook perfectly is the exception, not the rule. Train for ambiguity."},
+    {main:"The ERG is a starting point, not a finish line.", detail:"Initial isolation distances get you safely set up. <strong>Real-time data from meters</strong> determines where the actual hazard boundaries are.", sub:"Don't anchor to a distance just because the book says so. If your meters say the hazard has traveled further, believe your meters."},
+    {main:"Decontamination is not optional.", detail:"It is a <strong>critical life-safety operation</strong> that protects responders, their families, and the community.", sub:"The technician who shortcuts decon brings the hazard home. Residual contamination on gear, skin, and equipment is a real exposure pathway."},
+    {main:"Every chemical has a personality.", detail:"Some are <strong>patient</strong> — pooling quietly until an ignition source arrives. Others are <strong>aggressive</strong> — reacting violently the moment they contact air or water.", sub:"Learn to predict behavior based on physical properties: vapor density, water solubility, flash point, reactivity. The properties tell the story."},
+    {main:"The most dangerous moment in a hazmat response is when you think you know what you're dealing with.", detail:"<strong>Confirmation bias</strong> makes you see evidence that supports your theory and ignore evidence that contradicts it.", sub:"Challenge your own assumptions. Ask 'what else could this be?' at every stage. The chemical doesn't care about your theory."},
+    {main:"Communication saves more lives than any piece of equipment.", detail:"Clear, concise, and <strong>frequent communication</strong> between entry teams, command, and support is the backbone of safe operations.", sub:"If the entry team can't tell command what they're seeing — or command can't tell the entry team to withdraw — equipment doesn't matter."},
+    {main:"There is no shame in a defensive strategy.", detail:"Sometimes the safest, smartest decision is to <strong>isolate, deny entry, and let the professionals handle it</strong>.", sub:"Not every incident requires an offensive entry. Risk vs. benefit analysis is a core technician skill. Protect what you can without creating more victims."},
+    {main:"Your nose is a terrible detector.", detail:"Olfactory fatigue, genetic inability to smell certain chemicals, and adaptation all make <strong>human smell unreliable</strong> for hazard assessment.", sub:"H₂S disappears from your awareness at lethal concentrations. HCN is undetectable by 40% of people. Phosgene smells like 'fresh-cut grass.' Trust meters, not noses."},
+    {main:"The wind is not your friend or your enemy — it's information.", detail:"<strong>Wind direction and speed</strong> determine approach routes, zone placement, evacuation paths, and plume direction.", sub:"A technician who ignores the wind is gambling with everyone's life. Check it before approach. Monitor it during operations. Adjust when it shifts."},
+    {main:"Training is not about getting it right the first time.", detail:"It's about <strong>building the muscle memory and mental models</strong> that let you perform under stress when it matters.", sub:"The scenario you practice today becomes the automatic response tomorrow. Repetition with variety builds competence that survives stress."},
+    {main:"Vapor density is one of the most underrated properties in hazmat response.", detail:"It tells you <strong>where the hazard will travel</strong> — low areas for heavy vapors, elevated spaces for light gases.", sub:"A heavy vapor in a neighborhood with basements is a mass casualty event waiting to happen. Vapor density turns terrain analysis into a life-safety prediction."},
+    {main:"The Incident Commander who asks questions is stronger than the one who assumes answers.", detail:"<strong>Seeking information</strong> is not weakness — it's intelligence.", sub:"What's in the container? What's the wind doing? What's downhill? How many people are exposed? The IC who asks these questions first makes better decisions."},
+    {main:"PPE protects your body. Procedures protect your life.", detail:"The best chemical suit in the world won't save you if you <strong>skip the pre-entry briefing, ignore the buddy system, or bypass decon.</strong>", sub:"Equipment failure is rare. Procedural failure is common. Most hazmat injuries come from skipping steps, not from equipment malfunction."},
+    {main:"Every container tells a story.", detail:"The shape, size, markings, condition, and location of a container reveal <strong>what's inside before you open a reference book.</strong>", sub:"One-ton cylinders at a water plant. Nurse tanks at a farm. 55-gallon drums at a paint manufacturer. The container and occupancy are your first clues — learn to read them instantly."},
+    {main:"Toxic before explosive.", detail:"Most flammable chemicals reach <strong>dangerous toxic concentrations long before they reach explosive range.</strong>", sub:"An LEL meter reading of 5% seems low — but for gasoline, that's 700 ppm. The health hazard threshold is ~300 ppm. Your team was in danger before the LEL sensor even alarmed."},
+    {main:"The real hazmat call is the one that doesn't look like one.", detail:"Carbon monoxide in a residence. A 'medical' call with multiple patients having the same symptoms. An 'odor investigation' at a commercial building.", sub:"Many hazmat incidents arrive disguised as something else. The technician who recognizes the pattern — multiple victims, unexplained symptoms, unusual odors — catches the hazmat call that everyone else walks into unprotected."},
+    {main:"After-action reviews are not paperwork — they are the mechanism by which teams get better.", detail:"Every drill and every incident has <strong>lessons</strong>. If you don't capture them, you'll repeat the same mistakes.", sub:"The best teams in the country got there by being honest about what went wrong and deliberately training to fix it."},
+    {main:"Respect the product, respect the container, respect the process.", detail:"Shortcuts in hazmat response create <strong>victims out of responders.</strong>", sub:"The 30-year veteran who 'knows what they're doing' is still subject to the same chemistry as the first-year technician. The product doesn't care about your experience level."},
+    {main:"The public is watching — and they are scared.", detail:"<strong>Calm, organized, visible professionalism</strong> from the hazmat team reassures the community and sets the tone for the entire incident.", sub:"A team that looks like they have a plan — even if they're still developing it — builds confidence. Chaos at the command post breeds panic in the community."},
+    {main:"Knowledge without action is wasted. Action without knowledge is dangerous.", detail:"The technician mindset is the balance between the two: <strong>know enough to act, and act on what you know.</strong>", sub:"Paralysis by analysis costs time. Reckless action costs lives. The trained technician recognizes the sweet spot — enough information to make a sound decision, then the discipline to execute it."},
+    {main:"Every decision in hazmat response is a risk trade-off.", detail:"You are never choosing between <strong>safe and unsafe</strong> — you are choosing between <strong>levels of risk.</strong>", sub:"Entry to rescue a victim: risk to the team vs. risk to the victim. Defensive vs. offensive: risk of escalation vs. risk of exposure. The technician mindset evaluates both sides before committing."},
+    {main:"The call after the call matters.", detail:"Exposure documentation, medical monitoring, equipment decon, and <strong>mental health check-ins</strong> are not optional extras — they are part of the operation.", sub:"Hazmat incidents create physical and psychological stress. Taking care of your people after the call is just as important as protecting them during it."},
+    {main:"If the equipment is on the rig, you must be competent with its use.", detail:"<strong>NFPA 1500</strong> makes this clear — carrying equipment creates an obligation to train on it.", sub:"A detector you don't understand is a detector that gives you false confidence. A suit you can't don properly is a suit that will fail when you need it. Train on everything you carry."}
+];
+
+
+const meterPool = [
+    { id: "fourgas", icon: "📟", name: "4-Gas Meter", desc: "O₂, LEL, CO, H₂S" },
+    { id: "pid", icon: "📡", name: "PID", desc: "Volatile Organic Compounds" },
+    { id: "rad", icon: "☢️", name: "Radiation Detector", desc: "Gamma / Neutron" },
+    { id: "colorimetric", icon: "🧪", name: "Colorimetric Tubes", desc: "Chemical-specific detection" },
+    { id: "ammonia", icon: "🌡️", name: "NH₃ Specific Meter", desc: "Ammonia direct-read" },
+    { id: "cgid", icon: "🔬", name: "Chemical Classifier", desc: "HazCat / ID equipment" }
+];
+
+let currentChemical = null;
+let vaporClicks = 0;
+let zonesPlaced = 0;
+let sec1skillsDone = 0;
+const TOTAL_SECTIONS = 6;
+let currentSection = 1;
+
+function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+function goSection(n) {
+    document.getElementById('sec' + currentSection).classList.remove('active');
+    currentSection = n;
+    document.getElementById('sec' + n).classList.add('active');
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateProgress() {
+    const pct = (currentSection / TOTAL_SECTIONS) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = 'Section ' + currentSection + ' of ' + TOTAL_SECTIONS;
+}
+
+function resetModule() { location.reload(); }
+
+function startNewScenario() {
+    currentChemical = chemicals[Math.floor(Math.random() * chemicals.length)];
+    vaporClicks = 0;
+    zonesPlaced = 0;
+    sec1skillsDone = 0;
+    populateSection1();
+    populateSection2();
+    populateSection3();
+    populateSection4();
+    populateSection5();
+    populateSection6();
+    goSection(1);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SECTION 1 — SKILL-BASED QUESTIONS + SYNTHESIS
+// ═══════════════════════════════════════════════════════════
+function populateSection1() {
+    document.getElementById('sec1scene').innerHTML = currentChemical.sceneText;
+
+    const container = document.getElementById('sec1questions');
+    container.innerHTML = '';
+    sec1skillsDone = 0;
+
+    // Build 4 skill questions
+    currentChemical.skillQuestions.forEach((q, qi) => {
+        const blockId = 'skill' + qi;
+        const reasonId = 'skillreason' + qi;
+        const isTwo = q.options.length === 2;
+        const shuffled = shuffle(q.options.map((opt, idx) => ({ text: opt, isCorrect: idx === q.correct })));
+
+        let optsHtml = '';
+        shuffled.forEach(opt => {
+            optsHtml += '<button class="option-btn" onclick="answerSkill(\'' + blockId + '\',' + qi + ',this,' + opt.isCorrect + ')">' + opt.text + '</button>';
+        });
+
+        const block = document.createElement('div');
+        block.className = 'question-block';
+        block.id = blockId;
+        block.innerHTML =
+            '<div class="question-cat">' + q.cat + '</div>' +
+            '<div class="question-hint">' + q.hint + '</div>' +
+            '<div class="question-prompt">' + q.prompt + '</div>' +
+            '<div class="q-option-grid' + (isTwo ? ' two-col' : '') + '">' + optsHtml + '</div>' +
+            '<div class="reasoning" id="' + reasonId + '">' + q.why + '</div>';
+        container.appendChild(block);
+    });
+
+    // Build synthesis question (hidden until all skills done)
+    const synthDiv = document.createElement('div');
+    synthDiv.id = 'synthesisBlock';
+    synthDiv.style.display = 'none';
+    
+    // Build synthesis options: correct + 3 random wrong
+    let wrongChems = chemicals.filter(c => c.name !== currentChemical.name);
+    wrongChems = shuffle(wrongChems).slice(0, 3).map(c => c.name);
+    let allOpts = shuffle([currentChemical.name, ...wrongChems]);
+
+    let synthBtns = '';
+    allOpts.forEach(name => {
+        const isCorrect = name === currentChemical.name;
+        synthBtns += '<button class="option-btn" onclick="answerSynthesis(this,' + isCorrect + ')">' + name + '</button>';
+    });
+
+    synthDiv.innerHTML =
+        '<div class="question-block" id="synthCard" style="border-color: var(--amber); border-width: 2px;">' +
+            '<div class="question-cat" style="color: var(--amber); font-size: 14px; letter-spacing: 3px;">🧩 SYNTHESIS — PUT IT ALL TOGETHER</div>' +
+            '<div class="question-prompt" style="font-size: 16px; color: var(--amber);">Based on ALL your observations — container, vapor, occupancy, and hazard travel — what is the chemical?</div>' +
+            '<div class="q-option-grid">' + synthBtns + '</div>' +
+            '<div class="reasoning" id="synthReason">' + currentChemical.synthesisWhy + '</div>' +
+        '</div>';
+    container.appendChild(synthDiv);
+}
+
+function answerSkill(blockId, qIndex, btn, isCorrect) {
+    const block = document.getElementById(blockId);
+    const btns = block.querySelectorAll('.option-btn');
+    const q = currentChemical.skillQuestions[qIndex];
+
+    btns.forEach(b => {
+        b.classList.add('disabled');
+        if (b === btn) b.classList.add(isCorrect ? 'selected' : 'wrong');
+    });
+
+    if (!isCorrect) {
+        const correctText = q.options[q.correct];
+        btns.forEach(b => { if (b.textContent === correctText) b.classList.add('selected'); });
+    }
+
+    block.classList.add('answered');
+    document.getElementById('skillreason' + qIndex).classList.add('visible');
+
+    sec1skillsDone++;
+    if (sec1skillsDone >= currentChemical.skillQuestions.length) {
+        // Reveal synthesis question with a slight delay for dramatic effect
+        setTimeout(() => {
+            const synthBlock = document.getElementById('synthesisBlock');
+            synthBlock.style.display = 'block';
+            synthBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 600);
+    }
+}
+
+function answerSynthesis(btn, isCorrect) {
+    const card = document.getElementById('synthCard');
+    const btns = card.querySelectorAll('.option-btn');
+    btns.forEach(b => {
+        b.classList.add('disabled');
+        if (b === btn) b.classList.add(isCorrect ? 'selected' : 'wrong');
+    });
+    if (!isCorrect) {
+        btns.forEach(b => { if (b.textContent === currentChemical.name) b.classList.add('selected'); });
+    }
+    document.getElementById('synthReason').classList.add('visible');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SECTION 2 — VAPOR BEHAVIOR
+// ═══════════════════════════════════════════════════════════
+function populateSection2() {
+    document.getElementById('sec2scene').innerHTML = currentChemical.vaporSceneText;
+    const cells = document.querySelectorAll('#vaporDiagram .diagram-cell');
+    cells.forEach(cell => {
+        cell.classList.remove('correct', 'incorrect', 'disabled');
+        const idx = parseInt(cell.dataset.index);
+        const isCorrect = currentChemical.vaporCorrect.includes(idx);
+        cell.onclick = () => selectVaporCell(cell, isCorrect);
+    });
+    document.getElementById('q2reason').innerHTML = currentChemical.vaporReasoning;
+    document.getElementById('q2reason').classList.remove('visible');
+}
+
+function selectVaporCell(cell, isCorrect) {
+    if (cell.classList.contains('disabled')) return;
+    cell.classList.add('disabled');
+    cell.classList.add(isCorrect ? 'correct' : 'incorrect');
+    vaporClicks++;
+    if (vaporClicks >= 3) {
+        document.querySelectorAll('#vaporDiagram .diagram-cell').forEach(c => c.classList.add('disabled'));
+        document.getElementById('q2reason').classList.add('visible');
+    }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SECTION 3 — DYNAMIC METER SELECTION
+// ═══════════════════════════════════════════════════════════
+function populateSection3() {
+    document.getElementById('sec3scene').innerHTML = currentChemical.meterSceneText;
+    const grid = document.getElementById('meterGrid');
+    grid.innerHTML = '';
+    const bestId = currentChemical.bestMeter;
+    let others = shuffle(meterPool.filter(m => m.id !== bestId)).slice(0, 3);
+    shuffle([meterPool.find(m => m.id === bestId), ...others]).forEach(meter => {
+        const card = document.createElement('div');
+        card.className = 'meter-card';
+        card.innerHTML = '<span class="meter-icon">' + meter.icon + '</span><span class="meter-name">' + meter.name + '</span><div class="meter-desc">' + meter.desc + '</div>';
+        card.onclick = () => {
+            document.querySelectorAll('#meterGrid .meter-card').forEach(c => c.classList.add('dimmed'));
+            card.classList.remove('dimmed');
+            card.classList.add('selected');
+            const r = document.getElementById('q3reason');
+            r.innerHTML = currentChemical.meterReason[meter.id] || "<strong>No specific guidance.</strong>";
+            r.classList.add('visible');
+        };
+        grid.appendChild(card);
+    });
+    document.getElementById('q3reason').innerHTML = '';
+    document.getElementById('q3reason').classList.remove('visible');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SECTION 4 — DYNAMIC ISOLATION ZONES
+// ═══════════════════════════════════════════════════════════
+function populateSection4() {
+    document.getElementById('sec4scene').innerHTML = currentChemical.isolationSceneText;
+    const iso = currentChemical.isolation;
+    zonesPlaced = 0;
+    ['hot','warm','cold'].forEach(zone => {
+        const div = document.getElementById('zone' + zone.charAt(0).toUpperCase() + zone.slice(1));
+        div.innerHTML = '';
+        shuffle(iso[zone].options).forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'zone-opt';
+            btn.textContent = opt;
+            btn.onclick = () => {
+                btn.parentElement.querySelectorAll('.zone-opt').forEach(b => b.classList.add('disabled'));
+                btn.classList.add('selected-' + zone);
+                if (opt !== iso[zone].correct) {
+                    btn.parentElement.querySelectorAll('.zone-opt').forEach(b => {
+                        if (b.textContent === iso[zone].correct) b.classList.add('selected-' + zone);
+                    });
+                }
+                zonesPlaced++;
+                if (zonesPlaced >= 3) document.getElementById('q4reason').classList.add('visible');
+            };
+            div.appendChild(btn);
+        });
+    });
+    document.getElementById('q4reason').innerHTML = currentChemical.isolationReasoning;
+    document.getElementById('q4reason').classList.remove('visible');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SECTION 5 — DYNAMIC PRACTICE (pick 4 from 100)
+// ═══════════════════════════════════════════════════════════
+function populateSection5() {
+    const picked = shuffle(practiceScenarios).slice(0, 4);
+    const container = document.getElementById('practiceContainer');
+    container.innerHTML = '';
+    picked.forEach((sc, i) => {
+        const id = 'dp' + i;
+        const card = document.createElement('div');
+        card.className = 'practice-card';
+        card.id = id;
+        card.innerHTML =
+            '<div class="practice-statement">"' + sc.s + '"</div>' +
+            '<div class="practice-btns">' +
+                '<button class="practice-btn" onclick="judgePractice(\'' + id + '\',this,' + (sc.safe === true) + ')">✓ Safe Practice</button>' +
+                '<button class="practice-btn" onclick="judgePractice(\'' + id + '\',this,' + (sc.safe === false) + ')">✗ Dangerous Practice</button>' +
+            '</div>' +
+            '<div class="practice-explain" id="' + id + 'exp">' + sc.exp + '</div>';
+        container.appendChild(card);
+    });
+}
+
+function judgePractice(cardId, btn, isCorrect) {
+    const card = document.getElementById(cardId);
+    card.querySelectorAll('.practice-btn').forEach(b => {
+        b.classList.add('disabled');
+        if (b === btn) b.classList.add(isCorrect ? 'correct' : 'incorrect');
+    });
+    document.getElementById(cardId + 'exp').classList.add('open');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SECTION 6 — DYNAMIC MINDSET
+// ═══════════════════════════════════════════════════════════
+function populateSection6() {
+    const msg = mindsetMessages[Math.floor(Math.random() * mindsetMessages.length)];
+    document.getElementById('mindsetClosing').innerHTML =
+        '<p>' + msg.main + '</p><p>' + msg.detail + '</p><p style="margin-top:16px; font-size:14px; color:var(--text-dim);">' + msg.sub + '</p>';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════
+updateProgress();
+startNewScenario();
+</script>
+
+</body>
+</html>
