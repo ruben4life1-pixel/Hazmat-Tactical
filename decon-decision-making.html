@@ -1,0 +1,1870 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decon Decision Making | Hazmat Tactical Training</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #080c18;
+  --navy2: #0d1222;
+  --navy3: #131929;
+  --navy4: #1a2035;
+  --border: #1e2740;
+  --border2: #263050;
+  --amber: #f5a623;
+  --amber2: #ffbb42;
+  --red: #d9232e;
+  --red2: #f03040;
+  --green: #27ae60;
+  --green2: #2ecc71;
+  --text: #dde3ef;
+  --text-dim: #7a8aaa;
+  --text-muted: #4a5568;
+  --basic: #27ae60;
+  --inter: #e6a817;
+  --adv: #d9232e;
+  --correct: #27ae60;
+  --wrong: #d9232e;
+  --highlight: rgba(245,166,35,0.08);
+  --card-glow-basic: 0 0 30px rgba(39,174,96,0.08);
+  --card-glow-inter: 0 0 30px rgba(230,168,23,0.1);
+  --card-glow-adv: 0 0 30px rgba(217,35,46,0.1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Barlow', sans-serif;
+  background: var(--navy);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 20%, rgba(217,35,46,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 80%, rgba(245,166,35,0.04) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── HEADER ── */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(8,12,24,0.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+}
+
+.header-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  gap: 16px;
+}
+
+.brand-block { display: flex; flex-direction: column; gap: 1px; }
+
+.brand-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text);
+  line-height: 1;
+}
+
+.brand-title span { color: var(--red); }
+
+.brand-sub {
+  font-size: 0.65rem;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-weight: 500;
+}
+
+.header-stats {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+.stat-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.stat-val {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--amber);
+}
+
+.stat-label {
+  font-size: 0.6rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.divider-v { width: 1px; height: 32px; background: var(--border); }
+
+/* ── PROGRESS BAR ── */
+.progress-wrap {
+  background: var(--border);
+  height: 3px;
+}
+
+.progress-fill {
+  height: 3px;
+  background: linear-gradient(90deg, var(--red), var(--amber));
+  transition: width 0.4s ease;
+  width: 0%;
+}
+
+/* ── MAIN LAYOUT ── */
+.app-wrap {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 28px 20px 60px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── FILTERS ── */
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.filter-label {
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-right: 4px;
+  flex-shrink: 0;
+}
+
+.filter-btn {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 6px 16px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--navy3);
+  color: var(--text-dim);
+  border-color: var(--border2);
+}
+
+.filter-btn:hover { color: var(--text); border-color: var(--amber); }
+.filter-btn.active-all { background: rgba(255,255,255,0.08); color: var(--text); border-color: rgba(255,255,255,0.2); }
+.filter-btn.active-basic { background: rgba(39,174,96,0.15); color: var(--basic); border-color: rgba(39,174,96,0.4); }
+.filter-btn.active-inter { background: rgba(230,168,23,0.15); color: var(--inter); border-color: rgba(230,168,23,0.4); }
+.filter-btn.active-adv { background: rgba(217,35,46,0.15); color: var(--adv); border-color: rgba(217,35,46,0.4); }
+
+.shuffle-btn {
+  margin-left: auto;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 4px;
+  border: 1px solid var(--amber);
+  background: rgba(245,166,35,0.08);
+  color: var(--amber);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.shuffle-btn:hover { background: rgba(245,166,35,0.16); }
+
+/* ── SCENARIO CARD ── */
+.scenario-card {
+  background: var(--navy2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  transition: box-shadow 0.3s;
+}
+
+.scenario-card.level-basic { border-top: 3px solid var(--basic); box-shadow: var(--card-glow-basic); }
+.scenario-card.level-inter { border-top: 3px solid var(--inter); box-shadow: var(--card-glow-inter); }
+.scenario-card.level-adv { border-top: 3px solid var(--adv); box-shadow: var(--card-glow-adv); }
+
+/* ── SCENARIO HEADER ── */
+.sc-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: var(--navy3);
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.sc-id {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.diff-badge {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 3px;
+}
+
+.diff-badge.basic { background: rgba(39,174,96,0.15); color: var(--basic); border: 1px solid rgba(39,174,96,0.35); }
+.diff-badge.inter { background: rgba(230,168,23,0.15); color: var(--inter); border: 1px solid rgba(230,168,23,0.35); }
+.diff-badge.adv   { background: rgba(217,35,46,0.15);  color: var(--adv);   border: 1px solid rgba(217,35,46,0.35); }
+
+.chem-block {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.chem-name-sm {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.5px;
+}
+
+.un-tag {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  background: var(--navy4);
+  padding: 2px 7px;
+  border-radius: 3px;
+  border: 1px solid var(--border2);
+  font-family: 'Barlow Condensed', sans-serif;
+}
+
+/* ── SCENARIO BODY ── */
+.sc-body { padding: 20px; }
+
+.incident-desc {
+  font-size: 1.05rem;
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--text);
+  margin-bottom: 18px;
+  border-left: 3px solid var(--amber);
+  padding-left: 14px;
+}
+
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.meta-cell {
+  background: var(--navy3);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 10px 12px;
+}
+
+.meta-key {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  font-family: 'Barlow Condensed', sans-serif;
+}
+
+.meta-val {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.3;
+  font-family: 'Barlow Condensed', sans-serif;
+  letter-spacing: 0.3px;
+}
+
+/* ── ANSWER OPTIONS ── */
+.answer-section { margin-top: 4px; }
+
+.answer-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.answer-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.answer-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--navy3);
+  border: 1px solid var(--border2);
+  border-radius: 5px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.18s;
+  text-align: left;
+  width: 100%;
+  color: var(--text);
+}
+
+.answer-btn:hover:not(:disabled) {
+  border-color: var(--amber);
+  background: var(--highlight);
+  transform: translateX(3px);
+}
+
+.answer-btn:disabled { cursor: default; }
+
+.answer-btn.correct {
+  border-color: var(--correct) !important;
+  background: rgba(39,174,96,0.1) !important;
+  transform: translateX(0) !important;
+}
+
+.answer-btn.wrong {
+  border-color: var(--wrong) !important;
+  background: rgba(217,35,46,0.08) !important;
+  transform: translateX(0) !important;
+}
+
+.answer-btn.dimmed {
+  opacity: 0.4;
+}
+
+.ans-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
+}
+
+.ans-text {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  flex-grow: 1;
+}
+
+.ans-check {
+  font-size: 1rem;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.answer-btn.correct .ans-check,
+.answer-btn.wrong .ans-check { opacity: 1; }
+
+/* ── FEEDBACK PANEL ── */
+.feedback-panel {
+  display: none;
+  margin-top: 16px;
+  background: var(--navy3);
+  border: 1px solid var(--border2);
+  border-radius: 6px;
+  overflow: hidden;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.feedback-panel.show { display: block; }
+
+.fb-verdict {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.fb-verdict.correct-v { background: rgba(39,174,96,0.12); color: var(--correct); border-bottom: 1px solid rgba(39,174,96,0.2); }
+.fb-verdict.wrong-v { background: rgba(217,35,46,0.1); color: var(--wrong); border-bottom: 1px solid rgba(217,35,46,0.2); }
+
+.fb-body { padding: 16px 18px; }
+
+.fb-correct-ans {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--correct);
+  margin-bottom: 10px;
+}
+
+.fb-explanation {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+
+.fb-why-section {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  margin-top: 12px;
+}
+
+.fb-why-title {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.fb-why-item {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--text-dim);
+}
+
+.fb-why-item .why-method {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  min-width: 90px;
+  padding-top: 1px;
+}
+
+/* ── NAV CONTROLS ── */
+.nav-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.nav-btn {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 11px 24px;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nav-btn-prev {
+  background: var(--navy3);
+  border-color: var(--border2);
+  color: var(--text-dim);
+}
+
+.nav-btn-prev:hover { color: var(--text); border-color: var(--amber); }
+
+.nav-btn-next {
+  background: var(--red);
+  border-color: var(--red);
+  color: #fff;
+}
+
+.nav-btn-next:hover { background: var(--red2); border-color: var(--red2); }
+.nav-btn-next:disabled { opacity: 0.35; cursor: default; }
+
+.scenario-counter {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* ── SCORE SUMMARY ── */
+.score-summary {
+  display: none;
+  text-align: center;
+  padding: 48px 20px;
+  background: var(--navy2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+}
+
+.score-big {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 5rem;
+  font-weight: 900;
+  color: var(--amber);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.score-label {
+  font-size: 0.75rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+.score-breakdown {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+
+.score-cat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 20px;
+  background: var(--navy3);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.score-cat-val {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.score-cat-val.c-basic { color: var(--basic); }
+.score-cat-val.c-inter { color: var(--inter); }
+.score-cat-val.c-adv { color: var(--adv); }
+
+.score-cat-label {
+  font-size: 0.62rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.restart-btn {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 13px 32px;
+  border-radius: 5px;
+  border: 1px solid var(--amber);
+  background: rgba(245,166,35,0.1);
+  color: var(--amber);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.restart-btn:hover { background: rgba(245,166,35,0.2); }
+
+/* ── LEGEND ── */
+.legend-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  background: var(--navy3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+  font-family: 'Barlow Condensed', sans-serif;
+  text-transform: uppercase;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  .header-inner { height: auto; padding: 12px 0; flex-wrap: wrap; }
+  .brand-title { font-size: 1.2rem; }
+  .meta-grid { grid-template-columns: 1fr 1fr; }
+  .header-stats { gap: 12px; }
+  .stat-val { font-size: 1.1rem; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand-block">
+      <div class="brand-title">DECON <span>DECISION</span> MAKING</div>
+      <div class="brand-sub">Operations-Level Decision Training · Hazmat Tactical</div>
+    </div>
+    <div class="header-stats">
+      <div class="stat-pill">
+        <div class="stat-val" id="scoreDisplay">0</div>
+        <div class="stat-label">Correct</div>
+      </div>
+      <div class="divider-v"></div>
+      <div class="stat-pill">
+        <div class="stat-val" id="totalDisplay">0</div>
+        <div class="stat-label">Answered</div>
+      </div>
+      <div class="divider-v"></div>
+      <div class="stat-pill">
+        <div class="stat-val" id="pctDisplay">—</div>
+        <div class="stat-label">Score %</div>
+      </div>
+    </div>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+</header>
+
+<div class="app-wrap">
+
+  <div class="filter-row">
+    <span class="filter-label">Filter:</span>
+    <button class="filter-btn active-all" data-filter="all" onclick="setFilter('all',this)">All Levels</button>
+    <button class="filter-btn" data-filter="basic" onclick="setFilter('basic',this)">🟢 Basic</button>
+    <button class="filter-btn" data-filter="inter" onclick="setFilter('inter',this)">🟡 Intermediate</button>
+    <button class="filter-btn" data-filter="adv" onclick="setFilter('adv',this)">🔴 Advanced</button>
+    <button class="shuffle-btn" onclick="shuffleScenarios()">⟳ Shuffle</button>
+  </div>
+
+  <div class="legend-row">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--basic)"></div>Basic — Single hazard, obvious cues</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--inter)"></div>Intermediate — Multiple variables, some ambiguity</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--adv)"></div>Advanced — Complex, conflicting priorities</div>
+  </div>
+
+  <div id="scenarioWrap">
+    <div class="scenario-card" id="scenarioCard">
+      <div class="sc-head">
+        <span class="sc-id" id="scId"></span>
+        <span class="diff-badge" id="diffBadge"></span>
+        <div class="chem-block">
+          <span class="chem-name-sm" id="scChem"></span>
+          <span class="un-tag" id="scUN"></span>
+        </div>
+      </div>
+      <div class="sc-body">
+        <div class="incident-desc" id="scDesc"></div>
+        <div class="meta-grid" id="scMeta"></div>
+        <div class="answer-section">
+          <div class="answer-label">Select the Most Appropriate Decon Method:</div>
+          <div class="answer-grid" id="answerGrid"></div>
+        </div>
+        <div class="feedback-panel" id="feedbackPanel">
+          <div class="fb-verdict" id="fbVerdict"></div>
+          <div class="fb-body">
+            <div class="fb-correct-ans" id="fbCorrectAns"></div>
+            <div class="fb-explanation" id="fbExplanation"></div>
+            <div class="fb-why-section" id="fbWhySection"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-controls">
+      <button class="nav-btn nav-btn-prev" onclick="navigate(-1)">◄ PREVIOUS</button>
+      <span class="scenario-counter" id="scCounter"></span>
+      <button class="nav-btn nav-btn-next" id="nextBtn" onclick="navigate(1)">NEXT SCENARIO ►</button>
+    </div>
+  </div>
+
+  <div class="score-summary" id="scoreSummary">
+    <div class="score-big" id="finalScore"></div>
+    <div class="score-label">Overall Score</div>
+    <div class="score-breakdown">
+      <div class="score-cat">
+        <div class="score-cat-val c-basic" id="basicScore">—</div>
+        <div class="score-cat-label">🟢 Basic</div>
+      </div>
+      <div class="score-cat">
+        <div class="score-cat-val c-inter" id="interScore">—</div>
+        <div class="score-cat-label">🟡 Intermediate</div>
+      </div>
+      <div class="score-cat">
+        <div class="score-cat-val c-adv" id="advScore">—</div>
+        <div class="score-cat-label">🔴 Advanced</div>
+      </div>
+    </div>
+    <button class="restart-btn" onclick="restart()">RESTART TRAINING</button>
+  </div>
+
+</div>
+
+<script>
+// ── ANSWER OPTION DEFINITIONS ──
+const OPTS = [
+  { id:'dry',       icon:'🧹', label:'Dry Decon',            desc:'Brush/shake off dry particulates — powders, dust, solids' },
+  { id:'gross',     icon:'💧', label:'Gross Decon',           desc:'High-volume water flush — heavy liquid contamination' },
+  { id:'technical', icon:'⚙️', label:'Technical Decon',       desc:'Hazmat team-level decon — complex/unknown/systemic risk' },
+  { id:'clothing',  icon:'🧥', label:'Clothing Removal Only', desc:'Vapor/gas exposure — no surface liquid, remove saturated clothing' },
+  { id:'none',      icon:'✓',  label:'No Decon Required',     desc:'No surface contamination — inert gas, uncontaminated responders' }
+];
+
+// ── SCENARIO DATABASE ──
+// Fields: id, level (basic/inter/adv), chem, un, container, desc,
+//         state, contam, victim, weather, resources, answer,
+//         explanation, whyOthers (obj keyed by OPTS id)
+
+const ALL_SCENARIOS = [
+
+// ════════════════════════════════════════════════════════
+// ░░ BASIC (Level 1) — 35 scenarios ░░
+// ════════════════════════════════════════════════════════
+
+{id:'B-01',level:'basic',chem:'Chlorine',un:'UN 1017',container:'1-ton pressurized cylinder',
+ desc:'A 1-ton chlorine cylinder at a water treatment plant has developed a small valve leak. A maintenance worker was working downwind and was enveloped in the yellow-green vapor cloud for approximately 90 seconds before self-evacuating. He reports burning eyes and throat irritation. His clothing appears dry — no visible liquid. You establish a perimeter and contact the worker.',
+ state:'Gas',contam:'Vapor/inhalation only',victim:'1 civilian — symptomatic',weather:'Mild, wind 8 mph from SW',resources:'1 Engine company, no hazmat on scene yet',
+ answer:'clothing',
+ explanation:'The worker was in a <strong>vapor cloud only</strong> — chlorine gas does not deposit as a liquid contamination under these conditions. The biggest decon benefit is removing the worker\'s clothing, which has absorbed chlorine gas into the fabric. This eliminates ongoing off-gassing and prevents secondary contamination of EMS personnel. Water is not indicated because there is no liquid chemical on the skin or clothing to dilute.',
+ whyOthers:{dry:'Dry decon removes particulates. Chlorine here is a gas, not a powder or particulate.',gross:'Gross decon is for liquid contamination. No liquid chlorine is visible on the victim.',technical:'Technical decon is appropriate for liquid chlorine contact or complex exposure, not a straightforward vapor-only scenario at operations level.',none:'The victim\'s clothing contains absorbed vapor. Leaving it on causes continued off-gassing and risks secondary contamination of medics.'}
+},
+
+{id:'B-02',level:'basic',chem:'Sulfuric Acid',un:'UN 1830',container:'55-gallon drum',
+ desc:'A forklift operator struck a 55-gallon drum of sulfuric acid in a warehouse, rupturing the drum. The acid splashed across the floor and struck the operator\'s legs and torso. Liquid is visibly soaking through his jeans and work shirt. He is walking and alert, reporting burning pain at contact areas.',
+ state:'Liquid',contam:'Liquid splash — skin and clothing',victim:'1 civilian — symptomatic, ambulatory',weather:'Indoor, 68°F',resources:'1 Engine company, available hose and water supply',
+ answer:'gross',
+ explanation:'This is a <strong>direct liquid splash</strong> to skin and clothing. The priority is immediate high-volume water dilution to stop ongoing acid burns. Every second of contact time increases injury severity. Gross decon — flush with large amounts of water — is the correct operations-level intervention. Remove clothing while flushing to eliminate continued exposure.',
+ whyOthers:{dry:'Dry decon addresses dry particulates, not liquid splashes. Brushing acid would spread it.',technical:'Operations level can perform gross decon for a single victim with confirmed liquid acid splash. Hazmat team decon is not required here.',clothing:'Removing clothing without simultaneously flushing with water leaves acid on the skin and delays dilution. Gross decon includes clothing removal.',none:'Liquid sulfuric acid on skin causes progressive chemical burns. Decon is immediately required.'}
+},
+
+{id:'B-03',level:'basic',chem:'Malathion (Organophosphate Pesticide)',un:'UN 2783',container:'Agricultural spreader truck',
+ desc:'An agricultural spreader truck carrying dry malathion pesticide has been involved in a minor collision. A bag of the dry powder pesticide ruptured and spilled into the truck bed and across the tailgate. A bystander who approached the vehicle to render aid has visible white-tan powder on his hands, forearms, and jacket.',
+ state:'Solid (powder)',contam:'Dry particulate — skin and clothing',victim:'1 civilian — no symptoms yet',weather:'Sunny, light breeze',resources:'1 Engine company',
+ answer:'dry',
+ explanation:'The pesticide is in <strong>dry powder form</strong> with no liquid involved. The correct first step is dry decon — brush off as much powder as possible before introducing water. Wetting a dry organophosphate pesticide can accelerate skin absorption. Remove contaminated clothing, then brush. Once dry material is removed, a rinse can follow, but the initial decon is dry.',
+ whyOthers:{gross:'Adding water to dry organophosphate powder can increase dermal absorption. Dry decon comes first.',technical:'Operations level can manage a single victim with dry powder contamination. Hazmat escalation is not yet required for this scope.',clothing:'Removing clothing without first brushing off the powder can spread contamination to the head, neck, and face.',none:'Visible pesticide powder on skin is a confirmed contamination requiring decon.'}
+},
+
+{id:'B-04',level:'basic',chem:'Ammonia, Anhydrous',un:'UN 1005',container:'Nurse tank (agricultural)',
+ desc:'A nurse tank of anhydrous ammonia has a minor connection hose leak. A worker standing approximately 30 feet downwind was caught in the ammonia vapor cloud briefly. He retreated immediately. There is no visible frosting on his clothing and he reports no liquid contact. He has mild eye irritation.',
+ state:'Gas',contam:'Vapor only',victim:'1 farm worker — mild symptoms',weather:'Warm, 78°F, wind 12 mph',resources:'Engine company responding',
+ answer:'clothing',
+ explanation:'<strong>Vapor exposure only</strong> — no liquid anhydrous ammonia contact occurred. The worker\'s clothing has absorbed ammonia vapor. Clothing removal eliminates the primary source of continued vapor off-gassing and protects EMS personnel. High-volume water flush is not indicated because there is no liquid chemical to dilute off the skin.',
+ whyOthers:{dry:'No dry particulate is present. Ammonia here is a gas, not a solid.',gross:'Gross decon requires visible liquid contamination. There is no liquid on this victim.',technical:'The exposure is straightforward vapor only from a known source. Operations level can manage clothing removal for vapor-exposed victims.',none:'Ammonia-saturated clothing continues to off-gas and can cause secondary contamination.'}
+},
+
+{id:'B-05',level:'basic',chem:'Sodium Hydroxide (Lye)',un:'UN 1823',container:'Fiber drum — solid pellets',
+ desc:'A fiber drum of dry sodium hydroxide (lye) pellets tipped off a loading dock. The drum burst open and dry white pellets scattered across the dock. A dock worker has sodium hydroxide pellets on both hands and his forearms. The pellets are dry. No water is present at the contamination site.',
+ state:'Solid (pellets)',contam:'Dry solid — hands and forearms',victim:'1 civilian — no symptoms yet',weather:'Dry, 72°F',resources:'Engine company on scene',
+ answer:'dry',
+ explanation:'Sodium hydroxide pellets are <strong>dry solid material</strong> — before any water contact. Dry decon first: brush off all pellets from skin and clothing. This is critical because sodium hydroxide reacts exothermically with water. If pellets are present on skin when water is applied, a brief heat reaction can occur. Remove pellets first, then flush thoroughly with water.',
+ whyOthers:{gross:'Introducing water before removing solid pellets causes an exothermic reaction on the skin. Dry decon must precede gross decon here.',technical:'Single victim, confirmed solid caustic, no complex exposure pathway. Operations level can manage this.',clothing:'Clothing removal is appropriate but dry decon of hands and forearms comes first before pellets are spread.',none:'Sodium hydroxide on skin causes progressive alkaline burns. Decon is required.'}
+},
+
+{id:'B-06',level:'basic',chem:'Carbon Monoxide',un:'UN 1016',container:'Residential furnace/attached garage',
+ desc:'Engine company responds to a carbon monoxide alarm in a single-family home. Two occupants are removed from the house to fresh air. Both are conscious and show signs of CO poisoning — headache, nausea, confusion. They had been in the house for approximately two hours.',
+ state:'Gas',contam:'Inhalation — no surface contamination',victim:'2 civilians — symptomatic',weather:'Winter, 28°F',resources:'Engine company, ALS en route',
+ answer:'none',
+ explanation:'Carbon monoxide is a <strong>colorless, odorless gas</strong> that causes injury by inhalation only. It does not deposit on surfaces, clothing, or skin. There is no surface contamination. The victims require fresh air and high-flow oxygen — a medical intervention, not decontamination. No decon method is appropriate here.',
+ whyOthers:{dry:'CO is a gas. There is no particulate to brush off.',gross:'There is no liquid chemical on these victims. Water flush would be inappropriate.',clothing:'Clothing removal does not affect CO poisoning treatment. CO does not accumulate in clothing.',technical:'No contamination has occurred. Hazmat decon is not warranted.'}
+},
+
+{id:'B-07',level:'basic',chem:'Gasoline',un:'UN 1203',container:'Vehicle fuel tank — MVA',
+ desc:'A motor vehicle accident has ruptured the fuel tank of one vehicle. The driver climbed out through the driver window and crawled across the hood, which was pooled with gasoline. His shirt and pants are visibly saturated with fuel. He is ambulatory and alert, smelling strongly of gasoline.',
+ state:'Liquid',contam:'Liquid — clothing saturation',victim:'1 civilian — ambulatory, no apparent injuries',weather:'Clear, 65°F',resources:'Engine company, water supply available',
+ answer:'gross',
+ explanation:'<strong>Liquid gasoline soaking clothing</strong> requires gross decon. Gasoline is absorbed through the skin, is a dermal irritant, and creates a serious fire hazard. Remove the saturated clothing and rinse exposed skin thoroughly with water. This also eliminates the ignition hazard near patients who may be near fire suppression efforts.',
+ whyOthers:{dry:'Gasoline is a liquid, not a powder. Dry decon does not address liquid contamination.',clothing:'Clothing removal alone is appropriate for vapor exposure. Liquid-soaked clothing requires water flushing to remove residual fuel from skin.',technical:'Single victim, known chemical, liquid exposure. Operations level gross decon is appropriate.',none:'Gasoline-soaked clothing creates both a health risk (dermal absorption, irritation) and a fire hazard. Decon is required.'}
+},
+
+{id:'B-08',level:'basic',chem:'Asbestos (Chrysotile)',un:'UN 2590',container:'Pipe insulation — building collapse',
+ desc:'A portion of ceiling collapsed in an older commercial building during a structure fire overhaul. The ceiling material is confirmed asbestos-containing. Firefighters in SCBA overhaul the area. Upon exit, white fibrous dust is visible on their turnout gear, helmets, and gloves.',
+ state:'Solid (fibrous dust)',contam:'Dry particulate — PPE surfaces',victim:'3 firefighters — SCBA worn, no direct skin exposure',weather:'Indoor',resources:'Engine company — on scene',
+ answer:'dry',
+ explanation:'Asbestos contamination is a <strong>dry fibrous particulate</strong>. Responders should remove gear in a controlled manner and bag it. The decon method is dry — wet wipe or HEPA vacuum turnout gear, then bag for laundering. Do not use a high-pressure water hose, which would aerosolize fibers. Respiratory protection was in use, so inhalation exposure is mitigated.',
+ whyOthers:{gross:'High-pressure water flushing can aerosolize asbestos fibers, creating a greater inhalation hazard. Wet wiping is acceptable but not pressurized flushing.',technical:'Asbestos PPE decon at operations level is managed with careful dry decon and bagging of gear.',clothing:'This is responders in full PPE, not vapor exposure. The correct method is dry decon of gear.',none:'Visible asbestos fibers on gear require decon to prevent secondary fiber release and protect decon personnel.'}
+},
+
+{id:'B-09',level:'basic',chem:'Natural Gas (Methane)',un:'UN 1971',container:'Residential gas line — indoor leak',
+ desc:'Engine company responds to a natural gas odor inside a residence. The gas company has been called. Residents were evacuated — 4 adults who were inside the home when the odor began. None report liquid contact. Gas utility has shut off the meter. Residents are in the driveway asking about decon.',
+ state:'Gas',contam:'Vapor — no surface contamination',victim:'4 civilians — no symptoms, precautionary',weather:'Clear, 60°F',resources:'Engine company',
+ answer:'none',
+ explanation:'Natural gas (methane) is lighter than air and causes hazard by <strong>inhalation and explosion risk, not surface contamination</strong>. It does not deposit on skin or clothing in a way that requires decontamination. The residents simply need fresh air. No decon method is warranted.',
+ whyOthers:{dry:'Methane is a gas, not a particulate.',gross:'No liquid contamination occurred.',clothing:'Clothing does not absorb methane in a meaningful way that requires removal for decon purposes.',technical:'No contamination has occurred. Hazmat decon resources are not needed for this presentation.'}
+},
+
+{id:'B-10',level:'basic',chem:'Hydrochloric Acid',un:'UN 1789',container:'Drum — industrial warehouse',
+ desc:'A warehouse worker knocked over a 30-gallon open-top container of hydrochloric acid. The liquid splashed across the floor and onto the worker\'s left leg and foot — his work pants from the knee down are wet with acid solution. He is standing, in pain, reporting burning at the contact area.',
+ state:'Liquid',contam:'Liquid splash — lower extremity',victim:'1 industrial worker — symptomatic',weather:'Indoor, 70°F',resources:'Engine company, water supply available',
+ answer:'gross',
+ explanation:'<strong>Liquid acid splash to skin and clothing</strong> requires immediate gross decon. Hydrochloric acid causes progressive tissue damage with continued contact time. High-volume water flush to the affected area is the operations-level intervention. Remove the wet clothing while flushing to eliminate the ongoing chemical exposure to skin.',
+ whyOthers:{dry:'HCl is a liquid. There is nothing to brush off.',technical:'Gross decon by the engine company is the correct immediate intervention for a single victim with confirmed liquid acid splash.',clothing:'Clothing removal without simultaneous water flushing leaves acid residue on skin and continues the burn.',none:'Active liquid acid contact causes progressive burns. Immediate decon is required.'}
+},
+
+{id:'B-11',level:'basic',chem:'Propane',un:'UN 1978',container:'20-lb BBQ cylinder',
+ desc:'A propane barbecue cylinder developed a leak near an outdoor restaurant grill. The vapor accumulated briefly in the outdoor kitchen area before being detected. The cook was in the vapor cloud for approximately 2 minutes. There is no liquid propane visible on him, no burns from ignition.',
+ state:'Gas',contam:'Vapor only',victim:'1 cook — mild headache, no other symptoms',weather:'Outdoor, 75°F, light wind',resources:'Engine company',
+ answer:'clothing',
+ explanation:'Propane vapor exposure means the <strong>clothing has absorbed the flammable gas</strong>. Clothing removal is appropriate to eliminate vapor-saturated clothing that can off-gas near ignition sources and prevent secondary contamination. There is no liquid chemical and no particulate — full gross decon is not warranted.',
+ whyOthers:{dry:'Propane is a gas, not a powder or solid.',gross:'No liquid propane is present on the victim. Gross decon is for liquid contamination.',technical:'Vapor exposure from a known source with a single mild victim is an operations-level call.',none:'Propane-saturated clothing is a fire hazard and continues off-gassing. Removing it is appropriate.'}
+},
+
+{id:'B-12',level:'basic',chem:'Sodium Cyanide',un:'UN 1689',container:'Sack — mining operation transport',
+ desc:'A truck carrying bagged sodium cyanide was involved in a rollover accident. Several bags have torn and white granular cyanide powder has spilled across the road. A passing driver who stopped to help before hazard markings were visible has sodium cyanide dust visibly coating both hands and the front of his shirt.',
+ state:'Solid (granules/powder)',contam:'Dry particulate — hands and clothing',victim:'1 civilian — no symptoms yet',weather:'Overcast, 58°F',resources:'Engine company — approaching',
+ answer:'dry',
+ explanation:'Sodium cyanide is a <strong>dry granular solid</strong>. The priority is dry decon — brush off granules before introducing water. Sodium cyanide reacts with moisture to begin generating hydrogen cyanide gas. Remove all dry material first, then flush thoroughly with water, moving the runoff away from personnel. Protective decon eyewear critical.',
+ whyOthers:{gross:'Water applied to dry cyanide can generate HCN gas at the decon site, exposing responders and the victim. Dry decon must precede water.',technical:'Single victim with dry surface contamination from a known solid. Operations-level dry decon is appropriate as the first step.',clothing:'Brushing off granules from the shirt is important, but hands — which were in direct contact — require careful dry decon first.',none:'Cyanide granules on skin will begin absorbing through the skin and react with moisture. Decon is required immediately.'}
+},
+
+{id:'B-13',level:'basic',chem:'Acetone',un:'UN 1090',container:'5-gallon can — workshop',
+ desc:'A 5-gallon can of acetone was knocked off a shelf in an auto body shop. The lid came off and acetone poured over a technician\'s arms, chest, and legs. His clothing is visibly saturated with acetone. He complains of skin irritation and the strong solvent smell is apparent.',
+ state:'Liquid',contam:'Liquid saturation — clothing and skin',victim:'1 technician — symptomatic irritation',weather:'Indoor shop, fan ventilation',resources:'Engine company',
+ answer:'gross',
+ explanation:'<strong>Liquid acetone soaking clothing and skin</strong> requires gross decon. Acetone is a skin irritant and rapidly absorbs through clothing onto skin. Remove saturated clothing and flush skin with large amounts of water. Acetone is also highly flammable — ensure no ignition sources near the decon area.',
+ whyOthers:{dry:'Acetone is a liquid solvent. Dry decon does not address liquid contamination.',clothing:'Liquid-soaked clothing needs a water rinse to remove solvent residue from skin, not just clothing removal.',technical:'Single victim, known solvent, confirmed liquid exposure. Operations level is appropriate.',none:'Liquid acetone absorption through skin causes progressive irritation and the flammable vapor requires eliminating the source.'}
+},
+
+{id:'B-14',level:'basic',chem:'Benzene',un:'UN 1114',container:'Tanker truck — highway rollover',
+ desc:'A benzene tanker truck has rolled over on the highway. The tanker is not breached, but vapor from pressure relief vents has created a downwind vapor cloud. Motorists who were briefly caught in the cloud before barricades were set have evacuated on their own. None report liquid contact. Clothing appears dry.',
+ state:'Gas/vapor',contam:'Vapor only — no liquid contact',victim:'6 civilians — mild symptoms, grouped at staging area',weather:'Sunny, 82°F, wind SW 10 mph',resources:'Engine company, additional units en route',
+ answer:'clothing',
+ explanation:'<strong>Vapor exposure from benzene</strong> — no liquid contamination. The primary action is removing clothing, which has absorbed benzene vapor. This eliminates continued off-gassing, reduces inhalation exposure, and prevents secondary contamination of EMS personnel. Benzene is a known carcinogen — exposure should be minimized rapidly.',
+ whyOthers:{dry:'Benzene is a vapor, not a particulate.',gross:'No liquid benzene contact has occurred. Water flush is not indicated.',technical:'Six victims with vapor-only exposure at staging — operations level clothing removal is appropriate as the initial response.',none:'Benzene-saturated clothing continues off-gassing a carcinogen onto skin and toward EMS personnel.'}
+},
+
+{id:'B-15',level:'basic',chem:'Chlorine (Pool Shock)',un:'UN 2880',container:'Bucket — residential pool',
+ desc:'A homeowner was adding dry calcium hypochlorite (pool shock) to a bucket when it reacted unexpectedly and produced a brief white cloud. The powder and cloud made contact with his face, neck, and shirt front. White powder residue is visible on his clothing and skin.',
+ state:'Solid (powder)',contam:'Dry powder — face, neck, shirt',victim:'1 civilian — coughing, eye irritation',weather:'Outdoor, 88°F',resources:'Engine company',
+ answer:'dry',
+ explanation:'<strong>Dry calcium hypochlorite powder</strong> is the contaminating agent. Begin with dry decon — remove powder from skin and clothing before wetting. Calcium hypochlorite reacts with water and generates chlorine gas and heat. Brush off powder first, then flush with copious water, directing runoff away from the victim\'s face. Remove contaminated clothing.',
+ whyOthers:{gross:'Applying water directly to calcium hypochlorite powder on skin can generate chlorine gas and cause a heat reaction. Dry decon precedes gross decon.',technical:'Single victim, known product, operations-level presentation.',clothing:'Clothing removal before dry brushing can spread powder to the face. Remove powder first, then clothing.',none:'Dry oxidizing pool chemical on skin requires decon. Eye exposure warrants immediate attention.'}
+},
+
+{id:'B-16',level:'basic',chem:'Toluene',un:'UN 1294',container:'Drum — printing facility',
+ desc:'A printing facility worker stepped into a toluene spill during cleanup. The liquid soaked through his work boots and his socks are visibly wet. He has been standing in the spilled liquid and the lower portion of his work pants is also saturated. He reports dizziness and a strong solvent odor.',
+ state:'Liquid',contam:'Liquid — boots, feet, lower legs',victim:'1 worker — mildly symptomatic',weather:'Indoor, ventilated',resources:'Engine company',
+ answer:'gross',
+ explanation:'<strong>Liquid toluene saturating clothing and footwear</strong> requires gross decon. Remove boots, socks, and contaminated clothing. Flush feet and lower legs with large amounts of water. Toluene absorbs through skin and the vapor is concentrated when the chemical is trapped against skin under clothing and footwear. Flushing removes residue and stops absorption.',
+ whyOthers:{dry:'Toluene is a liquid, not a dry solid.',clothing:'Liquid-soaked clothing requires water flush after removal to clear solvent residue from skin.',technical:'Confirmed liquid exposure, known chemical, single victim. Operations-level gross decon is appropriate.',none:'Liquid toluene on skin causes dermal absorption and the victim is already symptomatic.'}
+},
+
+{id:'B-17',level:'basic',chem:'Hydrogen Sulfide',un:'UN 1053',container:'Sewer manhole — confined space',
+ desc:'Workers found a co-worker who had collapsed in a manhole with elevated H2S. The victim was removed with rope entry by a crew member in SCBA. The victim was in the H2S atmosphere for approximately 10 minutes before removal. His clothing appears dry — no liquid contact in the sewer at the entry point.',
+ state:'Gas',contam:'Vapor — potential clothing absorption',victim:'1 worker — unconscious, removed to surface',weather:'Outdoor, dry conditions',resources:'Engine company with SCBA',
+ answer:'clothing',
+ explanation:'<strong>H2S vapor exposure</strong> — the victim\'s clothing has absorbed hydrogen sulfide gas. Remove clothing to prevent continued off-gassing and protect EMS providers who will be conducting airway management close to the patient. H2S desorbing from clothing has caused secondary rescuer incapacitation in documented cases.',
+ whyOthers:{dry:'H2S is a gas, not a particulate.',gross:'No liquid contamination occurred in this scenario.',technical:'Clothing removal for vapor exposure is an operations-level action. Hazmat team is not required for this specific decon action.',none:'H2S-saturated clothing presents a secondary exposure risk to EMS personnel conducting close patient care.'}
+},
+
+{id:'B-18',level:'basic',chem:'Ethanol',un:'UN 1170',container:'Tanker truck — rollover',
+ desc:'An ethanol tanker has overturned and product is pooling on the highway. A driver from a rear-end collision vehicle waded into the spill to exit his vehicle before fire crews arrived. His clothing from the waist down is soaked in ethanol. He is alert and walking.',
+ state:'Liquid',contam:'Liquid saturation — lower body',victim:'1 civilian — alert, ambulatory',weather:'Clear, 68°F',resources:'Engine company',
+ answer:'gross',
+ explanation:'<strong>Liquid ethanol soaking clothing</strong> requires gross decon. Remove saturated clothing and flush with water. Ethanol is flammable — the saturated clothing creates an ignition risk if any spark or heat source is present during treatment. Water rinse removes ethanol residue from skin.',
+ whyOthers:{dry:'Ethanol is a liquid. Dry decon is not applicable.',clothing:'Liquid saturation requires a water flush after clothing removal to remove residue from skin.',technical:'Known chemical, single victim, liquid exposure. Operations-level gross decon is the right call.',none:'Flammable liquid-soaked clothing is both a health and fire hazard.'}
+},
+
+{id:'B-19',level:'basic',chem:'Hydrogen Cyanide',un:'UN 1051',container:'Chemical plant — atmospheric release',
+ desc:'A chemical plant has reported a hydrogen cyanide gas release from a process vessel. Three office workers located in a building at the downwind edge of the plant property were in the vapor cloud for less than 2 minutes before evacuating. All three are conscious and ambulatory. Their clothing appears dry — no liquid contact.',
+ state:'Gas',contam:'Vapor only',victim:'3 civilians — mild symptoms',weather:'Clear, wind 12 mph',resources:'Engine company at outer perimeter',
+ answer:'clothing',
+ explanation:'<strong>HCN vapor exposure</strong> — clothing has absorbed toxic gas. Clothing removal is the priority operation-level action. Remove contaminated clothing and move victims to fresh air. HCN does not deposit as a liquid under these conditions. Removing clothing eliminates continued vapor off-gassing near responders and EMS. Keep victims warm if needed — hypothermia risk if removing clothing in cold weather.',
+ whyOthers:{dry:'HCN is a gas, not a solid. No dry particulate is present.',gross:'No liquid HCN contact occurred.',technical:'Clothing removal for vapor exposure is within operations-level scope. The decon action itself is straightforward.',none:'HCN-saturated clothing continues exposing the victim and nearby responders to a lethal gas.'}
+},
+
+{id:'B-20',level:'basic',chem:'Xylene',un:'UN 1307',container:'Drum — auto repair shop',
+ desc:'An auto parts cleaner drum (xylene-based) was dropped and ruptured. Xylene liquid poured over a mechanic\'s hands, arms, and chest. His shirt and apron are soaked. He reports skin tingling and the sharp sweet solvent odor is strong.',
+ state:'Liquid',contam:'Liquid splash — upper body',victim:'1 mechanic — skin irritation',weather:'Indoor garage',resources:'Engine company',
+ answer:'gross',
+ explanation:'<strong>Liquid xylene on skin and clothing</strong> requires gross decon. Xylene absorbs readily through skin and causes CNS effects at higher exposures. Remove contaminated clothing and flush skin with large amounts of water. Xylene is also flammable — eliminating liquid from clothing is important near any potential ignition source.',
+ whyOthers:{dry:'Xylene is a liquid solvent. Dry decon does not remove liquid chemicals.',clothing:'Liquid-soaked clothing without a concurrent water flush leaves xylene residue against the skin.',technical:'Known chemical, single victim, confirmed liquid exposure — operations level can manage this.',none:'Liquid xylene dermally absorbed causes progressive CNS effects.'}
+},
+
+{id:'B-21',level:'basic',chem:'Mercury (Elemental)',un:'UN 2809',container:'Broken thermometer — classroom',
+ desc:'A classroom thermometer broke and approximately 5 mL of elemental mercury spilled onto a student\'s desk. Shiny silver beads are visible on the desktop. The student and classmates were evacuated. No one has visible mercury on their skin or clothing. The teacher wants to know if students need decon.',
+ state:'Liquid (elemental metal)',contam:'None — no contact with persons',victim:'No one contaminated — spill on desk surface only',weather:'Indoor, 70°F',resources:'Engine company — evaluating',
+ answer:'none',
+ explanation:'<strong>No person has been contaminated</strong>. The mercury is on an inanimate surface — the desk. Students and staff were evacuated before contact. Environmental remediation of the surface is needed, but that is not decontamination of persons. No decon of individuals is required. Ventilate the room and await hazmat for environmental cleanup.',
+ whyOthers:{dry:'No person has mercury contamination. Individual decon is not indicated.',gross:'No liquid mercury is on any person. Gross decon of individuals is not warranted.',technical:'The surface spill requires hazmat environmental remediation — but that is not individual decon of persons.',clothing:'No one has clothing contamination.'}
+},
+
+{id:'B-22',level:'basic',chem:'Nitric Acid',un:'UN 2031',container:'Lab carboy — university lab',
+ desc:'A laboratory assistant bumped a carboy of dilute nitric acid (10%), which tipped and splashed liquid across both her forearms and the front of her lab coat. Visible yellowish discoloration is present on the lab coat and skin contact areas are red. She is in pain.',
+ state:'Liquid',contam:'Liquid splash — forearms, lab coat',victim:'1 lab worker — symptomatic skin burns',weather:'Indoor lab',resources:'Engine company, eyewash/shower in lab',
+ answer:'gross',
+ explanation:'<strong>Liquid nitric acid on skin</strong> causes progressive chemical burns with characteristic yellow staining of tissue (xanthoproteic reaction). Immediate gross decon — copious water flush — is the operations-level intervention. Remove the lab coat while flushing. Every second of contact time increases burn depth.',
+ whyOthers:{dry:'Nitric acid is a liquid. Dry decon is not applicable.',technical:'The engine company can manage gross decon for a single victim with a confirmed acid splash at operations level.',clothing:'Removing the lab coat without water flush leaves acid residue on the skin. Gross decon includes clothing removal plus simultaneous water flush.',none:'Active acid burns are ongoing. Immediate decon is required.'}
+},
+
+{id:'B-23',level:'basic',chem:'Ammonia Solution',un:'UN 2672',container:'Bulk cleaning supply drum',
+ desc:'A cleaning service worker was filling a spray bottle when a drum pump malfunctioned and sprayed ammonia cleaning solution across his face, neck, and shirt. Liquid is visibly present on his face and clothing. He is reporting severe eye pain and difficulty breathing.',
+ state:'Liquid',contam:'Liquid splash — face, neck, clothing',victim:'1 worker — symptomatic, ambulatory',weather:'Indoor, ventilated',resources:'Engine company',
+ answer:'gross',
+ explanation:'<strong>Liquid ammonia solution splash to the face</strong> requires immediate gross decon, with priority on continuous eye flushing. Ammonia causes severe chemical burns to eyes — early, copious water irrigation is critical to reduce eye injury severity. Remove contaminated clothing and flush all affected areas. This is operations-level gross decon.',
+ whyOthers:{dry:'Ammonia cleaning solution is a liquid. Dry decon is not applicable.',technical:'Single victim, known chemical, liquid splash. Operations-level gross decon is appropriate and time-critical.',clothing:'Face and eye contamination with liquid requires immediate water irrigation — clothing removal alone is insufficient.',none:'Active liquid ammonia on face and eyes is causing ongoing chemical burns.'}
+},
+
+{id:'B-24',level:'basic',chem:'Liquid Propane',un:'UN 1978',container:'Bulk storage tank — valve failure',
+ desc:'A valve on a liquid propane storage tank partially failed and briefly ejected a stream of liquid propane before the manual shutoff was operated. A maintenance worker who was near the valve has frost on his left arm and jacket from the liquid propane evaporation. He reports cold-related pain but no other symptoms.',
+ state:'Liquid (cryogenic phase)',contam:'Liquid cryogen contact — left arm',victim:'1 worker — cold injury, no burn from ignition',weather:'Outdoor, 55°F',resources:'Engine company',
+ answer:'gross',
+ explanation:'<strong>Liquid propane contact causes cryogenic injury (frostbite)</strong> — not just flammable vapor exposure. The evaporating liquid left behind a cryogen-contaminated garment. Remove the frosted clothing and flush with room-temperature water to warm the affected area. Do not use hot water — gradual rewarming. The contaminated jacket continues to absorb heat from tissue.',
+ whyOthers:{dry:'Liquid propane is a liquid cryogen. Dry decon does not address liquid chemical contact.',clothing:'Cryogenic skin contact requires water warming in addition to clothing removal. Clothing removal alone is not sufficient.',technical:'Single victim, known chemical, cryogenic contact. Operations-level gross decon is appropriate.',none:'Cryogenic tissue contact without decon and rewarming can lead to progressive frostbite.'}
+},
+
+{id:'B-25',level:'basic',chem:'Hydrofluoric Acid',un:'UN 1790',container:'Glass etching kit — retail store',
+ desc:'A retail store employee was using hydrofluoric acid glass etching solution when the container cracked and HF liquid splashed onto his right hand. The liquid is visible on the back of his hand and he is beginning to report burning pain. Amount involved is approximately 10 mL of dilute HF solution.',
+ state:'Liquid',contam:'Liquid splash — hand/skin',victim:'1 employee — symptomatic, hand pain',weather:'Indoor, 68°F',resources:'Engine company',
+ answer:'gross',
+ explanation:'<strong>HF liquid on skin</strong> requires immediate gross decon — flush with large amounts of water for at least 5 minutes. Hydrofluoric acid has a unique toxicity: it penetrates skin and binds calcium systemically, which can cause cardiac effects even from relatively small exposures to concentrated HF. At operations level, flush immediately and notify receiving hospital about the HF exposure. Note: calcium gluconate gel (SRP) is a specific antidote but outside operations-level scope — hazmat follow-up is needed.',
+ whyOthers:{dry:'HF is a liquid. Dry decon is not applicable.',technical:'Immediate gross decon with water is the correct first action for HF skin contact. Escalation to technical decon and medical management should follow.',clothing:'Remove the glove or clothing over the affected area while simultaneously flushing — not clothing removal alone.',none:'HF on skin causes progressive systemic toxicity even after the burning sensation may diminish.'}
+},
+
+{id:'B-26',level:'basic',chem:'Phosphoric Acid',un:'UN 1805',container:'Industrial drum — food processing facility',
+ desc:'A food processing line worker was cleaning with phosphoric acid sanitizer when a hose fitting failed and sprayed the liquid across his left leg and shoe. The liquid has saturated his pants leg from the knee down. He reports burning sensation where the liquid hit.',
+ state:'Liquid',contam:'Liquid — lower left extremity',victim:'1 worker — mild symptoms',weather:'Indoor facility',resources:'Engine company',
+ answer:'gross',
+ explanation:'<strong>Liquid phosphoric acid on skin and clothing</strong> requires gross decon — high-volume water flush to the affected extremity with removal of contaminated clothing. Phosphoric acid causes chemical burns with continued contact. Operations-level gross decon is appropriate and time-critical.',
+ whyOthers:{dry:'Phosphoric acid is a liquid. Dry decon is not applicable.',technical:'Single victim, known acid, operations-level presentation.',clothing:'Liquid acid on skin requires simultaneous water flushing — clothing removal alone is not sufficient.',none:'Active acid contact causes progressive tissue damage.'}
+},
+
+{id:'B-27',level:'basic',chem:'Carbon Dioxide',un:'UN 1013',container:'CO₂ fire suppression system',
+ desc:'A CO₂ fire suppression system activated in a server room. Four IT workers were in the room when activation occurred. They evacuated immediately. None report skin or clothing contact with liquid CO₂. They all report dizziness and shortness of breath consistent with oxygen displacement.',
+ state:'Gas',contam:'None — displacement asphyxiation only',victim:'4 workers — symptomatic, ambulatory',weather:'Indoor server room',resources:'Engine company',
+ answer:'none',
+ explanation:'<strong>CO₂ fire suppression causes O₂ displacement, not surface contamination</strong>. The workers were exposed to an oxygen-deficient atmosphere. CO₂ does not deposit on surfaces or clothing in a way that requires decontamination. The treatment is fresh air and medical evaluation. No decon is required.',
+ whyOthers:{dry:'CO₂ is a gas with no solid particulate component in this context.',gross:'No liquid or chemical is on the victims.',clothing:'CO₂ does not accumulate in clothing in a way that requires removal for decon purposes.',technical:'No contamination has occurred. Hazmat decon resources are not needed.'}
+},
+
+{id:'B-28',level:'basic',chem:'Dry Ammonium Nitrate Fertilizer',un:'UN 2067',container:'Bulk truck — agricultural',
+ desc:'A fertilizer truck carrying dry ammonium nitrate product had a bag rupture during unloading. White granular fertilizer spilled across the loading dock and coated a dock worker\'s clothing, hands, and face. Visible granules are present on his skin.',
+ state:'Solid (granules)',contam:'Dry granular — skin and clothing',victim:'1 dock worker — no symptoms',weather:'Outdoor, dry conditions',resources:'Engine company',
+ answer:'dry',
+ explanation:'<strong>Dry ammonium nitrate granules</strong> on skin and clothing — dry decon first. Brush off granules before introducing water. Then flush thoroughly with water to remove any residue. Note: ammonium nitrate is an oxidizer and a fertilizer — not immediately dangerous at skin contact concentrations, but should be flushed promptly.',
+ whyOthers:{gross:'Dry granules should be brushed off before water is applied to prevent spreading the chemical.',technical:'Single victim, dry granular contamination, known chemical. Operations level can manage.',clothing:'Brushing off granules from clothing and skin before removal prevents spreading them.',none:'Dry chemical on skin and face should be removed to prevent potential irritation and ingestion.'}
+},
+
+{id:'B-29',level:'basic',chem:'Hydrogen Cyanide',un:'UN 1051',container:'Metal plating plant — gas release',
+ desc:'An HCN gas alarm sounded at a metal plating facility. One worker who was closest to the source reports brief exposure. His shirt smells strongly of almonds (characteristic HCN odor). He is conscious and alert. Clothing appears dry — no liquid contact. He has a mild headache.',
+ state:'Gas',contam:'Vapor — clothing saturation',victim:'1 worker — conscious, mild symptoms',weather:'Indoor, exhaust ventilation',resources:'Engine company outside',
+ answer:'clothing',
+ explanation:'<strong>HCN vapor exposure</strong> — clothing has absorbed the toxic gas. Remove clothing immediately and get the victim to fresh air. HCN-saturated clothing can off-gas at dangerous concentrations close to EMS providers during transport and treatment. Clothing removal is the single most important operations-level decon action for gas-exposed victims.',
+ whyOthers:{dry:'HCN is a gas, not a solid.',gross:'No liquid HCN is present.',technical:'Clothing removal for vapor exposure is within operations-level scope. The decon itself is not complex.',none:'HCN-saturated clothing continues to off-gas at toxic concentrations and poses secondary exposure risk.'}
+},
+
+{id:'B-30',level:'basic',chem:'Carbon Tetrachloride',un:'UN 1846',container:'Lab container — dry cleaning',
+ desc:'A dry cleaning technician spilled a container of carbon tetrachloride cleaning solvent on his arms and chest. The liquid has visibly soaked into his work shirt and he can feel it on his forearms. He reports a sweet chloroform-like odor and mild dizziness.',
+ state:'Liquid',contam:'Liquid — torso and arms',victim:'1 worker — mildly symptomatic',weather:'Indoor, poor ventilation',resources:'Engine company',
+ answer:'gross',
+ explanation:'<strong>Liquid CCl₄ on skin and clothing</strong> requires gross decon. Carbon tetrachloride is a liver and kidney toxin that absorbs readily through skin. Remove contaminated clothing and flush skin with water. Move victim to fresh air to address the inhalation component. Gross decon removes the ongoing dermal exposure source.',
+ whyOthers:{dry:'Carbon tetrachloride is a liquid. Dry decon is not applicable.',technical:'Confirmed liquid exposure, known chemical. Operations level is appropriate.',clothing:'Liquid solvent on skin requires water flushing, not clothing removal alone.',none:'Active liquid exposure causes ongoing dermal absorption of a known hepatotoxin.'}
+},
+
+{id:'B-31',level:'basic',chem:'Methanol',un:'UN 1230',container:'5-gallon pail — industrial parts cleaning',
+ desc:'A parts cleaning pail of methanol tipped over during shop operations, spilling onto a mechanic\'s legs and feet. His work pants from mid-thigh down are soaked. He has been standing in it briefly. He reports no symptoms yet but can smell the alcohol-like odor.',
+ state:'Liquid',contam:'Liquid saturation — lower body',victim:'1 mechanic — no symptoms yet',weather:'Indoor shop',resources:'Engine company',
+ answer:'gross',
+ explanation:'<strong>Liquid methanol saturation of clothing</strong> requires gross decon. Methanol absorbs through skin and causes systemic toxicity — including blindness and cardiac effects — with a delay in symptom onset. The absence of symptoms does not mean no exposure is occurring. Remove clothing and flush skin with water immediately.',
+ whyOthers:{dry:'Methanol is a liquid, not a particulate.',technical:'Single victim, known chemical, liquid exposure. Operations level is appropriate.',clothing:'Liquid-soaked clothing must be followed by a water flush to remove methanol from skin.',none:'Methanol dermal absorption can cause serious delayed toxicity. No symptoms yet does not mean no decon required.'}
+},
+
+{id:'B-32',level:'basic',chem:'Ethylene Oxide',un:'UN 1040',container:'Medical sterilizer — hospital',
+ desc:'An ethylene oxide sterilizer unit malfunctioned in a hospital sterile processing department. An alarm activated and the area was evacuated. Two sterile processing technicians who were in the room during the leak have exited. No liquid contact occurred. Both report eye and throat irritation.',
+ state:'Gas',contam:'Vapor only',victim:'2 hospital workers — mild symptoms',weather:'Indoor, ventilated corridor',resources:'Engine company outside',
+ answer:'clothing',
+ explanation:'<strong>EtO vapor exposure</strong> — a known human carcinogen and potent chemical. Remove contaminated clothing to stop ongoing vapor off-gassing from fabric. No liquid chemical is present. Clothing removal plus fresh air is the appropriate operations-level action.',
+ whyOthers:{dry:'EtO is a gas. No dry particulate is present.',gross:'No liquid EtO contacted the workers.',technical:'Clothing removal for vapor-exposed workers is an operations-level action.',none:'EtO-saturated clothing continues exposing workers and EMS to a carcinogen.'}
+},
+
+{id:'B-33',level:'basic',chem:'Acrylic Acid',un:'UN 2218',container:'Tote — chemical plant',
+ desc:'A 275-gallon IBC tote of acrylic acid developed a drain valve leak. A plant worker who was walking past was splashed by the liquid stream — his work clothes from the waist down are wet with acrylic acid. He reports burning skin and a pungent vinegar-like odor.',
+ state:'Liquid',contam:'Liquid splash — lower body',victim:'1 worker — symptomatic skin irritation',weather:'Outdoor, 72°F',resources:'Engine company',
+ answer:'gross',
+ explanation:'<strong>Liquid acrylic acid on skin and clothing</strong> requires gross decon. Acrylic acid is corrosive and causes skin burns. Remove contaminated clothing while flushing with large amounts of water. Acrylic acid is also a respiratory irritant — move the victim upwind from the spill during decon.',
+ whyOthers:{dry:'Acrylic acid is a liquid.',technical:'Confirmed liquid exposure, known chemical, single victim. Operations level is appropriate.',clothing:'Liquid acid on skin requires simultaneous water flush.',none:'Active corrosive liquid contact causes ongoing burns.'}
+},
+
+{id:'B-34',level:'basic',chem:'Sulfur Dioxide',un:'UN 1079',container:'Refrigeration system — cold storage',
+ desc:'An SO₂ refrigeration leak occurred in a cold storage warehouse. Three workers evacuated the building when the alarm sounded. None report liquid contact — the gas alarm triggered before the exposure became prolonged. All three are outside coughing and have eye irritation. Their clothing appears dry.',
+ state:'Gas',contam:'Vapor only',victim:'3 workers — mild respiratory symptoms',weather:'Outdoor, cold 34°F',resources:'Engine company',
+ answer:'clothing',
+ explanation:'<strong>SO₂ vapor exposure</strong> — clothing absorbs the toxic gas. Clothing removal minimizes continued vapor off-gassing onto skin and reduces secondary exposure to EMS. Keep victims warm during clothing removal given the cold weather.',
+ whyOthers:{dry:'SO₂ is a gas. No dry particulate is present.',gross:'No liquid SO₂ contacted the workers.',technical:'Clothing removal for vapor exposure is within operations-level scope.',none:'SO₂ absorbed in clothing continues to off-gas onto skin and toward treating personnel.'}
+},
+
+{id:'B-35',level:'basic',chem:'Acetic Acid (Glacial)',un:'UN 2789',container:'Laboratory — spill',
+ desc:'A graduate student spilled approximately 200 mL of glacial acetic acid during an experiment. The liquid splashed across both hands and her lab coat front. She immediately ran to the emergency shower. The lab coat is saturated and liquid is visible on her hands. She has activated the shower.',
+ state:'Liquid',contam:'Liquid — hands and clothing',victim:'1 student — symptomatic, self-deconning',weather:'Indoor laboratory',resources:'Engine company en route',
+ answer:'gross',
+ explanation:'<strong>Liquid glacial acetic acid on hands and clothing</strong> — the student has already correctly initiated gross decon at the emergency shower. Continue the water flush for at least 15 minutes to all affected areas. Glacial acetic acid is corrosive at high concentration and requires extended flushing. Engine company should support continued decon and medical evaluation.',
+ whyOthers:{dry:'Glacial acetic acid is a liquid.',technical:'Self-initiated gross decon at an eye wash/shower is the correct first action. Operations-level support of that decon is appropriate.',clothing:'The lab coat is contaminated with liquid — clothing removal and flushing occur simultaneously at the shower.',none:'Active liquid acid contact causes progressive burns.'}
+},
+
+// ════════════════════════════════════════════════════════
+// ░░ INTERMEDIATE (Level 2) — 35 scenarios ░░
+// ════════════════════════════════════════════════════════
+
+{id:'I-01',level:'inter',chem:'Chlorine',un:'UN 1017',container:'1-ton cylinder',
+ desc:'A 1-ton chlorine cylinder at a water plant has developed a significant valve failure. An operator approached the cylinder during the initial alarm response. She reports being hit by both the gas cloud AND a brief spray of visible yellow-green liquid from the valve area before retreating. Her jacket appears both wet and discolored at the shoulder. She has a burning throat and difficulty breathing.',
+ state:'Gas + Liquid',contam:'Combined: vapor inhalation + liquid splash',victim:'1 operator — respiratory symptoms, possible liquid contact',weather:'Outdoor, light wind',resources:'Engine company on scene, hazmat 20 min out',
+ answer:'technical',
+ explanation:'This victim has a <strong>combined vapor and liquid chlorine exposure</strong>. Liquid chlorine on clothing is far more serious than vapor alone — it requires technical decon because the liquid residue can continue releasing chlorine gas against the skin and requires hazmat-level PPE and procedures to safely manage. Operations level should isolate the victim, begin removing the contaminated jacket with appropriate PPE, and hold for hazmat team arrival. Do not apply water without proper decon procedures in place.',
+ whyOthers:{dry:'No dry particulate is present.',gross:'Operations-level gross decon on liquid chlorine without full chemical-resistant PPE creates secondary contamination risk. Hazmat-level decon is required.',clothing:'Clothing removal alone does not address liquid chlorine residue on skin and creates exposure risk for anyone removing the clothing without chemical-resistant PPE.',none:'Liquid chlorine on skin and clothing is actively causing burns and toxicity.'}
+},
+
+{id:'I-02',level:'inter',chem:'Ammonia, Anhydrous',un:'UN 1005',container:'Nurse tank — agricultural leak',
+ desc:'An anhydrous ammonia nurse tank is leaking from a failed fitting. A farm worker is unsure if he was in the liquid zone (near the valve) or only the vapor zone — he approached the tank trying to shut the valve before retreating. His jacket has frost on it, suggesting possible liquid contact. He is in significant pain with bilateral eye tearing.',
+ state:'Gas + possible liquid',contam:'Ambiguous — vapor certain, liquid suspected',victim:'1 farm worker — symptomatic, possible liquid contact',weather:'55°F, variable wind',resources:'Engine company only, hazmat 35 min',
+ answer:'technical',
+ explanation:'<strong>Anhydrous ammonia with suspected liquid contact and ambiguous exposure pathway</strong> requires technical decon. The presence of frost on the jacket suggests liquid anhydrous ammonia contact — which causes severe chemical burns and differs significantly from vapor-only exposure. Operations level should isolate the patient, provide oxygen, and hold for hazmat team. Do not attempt to manage liquid anhydrous ammonia without chemical-resistant PPE.',
+ whyOthers:{dry:'No dry particulate is present. Frost is evaporated liquid ammonia, not a dry solid for brushing.',gross:'Without knowing if liquid anhydrous ammonia is present, gross decon without chemical-resistant PPE risks secondary contamination and chemical burns to responders.',clothing:'Removing a jacket potentially contaminated with liquid anhydrous ammonia without appropriate PPE can expose the remover.',none:'The victim has clear symptoms and suspected liquid chemical contact. Decon is required.'}
+},
+
+{id:'I-03',level:'inter',chem:'Parathion (Organophosphate)',un:'UN 2783',container:'Agricultural spray rig',
+ desc:'An agricultural spray rig applying liquid parathion insecticide to an orchard has a pump failure and the worker was sprayed with the liquid chemical. His clothing is soaked from the chest up. He reports increasing salivation, tearing of the eyes, and feeling nauseous. No SLUDGE progression yet but symptoms are increasing.',
+ state:'Liquid',contam:'Liquid — upper body saturation',victim:'1 farm worker — symptomatic, systemic absorption beginning',weather:'Warm, 82°F',resources:'Engine company, hazmat requested',
+ answer:'technical',
+ explanation:'<strong>Organophosphate insecticide with systemic absorption beginning</strong> escalates this beyond routine gross decon. Parathion is a highly toxic organophosphate that causes cholinergic toxicity requiring antidote (atropine). The worker needs hazmat team decon, ALS intervention, and potential antidote administration. Operations level should keep the victim isolated, begin clothing removal with gloves, and prepare for technical decon. Do not allow worker to walk through staging and contaminate others.',
+ whyOthers:{dry:'The exposure is from liquid organophosphate, not dry powder.',gross:'While gross decon with water is better than no decon, an organophosphate with beginning systemic absorption requires hazmat-level decon with proper PPE and simultaneous medical intervention.',clothing:'Clothing removal is an appropriate starting step, but it is insufficient for liquid organophosphate with systemic toxicity beginning.',none:'The victim has confirmed contamination and is becoming systemically symptomatic.'}
+},
+
+{id:'I-04',level:'inter',chem:'Benzene',un:'UN 1114',container:'Pipeline — outdoor work site',
+ desc:'A pipeline repair worker was using a wrench on a benzene line when the fitting blew and sprayed benzene across his face and chest. The liquid hit his face shield (he was wearing one), but also hit his neck and the open collar of his shirt. Some liquid ran inside his collar. He removed his face shield. The work site is hot — 91°F.',
+ state:'Liquid + vapor (high temp)',contam:'Liquid — face/neck area, possible inside collar',victim:'1 pipeline tech — mild dizziness, possible liquid skin contact at neck',weather:'Outdoor, 91°F, high vapor pressure',resources:'Engine company',
+ answer:'gross',
+ explanation:'<strong>Liquid benzene splash to face and neck</strong> with possible contamination inside collar — this is an operations-level gross decon scenario. Flush the face, neck, and exposed skin with water. Remove the shirt to address liquid that ran inside the collar. Benzene is a carcinogen with serious acute and chronic exposure concerns. At 91°F, benzene has high vapor pressure — respiratory protection for decon personnel is advisable (upwind positioning). The operations level can manage this with appropriate awareness.',
+ whyOthers:{dry:'Benzene is a liquid. Dry decon is not applicable.',technical:'Liquid splash to a known area (face, neck) with a known chemical and a single victim is within operations-level gross decon capability with appropriate precautions.',clothing:'Liquid in the collar area requires water flush, not just shirt removal.',none:'Active liquid benzene (carcinogen) on skin requires immediate gross decon.'}
+},
+
+{id:'I-05',level:'inter',chem:'Chlorine',un:'UN 1017',container:'Rail tanker — derailment',
+ desc:'A rail chlorine tanker has derailed. A chlorine vapor cloud is moving downwind. At the outer perimeter, 8 civilians who were in their cars downwind were in the vapor cloud for 3-4 minutes. None were outside their vehicles. Two elderly individuals are showing more severe respiratory distress than the others. All clothing appears dry.',
+ state:'Gas',contam:'Vapor — all 8 victims',victim:'8 civilians — 2 severe respiratory, 6 mild symptoms',weather:'Variable wind, 65°F',resources:'Engine + medic, hazmat 25 min',
+ answer:'clothing',
+ explanation:'<strong>Eight vapor-only exposed victims</strong> requiring triage. All clothing should be removed — this is mass clothing decon. The two severe victims need immediate ALS and aggressive airway management. Clothing removal for vapor exposure is within operations scope and reduces ongoing exposure and secondary contamination. Prioritize the two severe victims for clothing removal and medical intervention first. The 6 mild victims remove clothing as a group.',
+ whyOthers:{dry:'Chlorine vapor has no dry particulate component.',gross:'No liquid chlorine contact occurred. Gross decon with water is not indicated for vapor-only victims.',technical:'Technical decon for 8 vapor-only victims while ALS is needed for 2 critical patients is impractical and not required by the exposure type.',none:'Eight people with confirmed vapor exposure — including two with severe symptoms — require clothing removal to prevent continued exposure and secondary contamination of EMS.'}
+},
+
+{id:'I-06',level:'inter',chem:'Sulfuric Acid',un:'UN 1830',container:'Process equipment — industrial facility',
+ desc:'An industrial facility has an acid mist release from sulfuric acid processing equipment. The fine mist has settled on the clothing, faces, and hair of 4 workers who were in the area. The contamination is described as a fine spray rather than a direct splash — not as heavy as a direct spill but more than vapor.',
+ state:'Liquid mist/aerosol',contam:'Aerosol/mist — skin, face, hair, clothing',victim:'4 workers — mild to moderate symptoms, eye irritation',weather:'Indoor, poor ventilation',resources:'Engine company, water available',
+ answer:'gross',
+ explanation:'<strong>Acid mist aerosol contamination</strong> — even fine mist constitutes liquid contamination that requires gross decon. Acid mist deposits on skin and hair and continues to cause injury with contact time. Flush all affected areas — face, hair, eyes, and exposed skin — with large amounts of water. Remove contaminated clothing. The mist delivery makes the contamination more diffuse but does not change the decon method.',
+ whyOthers:{dry:'Acid mist is a liquid aerosol — even fine droplets require water flush, not dry decon.',technical:'Four workers with confirmed acid mist exposure is a manageable operations-level gross decon. Hazmat escalation should be called but gross decon begins immediately.',clothing:'Acid mist penetrates to skin through clothing. Clothing removal alone without water flush leaves acid residue on skin.',none:'Acid mist on skin, face, and hair requires immediate decon.'}
+},
+
+{id:'I-07',level:'inter',chem:'Ammonia, Anhydrous',un:'UN 1005',container:'Refrigeration unit — grocery store',
+ desc:'An ammonia refrigeration system at a large grocery store developed a leak. The store was evacuated with approximately 120 customers and employees. An elderly woman with COPD was near the leak and has significant respiratory distress. Her clothing appears dry. She is conscious and in distress. The hazmat team is 30 minutes out.',
+ state:'Gas',contam:'Vapor only',victim:'1 critical — elderly with COPD; mass evacuation otherwise',weather:'Indoor, store environment',resources:'Engine company, ALS unit on scene',
+ answer:'clothing',
+ explanation:'<strong>Vapor exposure only</strong> — clothing removal for the critical victim. The elderly patient with COPD represents a high-risk individual for ammonia vapor — her underlying lung disease makes her more vulnerable. Clothing removal eliminates ongoing off-gassing and allows ALS to work without secondary contamination. ALS airway management is the priority, with clothing removal coordinated simultaneously. Operations-level clothing removal is appropriate for this vapor-only exposure.',
+ whyOthers:{dry:'No dry particulate is present.',gross:'No liquid ammonia contact occurred. Gross decon is not indicated for vapor-only exposure.',technical:'The critical patient needs immediate ALS intervention and clothing removal. Delaying clothing removal while waiting 30 minutes for hazmat is not appropriate for vapor-only exposure.',none:'Ammonia-saturated clothing on a critical patient continues off-gassing near treating personnel.'}
+},
+
+{id:'I-08',level:'inter',chem:'Hydrogen Cyanide',un:'UN 1051',container:'Chemical plant fire',
+ desc:'A chemical plant fire has generated a toxic smoke plume including hydrogen cyanide from burning nitrile materials. Eight victims at the scene perimeter have been in the smoke and are presenting at varied severity levels. The scene is still active. Victims have smoky, soot-covered clothing. No direct liquid chemical contact is established, but the smoke composition includes HCN.',
+ state:'Gas (smoke/fire products)',contam:'Vapor/smoke absorption in clothing',victim:'8 civilians — varied severity, some critical',weather:'Wind shifting, 70°F',resources:'Multiple engine companies, ALS, hazmat requested',
+ answer:'clothing',
+ explanation:'<strong>Toxic smoke/HCN vapor absorption in clothing</strong> — clothing removal is the operations-level priority for all victims. Smoke-contaminated clothing off-gasses toxic compounds onto the skin and toward treating EMS. This is consistent with HazMat scene principles. Critical patients receive clothing removal with simultaneous medical intervention. The soot on clothing does not change the decon method — it is still vapor/smoke exposure, not liquid chemical exposure.',
+ whyOthers:{dry:'Soot on clothing from smoke does not constitute a dry chemical that requires brushing in the hazmat sense. Clothing removal is the primary action.',gross:'There is no liquid chemical on these victims. Gross decon with water is not indicated for smoke/vapor contamination.',technical:'For 8 victims with vapor/smoke exposure, operations-level clothing removal is the indicated method. Technical decon would be indicated if liquid chemical contact were established.',none:'Toxic smoke in clothing continues to off-gas onto victims and toward ALS providers.'}
+},
+
+{id:'I-09',level:'inter',chem:'Unknown Liquid',un:'UN number unknown',container:'Unmarked drum — abandoned site',
+ desc:'A construction worker discovered an unmarked 55-gallon drum at a brownfield site. Curious, he pried the bung partially and a clear liquid splashed onto his forearms. The material has an unusual odor he cannot identify. He reports mild skin tingling where the liquid contacted his arms. There are no markings on the drum.',
+ state:'Unknown liquid',contam:'Unknown liquid — forearms',victim:'1 worker — mild symptoms, unknown exposure',weather:'Outdoor, 68°F',resources:'Engine company, hazmat requested',
+ answer:'technical',
+ explanation:'<strong>Unknown chemical contamination</strong> requires technical decon. When the chemical identity is unknown, operations-level responders cannot determine appropriate decon methods, required PPE for decon personnel, or what health effects to anticipate. Isolate the victim, keep them calm, and hold for hazmat team to identify the substance and establish appropriate decon. Operations-level action: gloved gentle removal of contaminated clothing only.',
+ whyOthers:{dry:'Without knowing the chemical, you cannot determine if dry decon is appropriate or sufficient.',gross:'Without chemical identification, you cannot know if water is a safe or effective decon agent. Some chemicals react violently with water.',clothing:'Clothing removal is appropriate and within scope, but full decon management requires hazmat identification.',none:'Unknown chemical on skin with symptoms is confirmed contamination.'}
+},
+
+{id:'I-10',level:'inter',chem:'Hydrogen Fluoride',un:'UN 1052',container:'Industrial etching process',
+ desc:'Four workers at an electronics manufacturing facility were exposed to hydrogen fluoride vapor and possible mist during an etching process malfunction. Two workers report skin tingling. One reports no symptoms. One has visible misting on her arm and is in pain. Hazmat has been requested.',
+ state:'Vapor + possible mist',contam:'Vapor (3 victims) + possible liquid mist (1 victim)',victim:'4 workers — 1 with possible liquid contact, 3 vapor only',weather:'Indoor facility',resources:'Engine company, ALS requested, hazmat 20 min',
+ answer:'technical',
+ explanation:'<strong>HF exposure with complex pathways and possible liquid contact</strong> requires technical decon. HF systemic toxicity can cause fatal cardiac arrhythmias even from small skin exposures — this demands hazmat-level decon, calcium gluconate gel application (antidote), and ALS standing by. The combination of vapor-exposed and possible liquid-contacted victims and the unique systemic toxicity of HF means operations level should hold, not attempt gross decon without guidance. Apply water only if hazmat delays are extreme and liquid is confirmed.',
+ whyOthers:{dry:'HF is a vapor and potential mist, not a dry particulate.',gross:'While water flushing has value for HF, the systemic toxicity requires coordinated hazmat decon with antidote availability.',clothing:'Clothing removal is appropriate as a first step but insufficient for the systemic risk of HF exposure.',none:'HF exposure — even vapor only — requires decon and medical follow-up.'}
+},
+
+{id:'I-11',level:'inter',chem:'Toluene',un:'UN 1294',container:'Drum — warehouse spill',
+ desc:'A warehouse worker was overcome by toluene fumes in a poorly ventilated area and collapsed. He was dragged out by a co-worker. He is now semi-conscious. His clothing is dry — no direct liquid contact — but the strong toluene odor is present. The co-worker\'s bare hands made contact with the victim\'s clothing during the rescue.',
+ state:'Gas/vapor',contam:'Vapor — clothing saturation; secondary: co-worker hand contamination',victim:'1 primary (semi-conscious); 1 secondary (co-worker, hand contact)',weather:'Indoor warehouse, warm',resources:'Engine company, ALS en route',
+ answer:'clothing',
+ explanation:'<strong>Primary victim: vapor exposure, clothing saturated</strong>. Remove clothing to prevent continued off-gassing and secondary contamination during ALS airway care. The semi-conscious victim\'s clothing removal must be coordinated with ALS for airway management. <strong>Secondary victim: hands</strong> — the co-worker\'s hands that touched the contaminated clothing should be flushed with water (targeted gross decon). Both scenarios are operations-level.',
+ whyOthers:{dry:'Toluene is a vapor. No dry particulate is present.',gross:'The primary victim has no liquid contamination — clothing removal is appropriate. The co-worker\'s hand contact with a contaminated garment requires a targeted water flush.',technical:'Both the primary and secondary exposures are manageable at operations level.',none:'Vapor-saturated clothing continues off-gassing toluene onto the semi-conscious victim and toward ALS providers.'}
+},
+
+{id:'I-12',level:'inter',chem:'Calcium Hypochlorite',un:'UN 2880',container:'Storage shed — fire',
+ desc:'A pool chemical storage shed containing calcium hypochlorite is involved in a fire. White smoke and dust are issuing from the fire. Neighbors who were outside approximately 50 yards downwind have white powder deposited on their clothing and hair from the smoke column. The fire is controlled. Victims report coughing.',
+ state:'Solid (powder in smoke)',contam:'Dry powder deposition from smoke',victim:'6 neighbors — coughing, visible powder',weather:'Moderate wind, 70°F',resources:'Engine company',
+ answer:'dry',
+ explanation:'<strong>Dry powder deposition from calcium hypochlorite fire smoke</strong> — the white residue on victims is calcium hypochlorite particulate. Begin with dry decon: remove outer clothing and brush visible powder from hair and skin. Then rinse with water. Do not wet the victims in place while powder is in their hair — wet calcium hypochlorite can generate chlorine gas. Move to clean area, dry decon first, then rinse.',
+ whyOthers:{gross:'Calcium hypochlorite powder should be dry deconned before water is applied to prevent chlorine gas generation at the decon site.',technical:'Six victims with dry powder deposition from a known source is manageable at operations level.',clothing:'Clothing removal should follow dry brushing to prevent spreading powder to the face during removal.',none:'Visible calcium hypochlorite powder on skin and hair requires decon.'}
+},
+
+{id:'I-13',level:'inter',chem:'Methyl Isocyanate (MIC)',un:'UN 2480',container:'Chemical plant storage — leak',
+ desc:'A chemical plant reports a small release from an MIC storage unit. A security guard who was doing rounds was in the vicinity before the alarm sounded. She reports severe eye burning and chest tightness. Her clothing appears dry — no liquid contact. MIC is an extremely toxic vapor.',
+ state:'Gas (extremely toxic)',contam:'Vapor only — extremely hazardous material',victim:'1 guard — severe respiratory/eye symptoms',weather:'Night, calm wind, 55°F',resources:'Engine company outside perimeter, hazmat responding',
+ answer:'clothing',
+ explanation:'<strong>MIC vapor exposure with severe symptoms</strong>. Despite the extreme toxicity of MIC, the decon method for vapor-only exposure remains clothing removal. This eliminates ongoing off-gassing of the toxic vapor from the garment. ALS airway management is simultaneously critical. Operations-level clothing removal is appropriate — do not delay by waiting for technical decon setup when the exposure is vapor only.',
+ whyOthers:{dry:'MIC is a gas, not a particulate.',gross:'No liquid MIC contacted the victim. Gross decon would only be appropriate for liquid contact.',technical:'Technical decon is not required for vapor-only exposure. The decon action (clothing removal) is within operations scope.',none:'MIC-saturated clothing continues off-gassing an extremely toxic chemical onto the victim and toward treating personnel.'}
+},
+
+{id:'I-14',level:'inter',chem:'Hydrogen Sulfide',un:'UN 1053',container:'Sewer system — multiple entry points',
+ desc:'H2S is releasing from multiple sewer manholes following a treatment plant upset. Three workers from the water utility were in the field near open manholes during the release. None entered the manholes. All are ambulatory and outside. Two report mild headaches; one reports no symptoms. A fourth worker who actually entered the manhole to shut a valve before the alarm registered has been rescued unconscious.',
+ state:'Gas',contam:'Vapor — all 4; unconscious rescue victim',victim:'4 workers — 1 unconscious (direct entry), 3 ambulatory (perimeter)',weather:'Outdoor, mild, 65°F',resources:'Engine company, ALS',
+ answer:'clothing',
+ explanation:'<strong>H2S vapor exposure — all four victims</strong>. Clothing removal for all. The unconscious victim is the priority — his clothing should be removed as part of ALS airway preparation, as H2S off-gassing from clothing near providers working the airway is documented. The three ambulatory workers follow. All four received vapor-only exposure — no liquid contamination occurred.',
+ whyOthers:{dry:'H2S is a gas. No dry particulate.',gross:'No liquid chemical contact. Gross decon is not indicated.',technical:'All four victims have vapor exposure only. The decon action for vapor exposure — clothing removal — is within operations scope, including for the unconscious victim.',none:'H2S-contaminated clothing continues off-gassing to workers and EMS providers during close patient care.'}
+},
+
+{id:'I-15',level:'inter',chem:'Chlorine Dioxide',un:'UN 9191',container:'Water treatment — generation equipment',
+ desc:'ClO₂ generation equipment at a water treatment plant has an uncontrolled release. Two workers were in the treatment building for approximately 5 minutes before evacuating. One worker reports eye burning and coughing. The second worker says she was near the generator itself and may have gotten splashed, but is uncertain — her jacket has a faint yellow discoloration.',
+ state:'Gas + possible liquid',contam:'Vapor confirmed; liquid contact uncertain (1 victim)',victim:'2 workers — 1 vapor only, 1 uncertain (possible liquid)',weather:'Indoor facility',resources:'Engine company, hazmat requested',
+ answer:'technical',
+ explanation:'<strong>Ambiguous exposure pathway in a highly toxic agent</strong> — the worker with possible liquid contact and yellow discoloration (characteristic of ClO₂) needs technical decon. The ambiguity of liquid vs vapor contact, combined with the high toxicity of ClO₂, warrants holding for hazmat. The confirmed vapor-only worker can have clothing removed at operations level. Overall the incident command decision should be technical decon while separating the two victims.',
+ whyOthers:{dry:'No dry particulate is involved.',gross:'Operations-level gross decon on a possibly ClO₂-liquid-contacted worker without appropriate PPE creates secondary contamination risk.',clothing:'Appropriate for the confirmed vapor-only worker, but the worker with suspected liquid contact requires hazmat-level evaluation.',none:'Two workers with confirmed symptoms from a highly toxic agent require decon.'}
+},
+
+{id:'I-16',level:'inter',chem:'Pesticide Spray Drift',un:'UN 2902 (various)',container:'Agricultural spray aircraft — overspray',
+ desc:'An agricultural spray plane made a low pass over a road while spraying organophosphate pesticide. The spray drift reached a school bus parked on a rural road. The bus windows were partially open. Twelve children aboard were in the bus. A thin oily mist is visible on their clothing and the bus windows. None have symptoms yet.',
+ state:'Liquid aerosol (mist)',contam:'Fine liquid mist — clothing and possibly skin',victim:'12 children — no symptoms yet',weather:'Outdoor, warm, light wind',resources:'Engine company, 2 ambulances, school district',
+ answer:'gross',
+ explanation:'<strong>Organophosphate aerosol mist on 12 children</strong> — this is a mass gross decon for pediatric victims. The thin oily mist on clothing and potentially skin requires water removal. Organophosphates absorb through skin, and children are more susceptible than adults. Remove outer clothing and rinse exposed skin. No symptoms yet does NOT mean no absorption is occurring. Hospital notification required.',
+ whyOthers:{dry:'The pesticide is an oily liquid aerosol, not a dry powder.',technical:'Twelve children with confirmed liquid pesticide mist contamination — the engine company must initiate gross decon immediately. Awaiting hazmat with 12 potentially absorbing children is not appropriate.',clothing:'The oily mist has penetrated to skin level. Clothing removal followed by a water rinse of the skin is required.',none:'Organophosphate mist on children is a confirmed exposure. Symptom absence does not rule out ongoing absorption.'}
+},
+
+{id:'I-17',level:'inter',chem:'Nitric Acid',un:'UN 2031',container:'Tanker truck — highway accident',
+ desc:'A nitric acid tanker is leaking fuming nitric acid onto the highway. Orange-brown fumes are visible. A motorist who exited his vehicle downwind of the fumes was in the vapor cloud for about 90 seconds before retreating. His clothing appears dry. He also drove through the leading edge of the liquid spill before stopping — his car\'s tires and lower body panel have yellow staining.',
+ state:'Liquid + fuming gas',contam:'Vapor (victim) — car drove through liquid',victim:'1 motorist — mild symptoms; vehicle is secondary contamination concern',weather:'Outdoor, 72°F, wind 8 mph',resources:'Engine company',
+ answer:'clothing',
+ explanation:'The <strong>victim himself received vapor-only exposure</strong> — clothing removal is appropriate for him. The vehicle drove through the liquid, making it a secondary contamination source, but the driver did not have direct liquid contact on his person based on the scene information. Isolate the vehicle. The driver gets clothing removal. Hazmat should evaluate the vehicle before release.',
+ whyOthers:{dry:'Nitric acid vapor has no dry particulate component.',gross:'The driver did not have direct liquid acid contact on his body — vapor only. Gross decon of the person is not indicated.',technical:'Vapor-only exposure for a single victim is an operations-level clothing removal call. The vehicle is a hazmat concern but does not change the decon method for the person.',none:'Nitric acid vapor in clothing continues off-gassing and the clothing must be removed.'}
+},
+
+{id:'I-18',level:'inter',chem:'Sodium Cyanide',un:'UN 1689',container:'Industrial electroplating facility',
+ desc:'A sodium cyanide solution drum at an electroplating plant was knocked over by a forklift. The liquid splashed several workers. One worker has significant liquid on his arms and clothing. Another worker attempted to help and got a small splash on his hands. The environment smells of bitter almonds — HCN may be generating from the solution.',
+ state:'Liquid (alkaline cyanide solution)',contam:'Liquid — Worker A (heavy), Worker B (hands)',victim:'2 workers — various contamination levels',weather:'Indoor, warm, poor ventilation',resources:'Engine company outside, ventilation critical',
+ answer:'technical',
+ explanation:'<strong>Liquid sodium cyanide solution with HCN generation</strong> requires technical decon. The smell of bitter almonds indicates HCN gas is being produced. Operations-level responders cannot safely perform gross decon in a cyanide-contaminated environment without appropriate respiratory protection. Hazmat-level decon is required. Operations should isolate, keep victims outside, and await hazmat. As a bridge: have victims remove and bag their own clothing with gloves if possible. Cyanide antidote kit must be available.',
+ whyOthers:{dry:'The exposure is liquid cyanide solution, not dry powder.',gross:'Performing gross decon in a HCN-generating environment without SCBA would expose decon personnel to lethal gas.',clothing:'Appropriate as an interim self-decon step. Not sufficient as a complete decon method for liquid cyanide.',none:'Liquid cyanide solution contamination with HCN generation is a life-threatening emergency requiring decon.'}
+},
+
+{id:'I-19',level:'inter',chem:'Hydrogen Cyanide',un:'UN 1051',container:'Industrial fire — building',
+ desc:'A building fire involving plastics and synthetic materials has produced toxic combustion products including HCN. A firefighter who briefly lost SCBA seal during overhaul has exited to report possible exposure. He is conscious, has mild headache and flushed skin — consistent with early cyanide symptoms. His gear is soot-covered.',
+ state:'Gas (fire products)',contam:'Possible inhalation + gear contamination',victim:'1 firefighter — symptomatic, possible HCN exposure',weather:'Outdoor, fire under control',resources:'Engine company, ALS on scene',
+ answer:'technical',
+ explanation:'<strong>Firefighter with possible HCN exposure from SCBA loss</strong> — this requires technical decon attention because of the responder context. The firefighter needs hazmat team decon of his gear and ALS evaluation for cyanide antidote consideration. The combination of fire products, possible systemic toxicity beginning, and responder gear contamination warrants technical decon protocol. Remove SCBA and outer gear in controlled fashion — gear goes to hazmat for decontamination.',
+ whyOthers:{dry:'Soot on gear is not the primary concern — toxic vapor absorption is.',gross:'The gear is for hazmat decon team to handle. Gross decon with water on a firefighter\'s SCBA gear is not the appropriate method.',clothing:'Gear removal with proper controlled procedures is correct, but the gear management is hazmat protocol, not just clothing removal.',none:'Symptomatic firefighter with possible cyanide exposure requires decon and medical evaluation.'}
+},
+
+{id:'I-20',level:'inter',chem:'Carbon Disulfide',un:'UN 1131',container:'Lab storage — fire',
+ desc:'A laboratory storage area fire involves a quantity of carbon disulfide. CS₂ is highly toxic and has an extremely low flash point. The fire was quickly controlled. A grad student who was in the adjacent lab before evacuation reports a strong, unpleasant odor on his clothing and mild dizziness. Clothing appears dry.',
+ state:'Gas/vapor',contam:'Vapor — clothing absorption',victim:'1 student — mildly symptomatic',weather:'Indoor, evacuated',resources:'Engine company, fire under control',
+ answer:'clothing',
+ explanation:'<strong>CS₂ vapor exposure — clothing removal</strong>. Carbon disulfide vapor is absorbed into clothing and continues off-gassing. Additionally, CS₂ vapor is highly flammable — CS₂-saturated clothing near an ignition source creates a significant fire hazard. Remove clothing outdoors away from ignition sources. This is operations-level clothing removal for vapor exposure.',
+ whyOthers:{dry:'CS₂ is a vapor, not a dry solid.',gross:'No liquid CS₂ contact occurred.',technical:'Vapor-only exposure from a known chemical — clothing removal is within operations scope.',none:'CS₂-saturated clothing is a fire hazard and a continued inhalation exposure risk.'}
+},
+
+{id:'I-21',level:'inter',chem:'Ammonia + Bleach (Mixed)',un:'Multiple',container:'Residential — accidental mixing',
+ desc:'A homeowner accidentally mixed ammonia cleaner with bleach in a poorly ventilated bathroom, generating chloramine gas. She fled the bathroom but was in the toxic cloud for 2-3 minutes. Her clothing smells strongly of the chemical mixture. She has burning eyes and chest pain. No liquid splash occurred — she was outside the bathroom when the gas reached her.',
+ state:'Gas (chloramine)',contam:'Vapor — chloramine + components',victim:'1 civilian — respiratory symptoms',weather:'Indoor, window opened',resources:'Engine company',
+ answer:'clothing',
+ explanation:'<strong>Chloramine gas exposure — vapor only</strong>. Clothing removal eliminates continued vapor off-gassing from saturated fabric. The chemical is a mixed vapor product (chloramine) from two household chemicals. No liquid contamination occurred. Clothing removal plus fresh air is the operations-level response. This scenario also illustrates the importance of not mixing household chemicals.',
+ whyOthers:{dry:'No dry particulate is present.',gross:'No liquid chemical contacted the victim.',technical:'A single victim with vapor exposure from a household chemical mixing incident is within operations-level management.',none:'Chloramine-saturated clothing continues exposing the victim and treating personnel.'}
+},
+
+{id:'I-22',level:'inter',chem:'Acrylic Acid',un:'UN 2218',container:'Rail tanker — derailment',
+ desc:'A rail tanker of acrylic acid has derailed. Two railroad workers who were on the ground near the derailment were sprayed by a pressurized release — both have visible liquid on their clothing and exposed skin. The scene is isolated. Hazmat is responding but 40 minutes out. Both workers are reporting pain.',
+ state:'Liquid (pressurized release)',contam:'Liquid — both workers, skin and clothing',victim:'2 railroad workers — symptomatic',weather:'Outdoor, mild',resources:'Engine company, no hazmat for 40 min',
+ answer:'gross',
+ explanation:'<strong>Liquid acrylic acid on two workers with hazmat 40 minutes out</strong> — the engine company must initiate gross decon without delay. Acrylic acid causes progressive chemical burns. The 40-minute wait is unacceptable with active acid burns in progress. Operations level performs gross decon with high-volume water flush, removing contaminated clothing simultaneously. Document start time and inform incoming hazmat team.',
+ whyOthers:{dry:'Liquid acid requires water flush, not dry decon.',technical:'With hazmat 40 minutes away and active acid burns in progress, delaying all decon until technical team arrives would result in serious preventable injury.',clothing:'Liquid acid on skin requires water flushing, not clothing removal alone.',none:'Active liquid corrosive on skin is causing progressive burns. Decon cannot be delayed.'}
+},
+
+{id:'I-23',level:'inter',chem:'Liquid Nitrogen',un:'UN 1977',container:'Dewar flask — laboratory',
+ desc:'A large liquid nitrogen Dewar was accidentally tipped in a lab. The cryogenic liquid splashed onto a lab technician\'s lower legs and feet, and the intense cold caused his pants to freeze briefly. He hopped away from the spill area. His pants are now room temperature but the skin beneath was exposed to the cryogen. The spill has evaporated. He has pain in both lower legs.',
+ state:'Cryogenic liquid',contam:'Cryogenic contact — lower extremities',victim:'1 lab tech — possible cryogenic injury',weather:'Indoor, 68°F',resources:'Engine company',
+ answer:'gross',
+ explanation:'<strong>Cryogenic liquid nitrogen contact causing tissue injury</strong>. Although nitrogen itself is non-toxic, the cryogenic injury to the underlying skin requires management. Remove clothing from the affected lower extremities and apply room-temperature water to gradually rewarm the tissue. Gross decon here means water flushing for rewarming purposes — do not use hot water. The liquid nitrogen has evaporated from the environment, so no chemical decon of the area is needed.',
+ whyOthers:{dry:'The cryogen has evaporated. The issue is tissue injury requiring rewarming, not dry particulate.',technical:'Nitrogen is non-toxic — the injury is physical (cryogenic). Operations-level water rewarming is appropriate.',clothing:'Remove clothing from affected area to allow rewarming, but water application is also required for tissue rewarming.',none:'Cryogenic tissue injury requires rewarming intervention.'}
+},
+
+{id:'I-24',level:'inter',chem:'Methanol',un:'UN 1230',container:'Industrial vat — spill',
+ desc:'A 200-gallon vat of methanol overflowed and a worker fell into the liquid, emerging fully soaked head to toe. He is ambulatory, embarrassed, and reports no symptoms. He says he "didn\'t get any in his mouth." The large volume of liquid is a fire hazard. The worker is standing near the spill.',
+ state:'Liquid',contam:'Full body liquid saturation',victim:'1 worker — fully soaked, no symptoms',weather:'Indoor facility, 72°F',resources:'Engine company',
+ answer:'gross',
+ explanation:'<strong>Full-body methanol saturation</strong> requires immediate comprehensive gross decon. Methanol is absorbed through skin across the entire body surface — the risk of systemic toxicity is significant with this exposure volume. Move the worker away from the spill (fire hazard). Remove all clothing and flush the entire body with large amounts of water. The absence of symptoms is expected — methanol toxicity is delayed. Hospital transport required.',
+ whyOthers:{dry:'Methanol is a liquid.',technical:'Known chemical, clear exposure, gross decon is the appropriate method. Hazmat team should be notified but gross decon cannot be delayed.',clothing:'Full-body liquid methanol saturation requires a full water rinse — clothing removal alone leaves methanol on the skin.',none:'Full-body methanol soaking with delayed toxicity risk requires immediate decon regardless of current symptom absence.'}
+},
+
+{id:'I-25',level:'inter',chem:'Sulfur Dioxide',un:'UN 1079',container:'Industrial plant — release',
+ desc:'An SO₂ release from an industrial smelter has sent a vapor cloud into the surrounding neighborhood. Responding units find 22 residents in the street — most with mild to moderate respiratory irritation, one elderly male with severe bronchospasm. No liquid contact. Resources include 2 engines and 1 medic unit.',
+ state:'Gas',contam:'Vapor — mass victims',victim:'22 civilians — 1 critical (bronchospasm), 21 mild',weather:'Light wind, 60°F',resources:'2 engines, 1 medic, more en route',
+ answer:'clothing',
+ explanation:'<strong>Mass SO₂ vapor exposure</strong> — clothing removal for all 22 victims. With limited resources, prioritize the critical patient for ALS and clothing removal. Organize the 21 ambulatory patients into groups for clothing removal — this is mass clothing decon at operations level. SO₂-saturated clothing continues off-gassing respiratory irritant.',
+ whyOthers:{dry:'SO₂ is a gas, not a particulate.',gross:'No liquid SO₂ contact occurred. With 22 victims and limited resources, gross decon with water is not indicated for vapor-only exposure.',technical:'Mass clothing decon for vapor exposure is within operations scope with available resources.',none:'Twenty-two victims with confirmed vapor exposure require clothing removal to stop continued off-gassing.'}
+},
+
+{id:'I-26',level:'inter',chem:'Ethylene Oxide',un:'UN 1040',container:'Hospital sterilizer — malfunction',
+ desc:'An EtO sterilizer malfunction in a hospital Central Supply department caused a significant release. Six hospital workers were in the area for 3-10 minutes before evacuation. One worker was closest to the unit and reports eye burning and chest tightness. Others have mild symptoms. Clothing appears dry — vapor only. The hospital is asking if their own staff can handle decon.',
+ state:'Gas (known carcinogen)',contam:'Vapor — all 6 workers',victim:'6 hospital workers — varied symptoms',weather:'Indoor',resources:'Engine company, hospital medical staff',
+ answer:'clothing',
+ explanation:'<strong>EtO vapor exposure for 6 workers</strong> — clothing removal is the operations-level decon method. EtO is a known carcinogen and vapor exposure requires removing contaminated clothing to stop ongoing off-gassing. Hospital staff can assist with clothing under EMS direction. The engine company manages scene decon; hospital medical staff manage the medical treatment.',
+ whyOthers:{dry:'EtO is a gas, not a particulate.',gross:'No liquid EtO contact. Gross decon is not indicated.',technical:'All six workers have vapor-only exposure from a known source. Clothing removal is within operations scope.',none:'EtO-saturated clothing continues exposing workers to a carcinogenic gas.'}
+},
+
+{id:'I-27',level:'inter',chem:'Hydrogen Cyanide',un:'UN 1051',container:'Fire — polyurethane foam building',
+ desc:'A structure fire in a building with extensive polyurethane foam insulation has produced heavy HCN-laden smoke. Five firefighters who completed interior search and rescue are now outside. All were in SCBA during the entire interior operation. As they de-gear, the smell of almonds is apparent from their bunker gear.',
+ state:'Fire gas (HCN)',contam:'Turnout gear absorbed HCN products',victim:'5 firefighters — in SCBA throughout, no direct exposure',weather:'Outdoor, fire under control',resources:'Engine company, RIT',
+ answer:'none',
+ explanation:'<strong>Responders were in SCBA throughout — no exposure occurred</strong>. The HCN-laden smoke absorbed into the turnout gear is a contamination concern for the gear, not for the responders who were protected by SCBA. The appropriate action is gear decon per SOP (gross decon of turnout gear or bag for cleaning) — but the firefighters themselves do not require decon because they had no exposure. This reinforces the value of SCBA discipline.',
+ whyOthers:{dry:'The gear contamination is from gas/smoke, not particulate.',gross:'The gear requires decon procedure, but the responders who wore SCBA do not require personal gross decon.',technical:'No personal contamination occurred. Hazmat decon is not required for responders who were in SCBA.',clothing:'Responders routinely remove and bag contaminated gear — this is standard post-incident PPE handling, not medical decon of persons.'}
+},
+
+{id:'I-28',level:'inter',chem:'Chlorine',un:'UN 1017',container:'Pool chemical accident',
+ desc:'A pool maintenance contractor mixed incompatible pool chemicals at a commercial pool, causing a chlorine gas release. The contractor and a pool patron were caught in the gas cloud. The contractor reports he was exposed for about 5 minutes; the patron reports 1-2 minutes. The patron has a soaked swimsuit from being in the pool. The contractor\'s clothes are dry.',
+ state:'Gas',contam:'Vapor — both; patron additionally in pool water (chlorinated)',victim:'1 contractor (dry clothing, vapor), 1 patron (wet swimsuit)',weather:'Outdoor pool, 85°F',resources:'Engine company',
+ answer:'clothing',
+ explanation:'Both victims require <strong>clothing removal</strong>. The contractor: vapor exposure, dry clothing absorbing gas. The patron: already wet from pool water — but pool chlorination levels are not hazardous (the acute exposure was from the gas release). The patron\'s wet swimsuit with absorbed chlorine gas should be removed. Neither victim has heavy liquid chemical contact requiring gross decon. The wet swimsuit is actually a minor decon advantage for the patron.',
+ whyOthers:{dry:'No dry particulate for either victim.',gross:'The patron\'s wet swimsuit is pool water, not a direct chemical spill. Gross decon is not indicated for these vapor exposures.',technical:'Both victims have vapor exposure — operations-level clothing removal is the appropriate method.',none:'Both victims were in the chlorine gas cloud. Clothing removal is warranted.'}
+},
+
+{id:'I-29',level:'inter',chem:'Acetone Cyanohydrin',un:'UN 1541',container:'Chemical plant — release',
+ desc:'A small release from an acetone cyanohydrin process pipe has occurred. One worker was in the area. Acetone cyanohydrin rapidly decomposes to produce HCN. The worker reports he was in a light vapor cloud. His clothing appears dry. He has a mild headache. Hazmat is 30 minutes out.',
+ state:'Gas (decomposes to HCN)',contam:'Vapor — HCN products',victim:'1 worker — mild symptoms',weather:'Indoor plant, ventilation available',resources:'Engine company outside',
+ answer:'clothing',
+ explanation:'<strong>Vapor exposure from a cyanogenic compound</strong> — clothing removal is the operations-level action. The HCN component is a vapor that saturates clothing. Remove clothing to stop off-gassing. Move to fresh air. Mild headache in a cyanide exposure context warrants cyanide antidote kit preparation by ALS. Clothing removal is operations scope; cyanide antidote is ALS scope.',
+ whyOthers:{dry:'No dry particulate is present.',gross:'No liquid contamination on the victim.',technical:'Clothing removal for vapor exposure from a known material — even a highly toxic one — is within operations scope.',none:'The worker has symptoms consistent with cyanide exposure. Decon (clothing removal) is required.'}
+},
+
+{id:'I-30',level:'inter',chem:'Mercury Vapor',un:'UN 2809',container:'Laboratory — heating of mercury',
+ desc:'A laboratory accident involved heating a quantity of mercury, creating significant mercury vapor. Three lab students were exposed to the vapor for approximately 10 minutes before evacuation. No visible liquid mercury is on any person. Their clothing appears to have absorbed some vapor. Hazmat is requested.',
+ state:'Vapor (mercury)',contam:'Vapor absorption — clothing',victim:'3 students — no acute symptoms (mercury vapor delayed toxicity)',weather:'Indoor lab',resources:'Engine company, hazmat requested',
+ answer:'technical',
+ explanation:'<strong>Mercury vapor exposure requires technical decon</strong>. Mercury contamination of clothing is difficult to decon at operations level — mercury is not removed by standard water flush. The vapor condenses on clothing fibers. Technical decon (hazmat team with specialized equipment, HEPA vacuum capability) is required to safely decon mercury-contaminated clothing. Have students remain in place, do not allow them to spread to clean areas, and await hazmat.',
+ whyOthers:{dry:'Mercury contamination in clothing is not addressed by dry brushing.',gross:'Standard water flush does not effectively remove mercury from clothing and may mobilize mercury droplets.',clothing:'Mercury-contaminated clothing cannot be safely removed and bagged by operations responders without specialized procedures.',none:'Three students with confirmed mercury vapor exposure have clothing contamination requiring specialized decon.'}
+},
+
+{id:'I-31',level:'inter',chem:'Phosgene',un:'UN 1076',container:'Chemical plant — minor release',
+ desc:'A phosgene release alarm at a chemical plant. One worker was in the building during the release — she activated the alarm and evacuated. Exposure duration approximately 2 minutes. She feels mildly ill but not dramatically symptomatic. Phosgene is characterized by delayed-onset pulmonary edema.',
+ state:'Gas (pulmonary agent)',contam:'Vapor — potentially saturated clothing',victim:'1 worker — mildly symptomatic, delayed toxicity expected',weather:'Outdoor, post-evacuation',resources:'Engine company, hazmat en route',
+ answer:'clothing',
+ explanation:'<strong>Phosgene vapor exposure</strong> — clothing removal is the operations-level action. The mild symptoms are consistent with phosgene\'s characteristic delayed injury (pulmonary edema may develop hours later). Clothing removal reduces ongoing off-gassing. The critical action is hospital transport with explicit communication about phosgene exposure — the victim needs observation for delayed pulmonary edema development, not just current symptom treatment.',
+ whyOthers:{dry:'Phosgene is a gas, not a particulate.',gross:'No liquid phosgene contact.',technical:'Clothing removal for vapor exposure is operations-level. The medical complexity is managed by ALS and the receiving hospital.',none:'Phosgene-exposed patient with delayed toxicity expected requires clothing removal and hospital transport.'}
+},
+
+{id:'I-32',level:'inter',chem:'Chlorine',un:'UN 1017',container:'Tanker truck — highway',
+ desc:'A chlorine tanker is leaking vapor on a highway. A family of 5 (including 2 children, ages 4 and 7) was in a car caught in the plume for 3 minutes before driving out. They are all showing mild to moderate symptoms. The adults have removed their jackets but the children\'s clothing is still on.',
+ state:'Gas',contam:'Vapor — all 5, clothing saturation',victim:'5 civilians — 2 children (4 and 7), 3 adults',weather:'Outdoor, 60°F, light wind',resources:'Engine company, medic unit',
+ answer:'clothing',
+ explanation:'<strong>Clothing removal for all 5 victims, including children</strong>. Parents can assist with the children\'s clothing under EMS direction. Chlorine vapor in children\'s clothing continues off-gassing onto their more sensitive smaller airways. Prioritize the children who have not yet had clothing removed. Provide warm covering after removal — children lose heat quickly.',
+ whyOthers:{dry:'No dry particulate.',gross:'Vapor-only exposure does not require gross decon.',technical:'Operations-level clothing removal is appropriate for all five vapor-only victims.',none:'Children with chlorine vapor exposure still have contaminated clothing off-gassing.'}
+},
+
+{id:'I-33',level:'inter',chem:'Gasoline',un:'UN 1203',container:'Tanker — highway rollover',
+ desc:'A gasoline tanker has rolled over and product is running into a drainage ditch. Engine crews are working scene control. After 30 minutes, the IC reports a strong gasoline odor affecting all responders on scene. Responders have been working in the vapor cloud but none have liquid contact. Multiple units are involved.',
+ state:'Gas/vapor',contam:'Vapor — all responders at scene',victim:'Multiple responders — vapor exposure concern',weather:'Warm day, 85°F, light wind, high vapor pressure',resources:'Multiple engine companies, sector commanders',
+ answer:'clothing',
+ explanation:'<strong>All responders with prolonged vapor exposure need clothing consideration</strong>. Once committed responders are rotated out of the hazard zone, their clothing should be changed. High temperatures and high vapor pressure mean significant gasoline vapor absorption into clothing. This is an operational decon consideration — not emergency decon, but systematic clothing change for exposed responders during rehab. Responders should not wear gasoline-saturated clothing home.',
+ whyOthers:{dry:'Gasoline is a vapor/liquid, not a dry solid.',gross:'No liquid gasoline contact with responders.',technical:'Vapor-only responder exposure is managed with clothing change at operations level.',none:'Responders with prolonged gasoline vapor exposure have clothing that will continue off-gassing.'}
+},
+
+{id:'I-34',level:'inter',chem:'Hydrogen Chloride Gas',un:'UN 1050',container:'Gas cylinder — industrial',
+ desc:'A hydrogen chloride gas cylinder developed a slow leak in a commercial refrigeration shop. A technician worked next to it for 20 minutes before noticing the symptoms. He has severe throat irritation, coughing, and burning eyes. His clothing appears dry. His co-worker, who was in an adjacent room, has mild symptoms.',
+ state:'Gas',contam:'Vapor — both workers',victim:'2 workers — 1 severe, 1 mild',weather:'Indoor, enclosed',resources:'Engine company, ALS',
+ answer:'clothing',
+ explanation:'<strong>HCl gas vapor exposure for both workers</strong> — clothing removal for both, prioritizing the severely affected worker. HCl is highly corrosive to respiratory tissues. The severely affected worker needs ALS airway management simultaneously with clothing removal. The mildly affected co-worker gets clothing removal and fresh air.',
+ whyOthers:{dry:'HCl is a gas, not a dry solid.',gross:'No liquid HCl contact.',technical:'Vapor exposure from a known gas for two victims — operations-level clothing removal is appropriate.',none:'HCl-saturated clothing continues off-gassing respiratory and eye irritant.'}
+},
+
+{id:'I-35',level:'inter',chem:'Acetaldehyde',un:'UN 1089',container:'Food processing — vat leak',
+ desc:'A large vat of acetaldehyde developed a leak at a food processing facility. A worker was sprayed with liquid acetaldehyde when he tried to tighten a fitting. His shirt and arms are wet. He has flushed skin and is dizzy. Acetaldehyde is highly flammable — the work area has been cleared of ignition sources.',
+ state:'Liquid (flammable)',contam:'Liquid — arms and shirt',victim:'1 worker — dizzy, flushed',weather:'Indoor, 68°F',resources:'Engine company',
+ answer:'gross',
+ explanation:'<strong>Liquid acetaldehyde on skin and clothing</strong> requires gross decon. Remove contaminated clothing and flush skin with large amounts of water. Acetaldehyde is a known human carcinogen, CNS depressant at higher exposures, and highly flammable — the liquid on the worker is both a health and fire hazard. Eliminate ignition sources and perform gross decon promptly.',
+ whyOthers:{dry:'Acetaldehyde is a liquid.',technical:'Single victim, known chemical, liquid exposure. Operations level is appropriate.',clothing:'Liquid on skin requires water flush, not clothing removal alone.',none:'Liquid acetaldehyde on skin is causing symptoms and posing fire hazard.'}
+},
+
+// ════════════════════════════════════════════════════════
+// ░░ ADVANCED (Level 3) — 35 scenarios ░░
+// ════════════════════════════════════════════════════════
+
+{id:'A-01',level:'adv',chem:'Chlorine',un:'UN 1017',container:'Rail tanker — derailment, rural',
+ desc:'A chlorine rail tanker has derailed in a rural area. There are 23 victims from a nearby farm — mostly agricultural workers. Three have visible liquid chlorine contact (frost/yellow staining on clothing, severe pain). The other 20 have vapor exposure only. Hazmat is 55 minutes out. You have 2 engine companies and 1 medic unit.',
+ state:'Gas + liquid (3 victims)',contam:'Liquid (3) + vapor (20)',victim:'23 total — 3 critical (liquid contact), 20 mild to moderate',weather:'Outdoor, rural, 58°F, wind 12 mph',resources:'2 engines, 1 medic, hazmat 55 min out',
+ answer:'gross',
+ explanation:'<strong>Triage-driven decon with 55 min hazmat delay</strong>. The three victims with liquid chlorine contact cannot wait 55 minutes — progressive chemical burns are ongoing. Operations must initiate gross decon for the three liquid-contact victims immediately: remove clothing and flush with large-volume water. The 20 vapor-only victims get clothing removal simultaneously using the second engine. This is a resource-triage decision: life safety for the liquid contact victims cannot be delayed for hazmat arrival.',
+ whyOthers:{dry:'Three victims have liquid chemical contact — this requires water decon, not dry brushing.',technical:'With 55 minutes until hazmat arrives, allowing liquid chlorine burns to progress for the three critical victims is not an acceptable operations choice.',clothing:'Vapor-only victims get clothing removal (correct), but the liquid-contact victims need gross decon as the priority.',none:'Active liquid chlorine on three victims is causing progressive burns. Decon cannot be withheld.'}
+},
+
+{id:'A-02',level:'adv',chem:'Anhydrous Ammonia',un:'UN 1005',container:'Nurse tank — victim trapped in vehicle',
+ desc:'An anhydrous ammonia nurse tank has rolled over next to a pickup truck on a rural road. The truck driver is trapped in his vehicle and calling for help. The ammonia cloud is enveloping his vehicle. The tank is still releasing. You have one engine company. Rescue would require entry into the hot zone. Wind is blowing the cloud directly over the trapped victim\'s vehicle.',
+ state:'Gas',contam:'Victim enveloped in vapor',victim:'1 trapped victim — calling for help, in vapor cloud',weather:'Rural, wind 15 mph toward vehicle, 60°F',resources:'Engine company only — no hazmat, no rescue team',
+ answer:'none',
+ explanation:'<strong>Operations-level scope: defensive posture only</strong>. This scenario is designed to test the hardest decision — recognizing what operations cannot do. Entry into the hot zone without chemical-protective PPE and SCBA is not authorized at operations level. The correct action is to establish the perimeter, call for hazmat and technical rescue, attempt voice or phone contact with the victim, and document. This is not "no decon required" in the sense of no problem — it means the decon method is not the issue; the issue is a rescue that operations level cannot perform safely. The victim is not accessible for decon at this time.',
+ whyOthers:{dry:'The victim cannot be accessed for any decon at operations level without appropriate PPE.',gross:'Operations cannot enter the hazard zone to perform gross decon.',technical:'Technical decon also requires hazmat-level entry into the hazard zone — not yet available.',clothing:'The victim is inside a vehicle in a hot zone. Operations cannot access him for clothing removal.'}
+},
+
+{id:'A-03',level:'adv',chem:'Unknown White Powder',un:'Unknown',container:'Envelope — office building',
+ desc:'A suspicious white powder has been released in an office building from an opened envelope. The mail clerk who opened it has powder on her hands and face. She immediately called 911. The building is being self-evacuated. You arrive first. The clerk is standing outside. FBI and hazmat have been requested. Deliberate release cannot be ruled out.',
+ state:'Unknown solid',contam:'Unknown dry powder — hands, face',victim:'1 mail clerk — no symptoms, powder visible',weather:'Outdoor staging area',resources:'Engine company only — no hazmat, FBI WMD notified',
+ answer:'technical',
+ explanation:'<strong>Potential weaponized agent — WMD protocol</strong>. When a suspicious powder exposure occurs with potential criminal/terrorist indicators, operations level should not attempt routine decon. Isolate the victim in place, do not brush or spread the powder, do not wet it, secure the scene, and await hazmat with appropriate PPE for identification. The FBI WMD coordinator should be notified per protocol. Attempting dry decon of an unknown potential WMD agent without identification is a responder safety risk.',
+ whyOthers:{dry:'Do not brush or disturb an unknown potential weaponized agent — it can aerosolize and spread.',gross:'Do not wet an unknown powder — some agents activate or disperse with water.',clothing:'Clothing removal alone is insufficient for a potential WMD exposure and may spread the agent.',none:'Confirmed powder contamination on a victim requires decon — but the method must be determined by hazmat identification, not assumed.'}
+},
+
+{id:'A-04',level:'adv',chem:'Organophosphate Pesticide',un:'UN 2783',container:'Bulk agricultural spray — overspray',
+ desc:'A crop duster applied organophosphate pesticide over a field and made a low pass that oversprayed a school playground during recess. Forty-one children ages 5-11 were on the playground. The spray appeared as a fine oily mist. Teachers evacuated children to the parking lot. Most children have mist on exposed skin and clothing. Three children are showing early SLUDGE symptoms (salivation, lacrimation).',
+ state:'Liquid aerosol',contam:'Liquid mist — skin and clothing, 41 children',victim:'41 children — 3 early SLUDGE, 38 exposed but asymptomatic',weather:'Outdoor, 76°F',resources:'2 engines, 2 ambulances, hazmat requested',
+ answer:'gross',
+ explanation:'<strong>Mass pediatric decon — organophosphate mist, 41 children</strong>. Initiate gross decon immediately. With three children showing SLUDGE symptoms and active dermal absorption occurring in 38 others, waiting is not acceptable. Use available water (engine supply, hose setup) to rinse all children. Remove clothing. Set up an improvised corridor. The three symptomatic children go first and receive ALS with atropine consideration. This is a mass casualty organophosphate event at operations level — initiate decon before hazmat arrives because absorption is ongoing.',
+ whyOthers:{dry:'Oily liquid mist requires water removal, not dry brushing.',technical:'Waiting for hazmat while 41 children absorb organophosphate dermally is not consistent with operations-level responsibility. Gross decon must begin.',clothing:'The oily mist has penetrated to skin. Clothing removal must be accompanied by water rinse of exposed skin.',none:'Active organophosphate absorption in 41 children, 3 symptomatic — decon cannot be withheld.'}
+},
+
+{id:'A-05',level:'adv',chem:'Hydrogen Cyanide',un:'UN 1051',container:'Industrial fire — plastics',
+ desc:'A warehouse fire heavily loaded with synthetic materials has produced HCN-laden smoke. Eight victims were rescued from the interior: 3 are unconscious, 2 are combative/confused (altered mental status), and 3 are ambulatory with mild symptoms. Water supplies are limited — a tanker is responding. No visible liquid chemical contamination. Scene is outdoors.',
+ state:'Fire products (HCN in smoke)',contam:'Vapor/smoke — all 8 victims',victim:'8 total — 3 unconscious, 2 AMS, 3 ambulatory',weather:'Outdoor, fire under control',resources:'2 engines, 2 medics, 1 tanker (10 min), hazmat 25 min',
+ answer:'clothing',
+ explanation:'<strong>Mass HCN vapor exposure with limited water</strong> — clothing removal for all 8 victims is the correct decision precisely because water is limited. For vapor/smoke contamination, clothing removal is more effective than dilute water rinse. The three unconscious victims get clothing removal coordinated with ALS airway management. The two altered mental status victims require restraint assistance during clothing removal. The three ambulatory victims self-assist. Cyanide antidotes for ALS are the medical priority.',
+ whyOthers:{dry:'Fire smoke contamination is not a dry particulate for brushing.',gross:'Water is limited and not indicated for vapor/smoke exposure. Clothing removal is more appropriate and resource-conservative.',technical:'Eight victims requiring immediate ALS intervention and clothing removal — waiting 25 minutes for hazmat decon to begin clothing removal is not appropriate.',none:'HCN smoke saturated clothing continues off-gassing cyanide onto ALS providers during airway management.'}
+},
+
+{id:'A-06',level:'adv',chem:'Sulfuric Acid + Sodium Hydroxide',un:'UN 1830 / UN 1824',container:'Industrial accident — simultaneous release',
+ desc:'Two process lines at a chemical facility have simultaneously failed — releasing fuming sulfuric acid and sodium hydroxide solution. The chemicals are mixing on the floor near 3 workers who were caught in the splash. Steam and fuming vapors are rising from the neutralization reaction. One worker has acid and base on the same garment from different splashes.',
+ state:'Liquid (two corrosives + reaction products)',contam:'Mixed liquid — acid, base, and reaction products',victim:'3 workers — 1 with mixed contaminants, 2 with single chemical splash',weather:'Indoor, fume-laden',resources:'Engine company, hazmat requested',
+ answer:'technical',
+ explanation:'<strong>Mixed corrosive exposure with ongoing chemical reaction</strong> requires technical decon. The combination of fuming acid, caustic solution, and active neutralization reaction at the scene makes operations-level gross decon unsafe without knowing which chemical is on which victim in what quantity. The fumes also require respiratory protection for decon personnel. Hazmat team can assess and manage the specific decon for each victim. As an interim: move victims from the reaction zone, avoid adding water without knowing the chemical balance.',
+ whyOthers:{dry:'Liquid chemicals are present.',gross:'The complexity of mixed corrosives with an ongoing chemical reaction requires hazmat-level assessment before decon.',clothing:'Removing clothing with mixed acid/base contamination without knowing which chemical dominates could expose personnel to concentrated corrosive.',none:'Active mixed corrosive contamination is causing ongoing injury.'}
+},
+
+{id:'A-07',level:'adv',chem:'Hydrofluoric Acid',un:'UN 1790',container:'Industrial etching plant',
+ desc:'Two workers at an HF etching facility were splashed with concentrated HF. Worker A has HF on his right arm — he is in severe pain. Worker B has HF on her abdomen and is in moderate pain with beginning symptoms of systemic HF toxicity (tingling in her jaw, feeling faint). Hazmat is 30 min out. ALS is on scene.',
+ state:'Liquid',contam:'Liquid — Worker A (arm), Worker B (abdomen)',victim:'2 workers — 1 severe pain, 1 possible systemic toxicity',weather:'Indoor facility',resources:'Engine company, ALS on scene, hazmat 30 min',
+ answer:'technical',
+ explanation:'<strong>HF with systemic toxicity in Worker B</strong> requires a technical decon response because of the unique toxicity of HF. However, this is also a case where <em>waiting</em> for hazmat while systemic toxicity is progressing is unacceptable. The correct action: simultaneously initiate water flushing (gross decon as bridge) while ALS provides calcium gluconate (gel or IV), and request hazmat priority upgrade. The overall designation is technical decon because of the systemic management required, but flush immediately — do not wait 30 minutes.',
+ whyOthers:{dry:'HF is a liquid.',gross:'Gross decon with water alone is insufficient — systemic antidote management is simultaneously required. This is the defining reason technical decon is the answer even though water flush is initiated.',clothing:'Clothing removal happens as part of decon, but alone is insufficient for HF.',none:'Two workers with HF and one with possible systemic toxicity — immediate decon is critical.'}
+},
+
+{id:'A-08',level:'adv',chem:'Methyl Isocyanate (MIC)',un:'UN 2480',container:'Chemical plant — major release',
+ desc:'A chemical plant has a major methyl isocyanate release. The vapor cloud has reached a residential area 0.3 miles downwind. Residents are self-evacuating in cars. Engine companies at the outer perimeter are encountering civilians with moderate to severe symptoms — coughing, eye burning, respiratory distress. Twenty-plus civilians are in need of management. No liquid contact.',
+ state:'Gas (mass casualty)',contam:'Vapor — mass victims',victim:'20+ civilians — varied severity, no liquid contact',weather:'Night, wind 10 mph toward residential area',resources:'3 engines, 2 medics, hazmat 45 min',
+ answer:'clothing',
+ explanation:'<strong>Mass MIC vapor exposure — operations-level clothing removal</strong>. Despite the extreme toxicity of MIC, vapor-only exposed victims require clothing removal. With 45 minutes until hazmat arrives and 20+ victims, waiting is not appropriate. Establish a decon corridor and cycle victims through clothing removal. Prioritize the most symptomatic. MIC-saturated clothing off-gasses at dangerous concentrations — it must be removed to protect both victims and EMS personnel during prolonged medical care.',
+ whyOthers:{dry:'MIC is a gas, not a particulate.',gross:'No liquid MIC contact. Mass gross decon with water is not indicated.',technical:'With 20+ victims and hazmat 45 minutes out, technical decon setup would delay decon for all patients. Vapor-only exposure is addressed with clothing removal at operations level.',none:'Twenty-plus victims with confirmed MIC vapor exposure require clothing removal to prevent continued exposure and secondary contamination.'}
+},
+
+{id:'A-09',level:'adv',chem:'Sodium Cyanide',un:'UN 1689',container:'Mining transport — rollover, rural',
+ desc:'A truck carrying sodium cyanide in dry bulk form has overturned on a rural highway. The driver is out of the truck and has cyanide dust on his clothing and hands. He walked toward a passing motorist who stopped to help — the motorist now has secondary dust on his jacket from brief contact. Hazmat is 60 min away. Both are currently asymptomatic.',
+ state:'Solid (dry dust)',contam:'Primary: driver (dust on hands/clothing); Secondary: motorist (lighter dust on jacket)',victim:'2 — driver (moderate dust), motorist (light secondary)',weather:'Outdoor, warm, light wind',resources:'Engine company — only unit',
+ answer:'dry',
+ explanation:'<strong>Dry cyanide dust — dry decon with available resources</strong>. With hazmat 60 minutes away and both victims asymptomatic, the engine company can safely initiate dry decon: have both victims remove outer clothing (using gloves) and carefully brush off visible dust. Do NOT introduce water — cyanide dust reacts with moisture to generate HCN gas. Bag contaminated clothing and keep victims separated from the release site. Monitor for symptoms.',
+ whyOthers:{gross:'Adding water to dry cyanide dust can generate HCN gas at the decon site, endangering victims and responders.',technical:'Dry decon for a known dry powder with no symptoms and 60 minutes until hazmat is within operations-level capability.',clothing:'Removing clothing with cyanide dust before brushing can spread dust to the face and hair during the removal motion.',none:'Confirmed dry cyanide contamination requires decon, even without symptoms.'}
+},
+
+{id:'A-10',level:'adv',chem:'Chlorine + Ammonia (simultaneous release)',un:'UN 1017 / UN 1005',container:'Industrial facility — dual release',
+ desc:'A chemical plant has simultaneously released chlorine (from a storage cylinder) and ammonia (from a refrigeration line). The two clouds appear to be merging. Four workers from various parts of the plant are presenting at the outer perimeter — none know which chemical they were exposed to. All are symptomatic with respiratory irritation.',
+ state:'Gas (two unknown proportions)',contam:'Vapor — unknown chemical composition',victim:'4 workers — symptomatic, unknown which agent',weather:'Outdoor, wind shifting',resources:'2 engines, hazmat called',
+ answer:'clothing',
+ explanation:'<strong>Multiple gas exposure — unknown proportions</strong>. Both chlorine and ammonia are vapor contaminants only in this scenario. The decon method does not change based on which vapor is present — both are addressed with clothing removal. The ambiguity of which chemical is involved does not change the operations-level action for vapor-only victims. Remove clothing for all four, move to fresh air, and let ALS manage the symptoms while hazmat identifies the agents.',
+ whyOthers:{dry:'Neither chlorine nor ammonia is a dry particulate.',gross:'No liquid chemical contact in this scenario. Gross decon is not warranted.',technical:'Vapor-only exposure with unknown agents is complex medically, but the decon action — clothing removal — is within operations scope.',none:'Four symptomatic workers from known toxic gas releases require clothing removal.'}
+},
+
+{id:'A-11',level:'adv',chem:'Nitric Acid',un:'UN 2031',container:'Tanker — urban area, traffic',
+ desc:'A fuming nitric acid tanker is leaking in a dense urban intersection. Orange-brown fumes are in the street. Thirty pedestrians are trapped in the plume due to grid traffic — they cannot easily evacuate. Two pedestrians have yellow skin staining on exposed skin suggesting liquid acid mist contact. The remaining 28 are in the vapor. No apparatus water supply established yet.',
+ state:'Liquid + fuming gas',contam:'Mist/liquid (2) + vapor (28)',victim:'30 pedestrians — 2 with liquid contact, 28 vapor only',weather:'Urban, 72°F, light wind, buildings blocking',resources:'1 engine (no water supply yet), traffic blocking access',
+ answer:'clothing',
+ explanation:'<strong>Thirty victims, limited resources, no water supply yet</strong>. The priority decision here: vapor-only victims (28) get clothing removal immediately — this requires no water supply. The two with possible liquid contact should be evacuated and held for gross decon when water supply is established. Clothing removal for 28 vapor victims can begin with zero additional resources beyond personnel. Establish water supply in parallel. Do not delay the 28 vapor victims\' decon waiting for water for the 2.',
+ whyOthers:{dry:'No dry particulate. Acid mist and vapor.',gross:'Two victims need it, but water supply is not yet established. The 28 vapor victims cannot wait — clothing removal starts now.',technical:'The operational reality is 30 victims, no water yet. Operations must act. Clothing removal begins immediately.',none:'Thirty people in a fuming acid cloud with two confirmed liquid contacts cannot go without decon.'}
+},
+
+{id:'A-12',level:'adv',chem:'Radioactive Material (Medical Isotope)',un:'UN 2911',container:'Medical transport vehicle — accident',
+ desc:'A medical transport vehicle carrying radioactive material (Tc-99m — medical isotope in a shielded pig) was in a rollover accident. The pig has cracked and white powder (possibly contaminated) is visible on the driver who was trying to secure the load. Other responders are on scene. No one has a dosimeter. Hazmat and the radiation response team are responding.',
+ state:'Solid (radioactive powder)',contam:'Possible radioactive powder — driver skin/clothing',victim:'1 driver — no symptoms (radiation typically asymptomatic acutely)',weather:'Outdoor, roadway',resources:'Engine company — no radiation monitoring equipment',
+ answer:'technical',
+ explanation:'<strong>Radioactive contamination requires technical decon</strong>. Operations-level responders have no radiation monitoring capability (no dosimeters, no survey meters on this unit). The correct action is: isolate the victim, keep responders at distance, do NOT brush or wipe the powder (may aerosolize), and hold for radiation hazmat team with monitoring equipment. Do not perform dry decon on potential radioactive material without knowing the isotope, activity, and particle type.',
+ whyOthers:{dry:'Brushing potential radioactive powder without a survey meter risks aerosolizing it and confirming nothing has been decontaminated.',gross:'Water on radioactive powder creates radioactive liquid runoff — a secondary hazard. Hazmat team manages water containment in rad decon.',clothing:'Clothing removal is part of technical decon but should be done with hazmat team guidance, not independently.',none:'Confirmed white powder on driver from cracked radioactive package cannot be treated as no contamination.'}
+},
+
+{id:'A-13',level:'adv',chem:'Hydrogen Fluoride',un:'UN 1052',container:'Chemical plant — explosion',
+ desc:'An explosion at a chemical plant has ruptured an HF storage line. A blast has knocked down 6 plant workers. Three were close to the explosion and have both blast injuries (lacerations) AND HF liquid contamination on their skin and clothing. Three others were further back and are ambulatory with vapor exposure only. ALS is treating blast injuries.',
+ state:'Liquid + vapor',contam:'Liquid (3 blast victims) + vapor (3 ambulatory)',victim:'6 workers — 3 blast + HF liquid, 3 vapor only',weather:'Outdoor, post-explosion',resources:'2 engines, 2 ALS, hazmat 20 min',
+ answer:'technical',
+ explanation:'<strong>Blast injuries combined with HF contamination</strong> requires technical decon for the three blast victims. HF liquid on injured skin where the barrier is compromised dramatically accelerates systemic absorption. The three blast victims cannot safely receive gross decon without hazmat-level protection for decon personnel handling patients with lacerations contaminated with HF. The three ambulatory vapor-only victims receive operations-level clothing removal. Triage: separate the two groups, clothing removal starts for the ambulatory three, technical decon flag for the blast victims.',
+ whyOthers:{dry:'HF is a liquid.',gross:'HF with blast injuries and broken skin is beyond operations-level gross decon capability — responder safety requires chemical-protective PPE.',clothing:'For vapor-only victims, yes. Not sufficient for the blast victims with liquid HF on damaged skin.',none:'HF contamination on injured patients is rapidly lethal without decon.'}
+},
+
+{id:'A-14',level:'adv',chem:'Carbon Monoxide + Hydrogen Cyanide',un:'Multiple',container:'Building fire — residential',
+ desc:'A residential structure fire has been controlled. Twelve occupants were removed from the structure. Six are in moderate to critical condition with mixed smoke inhalation. The building contained a large amount of synthetic carpet, foam, and plastics — all known HCN sources. Soot is on the patients. No liquid chemical contact.',
+ state:'Fire products (CO + HCN)',contam:'Smoke — soot + toxic gases absorbed in clothing',victim:'12 victims — varied severity, 6 critical',weather:'Outdoor, cold 38°F, 3 AM',resources:'3 engines, 2 medics, no hazmat (not called)',
+ answer:'clothing',
+ explanation:'<strong>Smoke/fire product vapor exposure — clothing removal</strong>. Despite CO and HCN being in the mix, the decon method for vapor/smoke exposure is clothing removal. Soot-covered clothing off-gasses toxic compounds. The 6 critical patients need clothing removal coordinated with ALS airway management — this is not optional. Cold weather consideration: provide thermal protection immediately after clothing removal. Remove clothing even in cold — ongoing HCN off-gassing near airway providers is a documented secondary casualty mechanism.',
+ whyOthers:{dry:'Soot brushing does not address gas absorption in clothing.',gross:'No liquid chemical. Cold weather gross decon on critical fire victims would cause hypothermia without benefit.',technical:'This is a common fire product exposure scenario. Operations level manages clothing removal routinely.',none:'Fire victim clothing saturated with HCN and CO products continues exposing ALS providers during airway care.'}
+},
+
+{id:'A-15',level:'adv',chem:'Gasoline',un:'UN 1203',container:'Gas station fire — explosion',
+ desc:'An explosion at a gas station has caused a fire that is now controlled. Several bystanders were close to the explosion — 4 have burn injuries combined with gasoline-soaked clothing from the fireball wash. Two others have clothing soaked in gasoline from the initial spill without burn injuries. ALS is managing burns.',
+ state:'Liquid',contam:'Liquid — all 6 victims\' clothing',victim:'6 — 4 burns + gasoline, 2 gasoline without burns',weather:'Outdoor, fire controlled',resources:'Multiple engines, ALS, fire controlled',
+ answer:'gross',
+ explanation:'<strong>Gasoline-soaked clothing on all 6 victims</strong> requires gross decon — especially the 4 burn patients. Gasoline on burned skin continues to cause chemical burns in addition to the thermal injury. The two burn-free patients also need gross decon for the flammable liquid removal. Gasoline-soaked burn patients must have the fuel removed before transport — continued exposure of burned tissue to gasoline is a serious secondary injury. Coordinate clothing removal with ALS during burn dressing.',
+ whyOthers:{dry:'Gasoline is a liquid.',clothing:'Liquid gasoline requires water flush to remove it from the skin surface, especially over burned areas.',technical:'Known chemical, confirmed liquid — gross decon at operations level is the correct method.',none:'Gasoline-soaked burn patients have a combined thermal and chemical injury requiring decon.'}
+},
+
+{id:'A-16',level:'adv',chem:'Anhydrous Ammonia',un:'UN 1005',container:'Refrigerated warehouse — catastrophic failure',
+ desc:'A large refrigerated warehouse has a catastrophic ammonia system failure. The entire building is filled with ammonia vapor. Forty workers self-evacuated but 3 workers with more severe exposure are outside with ammonia vapor saturating their clothing. Additionally, one worker who was closest to the system has a frost-covered arm (liquid anhydrous contact). The engine company has a 500-gallon booster.',
+ state:'Gas + liquid (1 victim)',contam:'Vapor (3) + liquid (1)',victim:'4 workers — 1 liquid contact, 3 vapor only',weather:'Outdoor, 55°F, light wind',resources:'Engine company, 500-gal booster, hazmat 25 min',
+ answer:'gross',
+ explanation:'<strong>Triage-driven: 1 liquid contact victim gets gross decon now</strong>. The worker with frosted arm from liquid anhydrous ammonia contact cannot wait 25 minutes. Use the 500-gallon booster to gross decon the liquid contact victim (remove jacket, flush arm with water). The 3 vapor-only workers get clothing removal with no water required. With 500 gallons and 25 minutes until hazmat, prioritize the liquid contact victim for water decon and manage the vapor victims with clothing removal.',
+ whyOthers:{dry:'One victim has liquid cryogenic ammonia contact. Dry decon is not applicable.',technical:'The liquid contact victim needs gross decon now — 25 min until hazmat is too long for active cryogenic burns. Use what you have.',clothing:'Appropriate for the 3 vapor-only workers. The liquid contact victim needs water flushing.',none:'Active liquid anhydrous ammonia contact is causing ongoing injury.'}
+},
+
+{id:'A-17',level:'adv',chem:'Unknown Liquid — Industrial',un:'Unknown',container:'Abandoned chemical drums — brownfield',
+ desc:'A construction crew disturbed several unlabeled drums at a brownfield demolition site. A green liquid leaked from one drum and splashed 3 workers. All three have liquid visible on their arms and clothing. One reports a mild burning sensation. The substance is entirely unknown — there are no markings, no shipping papers, and no facility records available.',
+ state:'Unknown liquid',contam:'Unknown liquid — 3 workers',victim:'3 construction workers — 1 with mild symptoms, 2 asymptomatic',weather:'Outdoor, 72°F',resources:'Engine company, hazmat requested',
+ answer:'technical',
+ explanation:'<strong>Unknown liquid on 3 workers — technical decon required</strong>. With a completely unknown chemical, the engine company cannot safely perform gross decon without knowing if water is appropriate (some chemicals react violently). Isolate the three workers, instruct them to remove their own outer clothing if they are willing and able (minimizing responder exposure), and hold for hazmat identification. One victim has symptoms, which elevates the urgency of hazmat response.',
+ whyOthers:{dry:'Unknown liquids are not addressed by dry decon.',gross:'Unknown chemicals may react violently with water. Without identification, gross decon could cause a worse reaction.',clothing:'Having victims self-remove clothing is appropriate as a bridge step, but full decon method must await identification.',none:'Three workers with confirmed unknown liquid contamination require decon — method to be determined by hazmat identification.'}
+},
+
+{id:'A-18',level:'adv',chem:'Chlorine',un:'UN 1017',container:'Rail derailment — nighttime, rural',
+ desc:'A chlorine rail derailment at 0200 hours. Wind is 15 mph carrying the vapor cloud over a small rural neighborhood. Sixty residents are at a collection point upwind. Most show mild respiratory symptoms. Six individuals have more severe symptoms. No liquid chlorine contact is established for any victim. Your engine company is the only unit for 20 minutes.',
+ state:'Gas',contam:'Vapor — 60 civilians',victim:'60 civilians — 6 severe, 54 mild; nighttime',weather:'Night, 42°F, wind 15 mph, rural',resources:'1 engine company — only unit for 20 min',
+ answer:'clothing',
+ explanation:'<strong>One engine company, 60 vapor victims, nighttime, cold</strong>. Clothing removal for all 60 is the only decon method available and appropriate for vapor-only exposure. Prioritize the 6 severe victims first — coordinate with any available ALS for the worst cases. Establish a cold/warm zone for clothing removal and provide vehicles or shelter for warmth after removal. Mass clothing decon with one engine requires triage, organization, and clear direction. This is achievable at operations level.',
+ whyOthers:{dry:'No dry particulate — chlorine vapor.',gross:'No liquid contact. One engine company with limited water supply should not dilute resources on water-based decon for 60 vapor-only patients.',technical:'Sixty vapor victims cannot wait 20+ minutes for hazmat. Operations must act.',none:'Sixty confirmed vapor-exposed victims require clothing removal.'}
+},
+
+{id:'A-19',level:'adv',chem:'Organophosphate (VX-simulant)',un:'Unknown — WMD suspected',container:'Subway station — suspicious release',
+ desc:'Multiple patients are down at a subway station with SLUDGE symptoms (salivation, lacrimation, urination, defecation, GI distress, emesis). A suspicious oily residue is visible on several patients\' clothing. Law enforcement is on scene. No chemical identity confirmed. WMD cannot be ruled out. Forty patients. FBI WMD coordinator is being notified.',
+ state:'Unknown — possible liquid agent',contam:'Unknown oily liquid — possible nerve agent',victim:'40 — SLUDGE symptoms, oily residue on clothing',weather:'Underground transit',resources:'Multiple engines, ALS, hazmat requested, FBI en route',
+ answer:'technical',
+ explanation:'<strong>Suspected nerve agent — WMD protocol</strong>. The combination of SLUDGE symptoms (cholinergic toxidrome) and oily residue on clothing in a mass casualty event in public transit strongly suggests a chemical warfare agent or pesticide mass release. Operations level implements WMD protocol: establish hot/warm/cold zones, do not enter without SCBA and appropriate PPE, request hazmat priority. ALS can administer atropine for SLUDGE symptoms. Do not attempt gross decon without chemical identification and appropriate PPE.',
+ whyOthers:{dry:'Unknown oily residue is not a dry powder.',gross:'Performing gross decon on potentially weaponized agent without proper PPE risks mass secondary contamination of responders.',clothing:'Clothing removal is part of technical decon, not an independent action for a possible WMD event.',none:'Forty victims with SLUDGE symptoms and oily residue have confirmed contamination requiring decon.'}
+},
+
+{id:'A-20',level:'adv',chem:'Hydrogen Cyanide',un:'UN 1051',container:'Industrial fire — with trapped workers',
+ desc:'An industrial fire involves an area with HCN storage. The fire is 70% controlled. Two workers are trapped inside and need rescue. You have two responders willing to attempt rescue. Your engine company has SCBA. Entry into the HCN-affected atmosphere is required for rescue. Both rescued workers will be contaminated with fire smoke and possible HCN.',
+ state:'Gas (fire products + HCN)',contam:'Vapor expected for rescued workers',victim:'2 trapped workers (not yet rescued)',weather:'Indoor, fire 70% controlled',resources:'Engine company with SCBA',
+ answer:'clothing',
+ explanation:'<strong>Pre-plan the decon method before the rescue</strong>. The rescued workers will have vapor/smoke exposure. The decon method for smoke/vapor exposure is clothing removal. Establish a decon point outside before entry — the two rescued workers will come out with HCN-laden clothing and must have it removed immediately upon exit. SCBA-equipped rescuers perform the entry. Outside, pre-position the clothing removal point so decon happens at the exit without delay.',
+ whyOthers:{dry:'Fire smoke is not a dry particulate in the hazmat sense.',gross:'Vapor/smoke exposure is addressed with clothing removal. Water is not indicated for the expected vapor contamination.',technical:'Clothing removal for vapor-exposed rescued workers is within operations scope.',none:'Workers rescued from an HCN atmosphere will have contaminated clothing requiring immediate removal.'}
+},
+
+{id:'A-21',level:'adv',chem:'Sulfuric Acid',un:'UN 1830',container:'Industrial vat — accident with contaminated responder',
+ desc:'During the response to a sulfuric acid spill, a first responder from the initial unit slipped and fell into the acid pool. The responder is now contaminated with acid on both legs and is experiencing severe pain. The responder is fully conscious but is in a contaminated zone. Other engine company members must now manage a responder rescue and decon.',
+ state:'Liquid',contam:'Liquid — responder legs (both)',victim:'1 responder — symptomatic, in contaminated zone',weather:'Indoor industrial, 68°F',resources:'Engine company, water available, hazmat requested',
+ answer:'gross',
+ explanation:'<strong>Responder self-contamination — gross decon immediately</strong>. A responder with acid on both legs cannot wait for hazmat. Immediately remove the responder from the acid area with appropriate PPE, strip the boots and pants, and flush both legs with large-volume water. This is a life safety action for a fellow responder — the standard for immediate gross decon is the same as for a civilian: liquid acid contact requires immediate water flushing. Document and escalate to hazmat for continued decon.',
+ whyOthers:{dry:'Liquid acid requires water flush.',technical:'Immediate life safety action for a responder with active acid burns cannot await technical decon setup.',clothing:'Remove contaminated pants and boots simultaneously with water flush — clothing removal alone leaves acid on skin.',none:'Active acid on a responder\'s legs causes progressive burns without decon.'}
+},
+
+{id:'A-22',level:'adv',chem:'Acetic Acid',un:'UN 2789',container:'Industrial accident — combative patient',
+ desc:'A worker has liquid glacial acetic acid on both arms and is combative and confused — consistent with pain and acid fume inhalation. He is refusing treatment and attempting to walk away from the scene. He has acid visibly on both forearms. His combativeness is making decon difficult.',
+ state:'Liquid',contam:'Liquid — both forearms',victim:'1 worker — combative, liquid acid on arms',weather:'Outdoor, 70°F',resources:'Engine company, law enforcement on scene',
+ answer:'gross',
+ explanation:'<strong>Combative patient with confirmed liquid acid contamination</strong>. The decon method is still gross decon — the combativeness creates a tactical challenge, not a change in decon method. Law enforcement assistance for patient control may be required. Document the refusal and attempt to decon. Acid on skin is an ongoing emergency — progressive burns will result in serious injury. The patient\'s altered mental status may itself be a result of acid fume inhalation, making voluntary consent more complex.',
+ whyOthers:{dry:'Glacial acetic acid is a liquid.',technical:'The decon method for liquid acid on skin is clear — gross decon. The challenge is patient management, not decon method selection.',clothing:'Liquid acid on forearms requires water flushing, not clothing removal alone.',none:'Active liquid acid on skin cannot go untreated even in a combative patient — escalate to ALS and law enforcement for assistance.'}
+},
+
+{id:'A-23',level:'adv',chem:'Chlorine',un:'UN 1017',container:'Swimming pool — mechanical room',
+ desc:'A chlorine gas release from a pool mechanical room affected a community center. 65 children ages 8-14 were in swim lessons. They evacuated the pool area. Most children are in wet swimsuits and have been exposed to the vapor cloud. 3 children with possible higher exposure are showing more severe symptoms. All clothing is saturated wet swimsuits.',
+ state:'Gas',contam:'Vapor — 65 children in wet swimsuits',victim:'65 children — 3 severe, 62 mild; wet from pool',weather:'Indoor/outdoor transition, 72°F',resources:'2 engines, 2 medics, school/facility staff',
+ answer:'clothing',
+ explanation:'<strong>Sixty-five children in wet swimsuits — vapor exposure</strong>. The wet swimsuits actually offer slight advantage over dry clothing (pool water has already diluted surface exposure), but the swimsuits are still saturated with chlorine vapor. Remove swimsuits and provide covering. This is mass clothing removal at operations level. Pool staff and parents can assist under EMS direction. The 3 severe children go first with ALS. Privacy considerations for children removing swimsuits must be managed with gender-appropriate supervision.',
+ whyOthers:{dry:'Chlorine is a vapor. No dry particulate.',gross:'No liquid chlorine contact. Pool water is not the hazardous agent — the vapor is. Gross decon with additional water is not indicated.',technical:'Sixty-five children with vapor exposure cannot wait for technical decon. Operations-level clothing removal is the appropriate method.',none:'Sixty-five children with confirmed chlorine vapor exposure require clothing removal.'}
+},
+
+{id:'A-24',level:'adv',chem:'Propane + Structural Collapse',un:'UN 1978',container:'Residential — structural collapse',
+ desc:'A propane explosion has caused a partial structural collapse of a home. Three victims are trapped in debris — all have burn injuries from the explosion. One victim has been removed and has burns plus propane-soaked clothing from a ruptured propane line that vented over her during extrication. Structure is unstable. No active fire.',
+ state:'Gas (ignited) + liquid (one victim)',contam:'Burns + propane liquid (1 removed victim)',victim:'3 trapped (rescue pending), 1 removed with burns + propane',weather:'Outdoor, 62°F',resources:'2 engines, 1 medic, rescue responding',
+ answer:'gross',
+ explanation:'<strong>Removed victim with burns + propane liquid contamination</strong>. The rescued victim who has propane-soaked clothing needs gross decon — propane liquid on burn wounds causes additional chemical burn injury and the saturated clothing is a fire reignition hazard. Remove clothing and flush the burn areas with room-temperature water while ALS manages the burns. The trapped victims are a rescue problem, not yet a decon problem — they cannot be deconned until extricated.',
+ whyOthers:{dry:'Liquid propane on burn wounds requires water flush.',technical:'The removed victim needs immediate gross decon — waiting for technical decon with burns and flammable liquid present is not appropriate.',clothing:'Liquid propane on burned skin requires water flushing, not clothing removal alone.',none:'Propane-soaked burn wounds have both chemical and fire hazard components requiring decon.'}
+},
+
+{id:'A-25',level:'adv',chem:'Ethylene Oxide',un:'UN 1040',container:'Hospital — large-scale sterilizer failure',
+ desc:'A hospital\'s central supply department has a major EtO sterilizer failure. Fifteen hospital workers were in the department during the leak. All evacuated. The hospital has activated their Hazmat Response Plan and is requesting fire department assistance. Twelve workers have dry clothing with vapor exposure. Three workers who were closest to the unit have possible liquid EtO contact on their lab coats.',
+ state:'Gas + possible liquid (3)',contam:'Vapor (12) + possible liquid (3)',victim:'15 hospital workers — 3 possible liquid, 12 vapor only',weather:'Indoor — evacuated to parking area',resources:'Engine company, hospital hazmat plan activated, industrial hygienist responding',
+ answer:'technical',
+ explanation:'<strong>Three possible liquid EtO contacts</strong> — the three workers with possible liquid contact on lab coats require technical decon. EtO is a carcinogen that absorbs rapidly through skin. Liquid EtO contact is beyond operations-level management. The hospital\'s hazmat plan should be activated for these three. The 12 vapor-only workers receive operations-level clothing removal.',
+ whyOthers:{dry:'EtO is a gas and possible liquid.',gross:'Liquid EtO contact in the context of a carcinogen and possible systemic exposure requires hazmat-level decon for the three suspected liquid-contact workers.',clothing:'Appropriate for the 12 vapor-only workers. The 3 with possible liquid contact need technical decon.',none:'Fifteen confirmed EtO-exposed workers require decon.'}
+},
+
+{id:'A-26',level:'adv',chem:'Phosgene',un:'UN 1076',container:'Chemical plant — multiple victims',
+ desc:'A phosgene storage area valve failure has exposed 7 workers. All evacuated. None have obvious symptoms NOW — phosgene is characterized by a 4-24 hour delay before pulmonary edema develops. Three workers were closest to the source for 3-5 minutes; four were at greater distance for 1-2 minutes. Clothing appears dry.',
+ state:'Gas (delayed toxicity)',contam:'Vapor — all 7 workers',victim:'7 workers — currently asymptomatic (delayed injury expected)',weather:'Outdoor, post-evacuation',resources:'Engine company, ALS, hazmat requested',
+ answer:'clothing',
+ explanation:'<strong>Asymptomatic phosgene exposure — clothing removal critical despite no symptoms</strong>. This is an advanced scenario specifically because the correct answer does not change even when patients have no symptoms. Phosgene\'s delayed pulmonary injury means current symptom absence is meaningless for decon decision-making. Remove clothing for all seven, transport all to hospital for observation, and communicate phosgene exposure explicitly to the receiving facility. "No symptoms" is expected and does NOT mean no decon.',
+ whyOthers:{dry:'Phosgene is a gas.',gross:'No liquid contact. The vapor-only exposure is addressed with clothing removal.',technical:'Clothing removal for 7 vapor-exposed victims is operations-level. The medical management complexity is the hospital\'s responsibility.',none:'Seven confirmed phosgene-exposed workers with delayed injury expected cannot have no decon simply because they feel fine now.'}
+},
+
+{id:'A-27',level:'adv',chem:'Hydrogen Sulfide',un:'UN 1053',container:'Industrial process — multiple workers',
+ desc:'An H2S release at a refinery has overcome 9 workers in a processing area. Six have self-evacuated and are ambulatory with varying symptoms. Three are still in the area and unconscious — rescue requires entry. SCBA teams are entering for rescue. The 6 evacuated workers are at the perimeter with vapor-exposed clothing.',
+ state:'Gas',contam:'Vapor — 6 evacuated; 3 being rescued',victim:'9 total — 6 ambulatory (varying symptoms), 3 unconscious (being rescued)',weather:'Industrial outdoor, 75°F',resources:'Multiple engines, SCBA entry teams, ALS',
+ answer:'clothing',
+ explanation:'<strong>All 9 will have vapor exposure requiring clothing removal</strong>. The 6 evacuated workers begin clothing removal now. The 3 rescued workers receive clothing removal at the exit point as part of the SCBA rescue decon protocol. H2S-saturated clothing in close proximity to ALS providers doing airway management has caused secondary responder incapacitation. Clothing removal for all 9 is the unified operations-level decon plan.',
+ whyOthers:{dry:'H2S is a gas.',gross:'No liquid H2S. Vapor-only exposure.',technical:'Clothing removal for 9 H2S vapor victims is within operations scope.',none:'All 9 workers have confirmed H2S vapor exposure. Clothing saturation with H2S is a secondary exposure hazard.'}
+},
+
+{id:'A-28',level:'adv',chem:'Chlorine Dioxide',un:'UN 9191',container:'Water treatment — system failure',
+ desc:'A ClO₂ generation system failure at a municipal water treatment plant has released ClO₂ gas into the treatment building and adjacent areas. Eleven plant workers are affected — three were inside the building and have possible liquid contact from the generator overflow; eight were in the adjacent areas with vapor exposure only. The plant is isolated.',
+ state:'Gas + possible liquid (3)',contam:'Vapor (8) + liquid contact (3)',victim:'11 workers — 3 possible liquid, 8 vapor only',weather:'Industrial outdoor, 62°F',resources:'2 engines, ALS, hazmat 18 min',
+ answer:'technical',
+ explanation:'<strong>Liquid ClO₂ contact in 3 workers — technical decon required</strong>. ClO₂ is highly toxic with strong oxidizing properties. Three workers with possible liquid contact require hazmat-level decon. The 8 vapor-only workers receive clothing removal at operations level. Operations should begin clothing removal for the 8 vapor victims immediately; the 3 possible liquid-contact workers should be isolated, outer clothing self-removed with gloves, and held for hazmat arrival.',
+ whyOthers:{dry:'Liquid ClO₂ is not addressed by dry decon.',gross:'Performing gross decon on possible liquid ClO₂ contact without appropriate PPE risks secondary contamination.',clothing:'For the 8 vapor workers, yes. The 3 liquid contact workers need technical decon.',none:'Eleven workers with confirmed ClO₂ exposure require decon.'}
+},
+
+{id:'A-29',level:'adv',chem:'Sulfuric Acid',un:'UN 1830',container:'School science lab accident',
+ desc:'A high school chemistry teacher was demonstrating a reaction when a container failed and sprayed sulfuric acid. The teacher has acid on her face, hands, and lab coat. Four students closest to the demo bench have varying amounts of acid splash on them. Twelve other students in the room were exposed to acidic aerosol. The school is evacuating.',
+ state:'Liquid + aerosol',contam:'Direct liquid (teacher + 4 students) + aerosol (12 students)',victim:'17 total — 1 teacher (heavy), 4 students (moderate), 12 students (light aerosol)',weather:'Indoor lab',resources:'Engine company, 2 medics, school staff',
+ answer:'gross',
+ explanation:'<strong>Triage-driven gross decon for 17 school victims</strong>. The teacher and 4 most contaminated students are the priority — gross decon now. The 12 aerosol-exposed students should also receive gross decon given the acid nature of the aerosol. Use available sinks, emergency shower if present, and engine hose for those with heavy contamination. School staff can assist with organized decon of the aerosol group. Operations level can manage this with organization.',
+ whyOthers:{dry:'Sulfuric acid is a liquid and aerosol.',technical:'Operations must initiate decon — the acid is causing burns. Waiting for hazmat is not appropriate for 17 confirmed acid-exposed victims in a school.',clothing:'Direct liquid acid contact requires simultaneous water flushing.',none:'Seventeen victims with acid contamination — ranging from direct liquid to aerosol — require gross decon.'}
+},
+
+{id:'A-30',level:'adv',chem:'Methanol',un:'UN 1230',container:'Industrial vat — mass casualty',
+ desc:'A methanol storage vat catastrophically failed at a biofuel facility, releasing hundreds of gallons. Fourteen workers were caught in the flood of liquid methanol before evacuating. All 14 are soaked from the waist down. All are currently asymptomatic. However, methanol toxicity is significantly delayed. The facility is now secured.',
+ state:'Liquid',contam:'Liquid saturation — all 14 workers (lower body)',victim:'14 workers — all asymptomatic, all soaked',weather:'Industrial outdoor, 68°F',resources:'Multiple engines, ALS, hazmat available',
+ answer:'gross',
+ explanation:'<strong>Mass methanol liquid contamination — asymptomatic does not mean not exposed</strong>. All 14 workers require gross decon despite zero symptoms. Methanol\'s toxicity has a 12-24 hour delay — blindness and cardiac arrest may develop well after the exposure. Gross decon (remove clothing, flush skin) for all 14 is required regardless of symptom status. All 14 must also go to the hospital for methanol level testing and observation. The "no symptoms" aspect makes this an advanced decision — the correct answer is still gross decon.',
+ whyOthers:{dry:'Methanol is a liquid.',clothing:'Liquid methanol saturation requires water flushing of skin after clothing removal.',technical:'Fourteen workers with confirmed liquid methanol saturation — gross decon by the available resources is the correct method.',none:'Fourteen workers soaked in methanol have absorbed dermally whether or not they feel it. Decon and hospital transport are required.'}
+},
+
+{id:'A-31',level:'adv',chem:'Chlorine',un:'UN 1017',container:'Water treatment plant — large release',
+ desc:'A large chlorine release at a water treatment plant activates a community shelter-in-place. Twenty minutes after the release, residents start arriving at the fire station reporting that they sheltered in place but their home had a bad seal and they could smell chlorine. Thirty-two residents arrive over a 15-minute period. Clothing appears dry. The treatment plant has been shut off.',
+ state:'Gas (past exposure)',contam:'Vapor — confirmed but exposure concluded',victim:'32 civilians — walking in over 15 min, varied symptoms, exposure over',weather:'Outdoors at fire station, 55°F',resources:'3 engines, 2 medics, mass casualty protocol activated',
+ answer:'clothing',
+ explanation:'<strong>Mass self-presenting vapor victims at fire station</strong>. Even though the chlorine release has stopped, the victims\' clothing retains absorbed vapor and will continue off-gassing in enclosed spaces (ambulances, hospital corridors). Clothing removal for all 32 is the operations-level mass decon action. Set up a systematic clothing removal corridor. Provide gowns. Prioritize the most symptomatic. This is mass casualty management at operations level.',
+ whyOthers:{dry:'Chlorine vapor, not particulate.',gross:'The exposure has concluded. No liquid chemical is on any victim. Water is not the decon method.',technical:'Thirty-two vapor-only self-presenting victims at a fire station is manageable at operations level with mass clothing removal.',none:'Even with the source shut off, chlorine in clothing continues off-gassing in enclosed treatment and transport environments.'}
+},
+
+{id:'A-32',level:'adv',chem:'Mixed Industrial (Ammonia + Diesel)',un:'UN 1005 / UN 1202',container:'Transportation accident — dual vehicles',
+ desc:'A truck carrying anhydrous ammonia and a diesel tanker have collided. The ammonia tank is venting vapor. Diesel has spilled across the roadway. Two victims from the ammonia truck have vapor exposure only. One victim from the diesel truck fell into the diesel spill and has liquid diesel contamination. Both products and both decon needs must be managed.',
+ state:'Gas (NH3) + Liquid (diesel)',contam:'Vapor — 2 victims; Liquid — 1 victim',victim:'3 total — 2 vapor (NH3), 1 liquid (diesel)',weather:'Highway, 65°F, moderate wind',resources:'Engine company',
+ answer:'clothing',
+ explanation:'<strong>Triage by exposure type</strong>. The two ammonia vapor victims get clothing removal (vapor decon). The diesel-contaminated victim gets gross decon (liquid decon). This is a dual-method scenario at operations level. Neither chemical presents a hazmat-team-level complexity for the individual exposures: ammonia vapor = clothing removal; diesel liquid = gross decon. The complexity is managing both simultaneously with one engine company.',
+ whyOthers:{dry:'Neither ammonia nor diesel is a dry solid.',technical:'All three victims have manageable, operations-level exposures from known chemicals.',none:'Three victims with confirmed vapor and liquid chemical exposures require decon.'}
+},
+
+{id:'A-33',level:'adv',chem:'Chlorine + Mass Casualties',un:'UN 1017',container:'Municipal water supply — sabotage suspected',
+ desc:'Reports of a chlorine release at a public event (outdoor festival, 400 attendees). Multiple 911 calls for respiratory distress. Law enforcement has found a ruptured cylinder near a crowd area. Approximately 80 people are symptomatic in staging areas. None appear to have liquid contact. FBI WMD coordinator has been notified — intentional release is being investigated.',
+ state:'Gas',contam:'Vapor — 80+ victims, possible crime scene',victim:'80+ civilians — respiratory symptoms, crime scene concern',weather:'Outdoor, 72°F, variable wind',resources:'Mass casualty response, law enforcement, FBI responding',
+ answer:'clothing',
+ explanation:'<strong>Mass vapor decon with crime scene considerations</strong>. The decon method is clothing removal — it does not change because of possible criminal activity. However, the criminal investigation requires that removed clothing be bagged with victim identification (not commingled) as potential evidence. This is an advanced coordination challenge: mass clothing decon + evidence preservation protocol. Every item of clothing removed from a victim should be individually bagged and labeled.',
+ whyOthers:{dry:'Chlorine is a vapor. No dry particulate.',gross:'No liquid chlorine. Vapor-only exposure does not require gross decon.',technical:'Eighty victims with vapor-only exposure from a known agent — operations-level clothing removal is the method.',none:'Eighty symptomatic chlorine-exposed victims require clothing removal regardless of the criminal investigation.'}
+},
+
+{id:'A-34',level:'adv',chem:'Hydrogen Fluoride',un:'UN 1052',container:'Industrial spill — responder PPE failure',
+ desc:'An engine company is on scene at an HF spill. A responder whose chemical-resistant glove had an undetected pinhole defect has possible HF exposure on her right hand. She reports tingling in her right hand that is increasing. She is asymptomatic systemically. She is in full PPE otherwise. The ongoing HF response continues around her.',
+ state:'Liquid (trace)',contam:'Trace HF — right hand (glove breach)',victim:'1 responder — tingling, possible HF through glove breach',weather:'Outdoor industrial, 70°F',resources:'Full hazmat response ongoing',
+ answer:'technical',
+ explanation:'<strong>Responder HF exposure through PPE failure</strong>. This is exactly when technical decon applies for a responder — the hazmat team already on scene manages responder decon. The tingling in the hand is consistent with HF contact and suggests active absorption. The hazmat team performs technical decon of the responder\'s hand: flush with water, apply calcium gluconate gel (antidote), and arrange immediate ALS evaluation for systemic effects. Remove from the active scene immediately.',
+ whyOthers:{dry:'HF is a liquid.',gross:'A responder with HF on hand needs hazmat team management — calcium gluconate application, decon procedures, and medical evaluation as part of technical decon.',clothing:'The exposure is hand/glove — not whole-body clothing removal. Targeted technical decon is required.',none:'HF through a glove breach with tingling is active absorption. Immediate decon is required.'}
+},
+
+{id:'A-35',level:'adv',chem:'Multiple Unknown Chemicals',un:'Unknown',container:'Clandestine drug lab — fire',
+ desc:'A structure fire in a residential home revealed a clandestine methamphetamine lab with numerous unlabeled chemicals, solvents, and reactive precursors. During suppression, three firefighters with SCBA had brief seal breaches. Post-fire, suspicious residue is on all three responders\' SCBA and turnout gear. Law enforcement has requested evidence preservation. Chemical identity is unknown.',
+ state:'Unknown mixture',contam:'Unknown chemical residue — gear (3 responders)',victim:'3 firefighters — in SCBA, possible trace exposure, evidence concern',weather:'Outdoor, post-fire',resources:'Engine company, hazmat requested, law enforcement on scene',
+ answer:'technical',
+ explanation:'<strong>Clandestine lab with unknown chemicals + evidence preservation + responder gear</strong>. Unknown chemical residue on responder gear from a clandestine lab requires technical decon. Law enforcement needs evidence from the gear. The responders need to be deconned without destroying potential evidence. Hazmat team manages responder gear decon in coordination with law enforcement evidence collection. Responders should not self-decon their gear. Hold all three for hazmat while medically monitoring them.',
+ whyOthers:{dry:'Unknown chemical mixture — method cannot be determined without identification.',gross:'Unknown chemicals may react with water. Cannot perform gross decon without identification.',clothing:'This is responder gear with unknown chemicals and evidence concerns — not a simple clothing removal.',none:'Three responders with SCBA seal breaches and unknown chemical residue on gear require decon.'}
+}
+
+]; // end ALL_SCENARIOS
+
+// ── APPLICATION STATE ──
+let activeScenarios = [...ALL_SCENARIOS];
+let currentIndex = 0;
+let answered = false;
+let filter = 'all';
+const scoreMap = {}; // id -> {correct: bool}
+
+function shuffleArray(arr) {
+  for(let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function setFilter(f, btn) {
+  filter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.className = 'filter-btn';
+  });
+  btn.classList.add('active-' + f);
+  applyFilter();
+}
+
+function applyFilter() {
+  if(filter === 'all') {
+    activeScenarios = shuffleArray([...ALL_SCENARIOS]);
+  } else {
+    const map = {basic:'basic', inter:'inter', adv:'adv'};
+    activeScenarios = shuffleArray(ALL_SCENARIOS.filter(s => s.level === map[filter]));
+  }
+  currentIndex = 0;
+  answered = false;
+  renderScenario();
+}
+
+function shuffleScenarios() {
+  shuffleArray(activeScenarios);
+  currentIndex = 0;
+  answered = false;
+  renderScenario();
+}
+
+function navigate(dir) {
+  currentIndex += dir;
+  if(currentIndex < 0) currentIndex = 0;
+  if(currentIndex >= activeScenarios.length) {
+    showSummary();
+    return;
+  }
+  answered = false;
+  renderScenario();
+}
+
+function renderScenario() {
+  const s = activeScenarios[currentIndex];
+  document.getElementById('scoreSummary').style.display = 'none';
+  document.getElementById('scenarioWrap').style.display = 'block';
+
+  // Level styling
+  const card = document.getElementById('scenarioCard');
+  card.className = 'scenario-card level-' + s.level;
+
+  // Header
+  document.getElementById('scId').textContent = 'Scenario ' + s.id;
+  const badge = document.getElementById('diffBadge');
+  badge.className = 'diff-badge ' + s.level;
+  const labels = {basic:'🟢 Basic', inter:'🟡 Intermediate', adv:'🔴 Advanced'};
+  badge.textContent = labels[s.level];
+  document.getElementById('scChem').textContent = s.chem;
+  document.getElementById('scUN').textContent = s.un;
+
+  // Description
+  document.getElementById('scDesc').textContent = s.desc;
+
+  // Meta grid
+  const meta = document.getElementById('scMeta');
+  meta.innerHTML = [
+    ['Container / Source', s.container],
+    ['Physical State', s.state],
+    ['Contamination Type', s.contam],
+    ['Victim/Responder', s.victim],
+    ['Conditions', s.weather],
+    ['Available Resources', s.resources],
+  ].map(([k,v]) => `<div class="meta-cell"><div class="meta-key">${k}</div><div class="meta-val">${v}</div></div>`).join('');
+
+  // Answer buttons
+  const grid = document.getElementById('answerGrid');
+  grid.innerHTML = OPTS.map(opt =>
+    `<button class="answer-btn" id="ans-${opt.id}" onclick="selectAnswer('${s.id}','${opt.id}')">
+      <span class="ans-icon">${opt.icon}</span>
+      <span class="ans-text">${opt.label}</span>
+      <span class="ans-check" id="chk-${opt.id}"></span>
+    </button>`
+  ).join('');
+
+  // Feedback
+  const fb = document.getElementById('feedbackPanel');
+  fb.className = 'feedback-panel';
+
+  // If already answered this scenario
+  if(scoreMap[s.id] !== undefined) {
+    revealFeedback(s, scoreMap[s.id].selected);
+  }
+
+  // Progress
+  const pct = ((currentIndex+1) / activeScenarios.length) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('scCounter').textContent = `${currentIndex+1} / ${activeScenarios.length}`;
+
+  updateStats();
+
+  // Next button
+  document.getElementById('nextBtn').disabled = false;
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function selectAnswer(scenId, optId) {
+  if(scoreMap[scenId] !== undefined) return; // Already answered
+  const s = activeScenarios.find(x => x.id === scenId);
+  if(!s) return;
+
+  const correct = optId === s.answer;
+  scoreMap[scenId] = {correct, selected: optId};
+  revealFeedback(s, optId);
+  updateStats();
+}
+
+function revealFeedback(s, selectedId) {
+  const correct = selectedId === s.answer;
+  const correctOpt = OPTS.find(o => o.id === s.answer);
+
+  // Style buttons
+  OPTS.forEach(opt => {
+    const btn = document.getElementById('ans-' + opt.id);
+    const chk = document.getElementById('chk-' + opt.id);
+    if(!btn) return;
+    btn.disabled = true;
+    if(opt.id === s.answer) {
+      btn.classList.add('correct');
+      chk.textContent = '✓';
+    } else if(opt.id === selectedId && opt.id !== s.answer) {
+      btn.classList.add('wrong');
+      chk.textContent = '✗';
+    } else {
+      btn.classList.add('dimmed');
+    }
+  });
+
+  // Verdict
+  const verdict = document.getElementById('fbVerdict');
+  verdict.className = 'fb-verdict ' + (correct ? 'correct-v' : 'wrong-v');
+  verdict.innerHTML = correct
+    ? '<span>✓</span> CORRECT DECISION'
+    : '<span>✗</span> INCORRECT — REVIEW EXPLANATION';
+
+  // Correct answer label
+  document.getElementById('fbCorrectAns').textContent = 'Correct Method: ' + correctOpt.label.toUpperCase();
+
+  // Main explanation
+  document.getElementById('fbExplanation').innerHTML = s.explanation;
+
+  // Why others
+  const whySec = document.getElementById('fbWhySection');
+  const otherOpts = OPTS.filter(o => o.id !== s.answer);
+  whySec.innerHTML = '<div class="fb-why-title">Why the other options are incorrect:</div>' +
+    otherOpts.map(opt => {
+      const reason = s.whyOthers[opt.id] || 'Not applicable in this scenario.';
+      return `<div class="fb-why-item"><span class="why-method">${opt.label}:</span> <span>${reason}</span></div>`;
+    }).join('');
+
+  document.getElementById('feedbackPanel').classList.add('show');
+}
+
+function updateStats() {
+  const total = Object.keys(scoreMap).length;
+  const correct = Object.values(scoreMap).filter(v => v.correct).length;
+  document.getElementById('scoreDisplay').textContent = correct;
+  document.getElementById('totalDisplay').textContent = total;
+  document.getElementById('pctDisplay').textContent = total > 0 ? Math.round((correct/total)*100) + '%' : '—';
+}
+
+function showSummary() {
+  document.getElementById('scenarioWrap').style.display = 'none';
+  const sum = document.getElementById('scoreSummary');
+  sum.style.display = 'block';
+
+  const total = Object.keys(scoreMap).length;
+  const correct = Object.values(scoreMap).filter(v => v.correct).length;
+  const pct = total > 0 ? Math.round((correct/total)*100) : 0;
+
+  document.getElementById('finalScore').textContent = pct + '%';
+
+  ['basic','inter','adv'].forEach(level => {
+    const levelIds = ALL_SCENARIOS.filter(s => s.level === level).map(s => s.id);
+    const answered = levelIds.filter(id => scoreMap[id]);
+    const correct = answered.filter(id => scoreMap[id] && scoreMap[id].correct);
+    const idMap = {basic:'basicScore', inter:'interScore', adv:'advScore'};
+    document.getElementById(idMap[level]).textContent =
+      answered.length > 0 ? `${correct.length}/${answered.length}` : '—';
+  });
+}
+
+function restart() {
+  Object.keys(scoreMap).forEach(k => delete scoreMap[k]);
+  currentIndex = 0;
+  shuffleArray(activeScenarios);
+  document.getElementById('scoreSummary').style.display = 'none';
+  document.getElementById('scenarioWrap').style.display = 'block';
+  renderScenario();
+  updateStats();
+}
+
+// ── INIT ──
+shuffleArray(activeScenarios);
+renderScenario();
+</script>
+</body>
+</html>
