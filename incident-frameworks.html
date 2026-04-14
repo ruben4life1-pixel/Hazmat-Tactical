@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Incident Management Frameworks | Hazmat Tactical</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Rajdhani:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0a0e1a;
+  --navy-card: #141c2e;
+  --navy-elevated: #1a2340;
+  --amber: #f0a500;
+  --amber-dim: rgba(240,165,0,0.15);
+  --amber-glow: rgba(240,165,0,0.08);
+  --red: #e03a3a;
+  --red-dim: rgba(224,58,58,0.12);
+  --cyan: #00d9ff;
+  --cyan-dim: rgba(0,217,255,0.1);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,0.12);
+  --border: rgba(255,255,255,0.07);
+  --border-amber: rgba(240,165,0,0.3);
+  --text: #e8eaf0;
+  --text-muted: #6b7280;
+  --text-dim: #9ca3af;
+
+  /* Framework colors */
+  --f8: #f0a500;
+  --f8-dim: rgba(240,165,0,0.12);
+  --f8-border: rgba(240,165,0,0.35);
+  --f5: #00d9ff;
+  --f5-dim: rgba(0,217,255,0.1);
+  --f5-border: rgba(0,217,255,0.35);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--navy);
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 400px;
+  background: radial-gradient(ellipse, rgba(240,165,0,0.05) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+/* HEADER */
+.site-header { border-bottom: 1px solid var(--border); padding: 16px 0; }
+.header-inner { display: flex; align-items: center; gap: 16px; }
+.back-link { color: var(--text-muted); text-decoration: none; font-family: 'Barlow Condensed', sans-serif; font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+.back-link:hover { color: var(--amber); }
+.breadcrumb-sep { color: var(--border); }
+.page-label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; color: var(--amber); }
+
+/* HERO */
+.hero { padding: 48px 0 36px; border-bottom: 1px solid var(--border); }
+.hero-tag { font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: var(--amber); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+.hero-tag::before { content: ''; width: 32px; height: 1px; background: var(--amber); }
+.hero h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2.8rem, 7vw, 5rem); line-height: 0.9; letter-spacing: 2px; margin-bottom: 16px; }
+.hero h1 span { color: var(--amber); }
+.hero-sub { font-size: 1rem; color: var(--text-dim); max-width: 640px; line-height: 1.6; font-weight: 500; }
+.training-badge { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; padding: 6px 14px; border: 1px solid rgba(224,58,58,0.4); border-radius: 4px; font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: var(--red); background: var(--red-dim); }
+
+/* FRAMEWORK CARDS */
+.framework-overview { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 36px 0 0; }
+
+.fw-card { background: var(--navy-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.fw-card.f8 { border-top: 3px solid var(--f8); }
+.fw-card.f5 { border-top: 3px solid var(--f5); }
+
+.fw-card-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); }
+.fw-badge { display: inline-block; padding: 3px 10px; border-radius: 3px; font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+.fw-badge.f8 { background: var(--f8-dim); color: var(--f8); border: 1px solid var(--f8-border); }
+.fw-badge.f5 { background: var(--f5-dim); color: var(--f5); border: 1px solid var(--f5-border); }
+.fw-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 2px; margin-bottom: 6px; }
+.fw-card.f8 .fw-name { color: var(--f8); }
+.fw-card.f5 .fw-name { color: var(--f5); }
+.fw-origin { font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; letter-spacing: 1px; color: var(--text-muted); text-transform: uppercase; }
+
+.fw-card-body { padding: 16px 24px 20px; }
+.fw-desc { font-size: 0.88rem; color: var(--text-dim); line-height: 1.6; margin-bottom: 16px; }
+
+.fw-steps { display: flex; flex-direction: column; gap: 6px; }
+.fw-step { display: flex; align-items: flex-start; gap: 10px; }
+.fw-step-num { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; color: var(--text-muted); flex-shrink: 0; margin-top: 3px; min-width: 20px; }
+.fw-step-name { font-family: 'Barlow Condensed', sans-serif; font-size: 0.9rem; font-weight: 700; letter-spacing: 0.5px; }
+.f8 .fw-step-name { color: var(--f8); }
+.f5 .fw-step-name { color: var(--f5); }
+.fw-step-sub { font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; }
+
+.fw-audience { margin-top: 14px; padding: 8px 12px; border-radius: 4px; font-size: 0.78rem; color: var(--text-dim); line-height: 1.5; }
+.fw-audience.f8 { background: var(--f8-dim); border-left: 3px solid var(--f8); }
+.fw-audience.f5 { background: var(--f5-dim); border-left: 3px solid var(--f5); }
+
+/* MATRIX SECTION */
+.matrix-section { padding: 40px 0 60px; }
+.section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+.section-title { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 2px; color: var(--text); margin-bottom: 8px; }
+.section-desc { font-size: 0.9rem; color: var(--text-dim); line-height: 1.6; margin-bottom: 28px; max-width: 640px; }
+
+/* MATRIX TABLE */
+.matrix-wrap { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 24px; }
+
+.matrix-header { display: grid; grid-template-columns: 200px 1fr 1fr; background: var(--navy-elevated); border-bottom: 2px solid var(--border); }
+
+.mh-cell { padding: 14px 20px; }
+.mh-phase { font-family: 'Barlow Condensed', sans-serif; font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--text-muted); }
+.mh-fw { display: flex; align-items: center; gap: 8px; }
+.mh-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.mh-dot.f8 { background: var(--f8); }
+.mh-dot.f5 { background: var(--f5); }
+.mh-fw-name { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 1px; }
+.mh-fw-name.f8 { color: var(--f8); }
+.mh-fw-name.f5 { color: var(--f5); }
+
+.matrix-row { display: grid; grid-template-columns: 200px 1fr 1fr; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s; }
+.matrix-row:last-child { border-bottom: none; }
+.matrix-row:hover { background: rgba(255,255,255,0.02); }
+.matrix-row.expanded { background: rgba(240,165,0,0.03); }
+
+.phase-cell { padding: 16px 20px; border-right: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; gap: 4px; }
+.phase-num { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; color: var(--text-muted); }
+.phase-name { font-family: 'Barlow Condensed', sans-serif; font-size: 0.9rem; font-weight: 700; letter-spacing: 0.5px; color: var(--text); }
+.phase-expand { font-family: 'Barlow Condensed', sans-serif; font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase; color: var(--amber); margin-top: 4px; transition: opacity 0.2s; }
+
+.fw-cell { padding: 14px 20px; border-right: 1px solid var(--border); }
+.fw-cell:last-child { border-right: none; }
+
+.fw-step-tag { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.fw-step-tag-label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; }
+.fw-step-tag-label.f8 { color: var(--f8); }
+.fw-step-tag-label.f5 { color: var(--f5); }
+.fw-step-badge { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; padding: 2px 6px; border-radius: 3px; }
+.fw-step-badge.f8 { background: var(--f8-dim); color: var(--f8); border: 1px solid var(--f8-border); }
+.fw-step-badge.f5 { background: var(--f5-dim); color: var(--f5); border: 1px solid var(--f5-border); }
+.fw-step-badge.none { background: var(--navy-elevated); color: var(--text-muted); border: 1px solid var(--border); }
+
+.fw-cell-summary { font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; }
+
+/* EXPANDED DETAIL */
+.row-detail { display: none; background: var(--navy-card); border-bottom: 1px solid var(--border); }
+.row-detail.open { display: block; animation: fadeDown 0.25s ease; }
+
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+.detail-col { padding: 20px 24px; }
+.detail-col.f8 { border-right: 1px solid var(--border); border-left: 4px solid var(--f8); background: rgba(240,165,0,0.03); }
+.detail-col.f5 { border-left: 4px solid var(--f5); background: rgba(0,217,255,0.02); }
+
+.detail-fw-label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px; }
+.detail-fw-label.f8 { color: var(--f8); }
+.detail-fw-label.f5 { color: var(--f5); }
+
+.detail-step-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 1px; margin-bottom: 8px; }
+.detail-col.f8 .detail-step-name { color: var(--f8); }
+.detail-col.f5 .detail-step-name { color: var(--f5); }
+
+.detail-body { font-size: 0.85rem; color: var(--text-dim); line-height: 1.65; }
+.detail-body strong { color: var(--text); }
+
+.detail-note { margin-top: 12px; padding: 8px 12px; border-radius: 0 4px 4px 0; font-size: 0.78rem; color: var(--text-dim); line-height: 1.5; }
+.detail-note.f8 { background: var(--f8-dim); border-left: 3px solid var(--f8); }
+.detail-note.f5 { background: var(--f5-dim); border-left: 3px solid var(--f5); }
+.detail-note.none { background: var(--navy-elevated); border-left: 3px solid var(--border); color: var(--text-muted); }
+
+/* KEY DIFFERENCES */
+.diff-section { margin-top: 32px; }
+.diff-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 20px; }
+.diff-card { background: var(--navy-card); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
+.diff-label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; }
+.diff-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 1px; color: var(--amber); margin-bottom: 10px; }
+.diff-body { font-size: 0.84rem; color: var(--text-dim); line-height: 1.6; }
+.diff-body strong { color: var(--text); }
+
+/* FOOTER */
+.module-footer { padding: 24px 0; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.footer-disclaimer { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; color: var(--text-muted); line-height: 1.6; max-width: 560px; }
+.footer-brand { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 3px; color: var(--amber); opacity: 0.5; }
+
+@media (max-width: 768px) {
+  .framework-overview { grid-template-columns: 1fr; }
+  .matrix-header { grid-template-columns: 140px 1fr 1fr; }
+  .matrix-row { grid-template-columns: 140px 1fr 1fr; }
+  .detail-grid { grid-template-columns: 1fr; }
+  .detail-col.f8 { border-right: none; border-bottom: 1px solid var(--border); }
+}
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <div class="container">
+    <div class="header-inner">
+      <a href="index.html" class="back-link">← Hazmat Tactical</a>
+      <span class="breadcrumb-sep">|</span>
+      <span class="page-label">Concept Guides</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="hero">
+    <div class="hero-tag">Concept Guide — Decision Frameworks</div>
+    <h1>Incident Management <span>Frameworks</span></h1>
+    <p class="hero-sub">Two recognized approaches to hazmat incident management — compared side by side. Neither is doctrine. Both are tools for organized thinking under pressure.</p>
+    <div class="training-badge">⚠ Training Use Only — AHJ Protocols Govern</div>
+  </div>
+
+  <!-- FRAMEWORK OVERVIEW CARDS -->
+  <div class="framework-overview">
+
+    <div class="fw-card f8">
+      <div class="fw-card-header">
+        <div class="fw-badge f8">Systematic Framework</div>
+        <div class="fw-name">8-Step Process</div>
+        <div class="fw-origin">Hildebrand · Noll · Yvorra</div>
+      </div>
+      <div class="fw-card-body">
+        <p class="fw-desc">A cyclical, systematic framework built around deliberate pre-action analysis and structured decision-making. Emphasizes hazard and risk evaluation before committing personnel or resources. Designed to loop — conditions change mid-incident, and the process re-enters at the appropriate step.</p>
+        <div class="fw-steps">
+          <div class="fw-step"><span class="fw-step-num">01</span><div><div class="fw-step-name">Site Management &amp; Control</div><div class="fw-step-sub">Establish command, isolation perimeter, zones</div></div></div>
+          <div class="fw-step"><span class="fw-step-num">02</span><div><div class="fw-step-name">Identify the Problem</div><div class="fw-step-sub">Product ID, container type, behavior, quantity</div></div></div>
+          <div class="fw-step"><span class="fw-step-num">03</span><div><div class="fw-step-name">Hazard &amp; Risk Evaluation</div><div class="fw-step-sub">What are the hazards? What is the actual risk to people?</div></div></div>
+          <div class="fw-step"><span class="fw-step-num">04</span><div><div class="fw-step-name">Select Personal Protective Equipment</div><div class="fw-step-sub">PPE level driven by hazard/risk evaluation</div></div></div>
+          <div class="fw-step"><span class="fw-step-num">05</span><div><div class="fw-step-name">Information Management &amp; Resource Coordination</div><div class="fw-step-sub">Notifications, reachback, mutual aid, documentation</div></div></div>
+          <div class="fw-step"><span class="fw-step-num">06</span><div><div class="fw-step-name">Implement Response</div><div class="fw-step-sub">Execute selected tactical options</div></div></div>
+          <div class="fw-step"><span class="fw-step-num">07</span><div><div class="fw-step-name">Decontamination</div><div class="fw-step-sub">Personnel and equipment decon before leaving hot/warm zone</div></div></div>
+          <div class="fw-step"><span class="fw-step-num">08</span><div><div class="fw-step-name">Termination</div><div class="fw-step-sub">Debriefing, documentation, critique, cost recovery</div></div></div>
+        </div>
+        <div class="fw-audience f8">Widely taught at the technician level and closely aligned to NFPA 470 structure, but adopted across responder levels in different jurisdictions. Its cyclical structure and depth of pre-action analysis make it well-suited for complex incidents at any level. Always follow your AHJ's framework and protocols.</div>
+      </div>
+    </div>
+
+    <div class="fw-card f5">
+      <div class="fw-card-header">
+        <div class="fw-badge f5">Field Framework</div>
+        <div class="fw-name">5-Step Process</div>
+      </div>
+      <div class="fw-card-body">
+        <p class="fw-desc">A linear, field-action framework built around five clear steps. Straightforward structure makes it easy to follow under pressure. Adopted across jurisdictions at varying responder levels — always apply it within your training and AHJ authority.</p>
+        <div class="fw-steps">
+          <div class="fw-step"><span class="fw-step-num">01</span><div><div class="fw-step-name">Isolate</div><div class="fw-step-sub">Secure the area, evacuate, establish perimeter</div></div></div>
+          <div class="fw-step"><span class="fw-step-num">02</span><div><div class="fw-step-name">Identify</div><div class="fw-step-sub">Product ID using ERG, placards, shipping papers</div></div></div>
+          <div class="fw-step"><span class="fw-step-num">03</span><div><div class="fw-step-name">Notify</div><div class="fw-step-sub">Dispatch, hazmat team, agencies, CHEMTREC</div></div></div>
+          <div class="fw-step"><span class="fw-step-num">04</span><div><div class="fw-step-name">Mitigate</div><div class="fw-step-sub">Actions within the scope of your training and AHJ authority</div></div></div>
+          <div class="fw-step"><span class="fw-step-num">05</span><div><div class="fw-step-name">Terminate</div><div class="fw-step-sub">Scene turnover, documentation, after-action</div></div></div>
+        </div>
+        <div class="fw-audience f5">Audience varies by jurisdiction — adopted at operations level in some departments, technician level in others. Its linear structure and field-action orientation make it adaptable across responder levels. Always follow your AHJ's framework and protocols.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- COMPARISON MATRIX -->
+  <div class="matrix-section">
+    <div class="section-label">Side-by-Side Comparison</div>
+    <div class="section-title">Phase-by-Phase Matrix</div>
+    <p class="section-desc">Each row represents a phase of the incident. Select any row to see how each framework addresses that phase — including where they diverge, overlap, or where one framework leaves a gap the other fills.</p>
+
+    <div class="matrix-wrap" id="matrixWrap"></div>
+
+    <!-- KEY DIFFERENCES -->
+    <div class="diff-section">
+      <div class="section-label">Key Distinctions</div>
+      <div class="section-title" style="font-size:1.6rem;">What Separates These Frameworks</div>
+      <div class="diff-grid">
+
+        <div class="diff-card">
+          <div class="diff-label">Scope of Authority</div>
+          <div class="diff-title">Who Is This Built For?</div>
+          <div class="diff-body">The <strong>8-Step</strong> is structured around a systematic, cyclical process suited to complex incidents where multiple disciplines and resources are in play. The <strong>5-Step</strong> is built for a more linear, field-action flow that scales to the responder's training level and AHJ authority. Both frameworks can be applied by responders at different levels — the difference is in depth, structure, and how much pre-action analysis is explicitly built in.</div>
+        </div>
+
+        <div class="diff-card">
+          <div class="diff-label">Structure</div>
+          <div class="diff-title">Linear vs. Cyclical</div>
+          <div class="diff-body">The <strong>5-Step</strong> is linear — each step leads to the next. Simple to follow under stress. The <strong>8-Step</strong> is cyclical — conditions change mid-incident, and the process re-enters at the appropriate step. <strong>Hazard evaluation happens again after decon</strong>, and again after resources change. The loop is intentional, not a flaw.</div>
+        </div>
+
+        <div class="diff-card">
+          <div class="diff-label">Risk Evaluation</div>
+          <div class="diff-title">Depth of Pre-Action Analysis</div>
+          <div class="diff-body">The <strong>8-Step</strong> dedicates an entire step to hazard and risk evaluation — separate from product identification. That distinction matters: hazard is what the product can do, risk is the probability it will do it to you given current conditions. The <strong>5-Step</strong> embeds this thinking inside Identify and Isolate without explicitly naming it.</div>
+        </div>
+
+        <div class="diff-card">
+          <div class="diff-label">Notification</div>
+          <div class="diff-title">Where Notifications Live</div>
+          <div class="diff-body">The <strong>5-Step</strong> makes notification its own dedicated step — third in sequence. This reflects an early-response priority: calling the right people may be the most impactful action taken in the first minutes. The <strong>8-Step</strong> addresses notifications in Step 5 (Information Management) — later in the process, after risk evaluation and PPE selection have begun. Notifications in the 8-Step run as a parallel track while other actions proceed simultaneously.</div>
+        </div>
+
+        <div class="diff-card">
+          <div class="diff-label">Decontamination</div>
+          <div class="diff-title">Explicit vs. Embedded</div>
+          <div class="diff-body">The <strong>8-Step</strong> makes decontamination its own step — Step 7 — ensuring it cannot be skipped or assumed. The framework establishes the principle that decon should be set up before the first entry, not improvised when the team exits. The <strong>5-Step</strong> does not name decon as a standalone step. Whether formal decon is required depends on what happened during Mitigate — not which framework was used.</div>
+        </div>
+
+        <div class="diff-card">
+          <div class="diff-label">Termination</div>
+          <div class="diff-title">Both End the Same Way</div>
+          <div class="diff-body">Both frameworks close with a termination step covering scene turnover, documentation, critique, and after-action review. <strong>This step is often skipped in field practice</strong> — and when done well, it is among the most valuable for long-term team performance. Its presence in both frameworks reflects its importance regardless of how the incident was managed.</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="container">
+  <div class="module-footer">
+    <div class="footer-disclaimer">FOR TRAINING USE ONLY. Frameworks presented for educational comparison. Neither framework replaces your department's SOPs, AHJ-adopted protocols, or IC authority at an actual incident. Always operate within your training level and department guidelines. References: Hildebrand, Noll, Yvorra — Hazardous Materials: Managing the Incident; NFPA 470 (2022); OSHA 29 CFR 1910.120(q).</div>
+    <div class="footer-brand">Hazmat Tactical</div>
+  </div>
+</div>
+
+<script>
+// ─── MATRIX DATA ─────────────────────────────────────────────
+const phases = [
+  {
+    num: '01',
+    name: 'Initial Isolation & Scene Control',
+    f8: {
+      step: 'Step 1 — Site Management & Control',
+      badge: 'STEP 1',
+      summary: 'Establish command, isolate, set zones',
+      detail: `<strong>Site Management & Control</strong> is the 8-Step's opening move — and it's comprehensive. This step encompasses establishing Incident Command, isolating the scene, establishing hot/warm/cold zone perimeters, and controlling access.<br><br>
+        The 8-Step explicitly ties isolation distance to ERG initial isolation distances or detector readings, not just visual assessment. The IC structure is established here and drives everything that follows.`,
+      note: 'The 8-Step frames this as command infrastructure — not just tape and cones. ICS structure is operational from Step 1.'
+    },
+    f5: {
+      step: 'Step 1 — Isolate',
+      badge: 'STEP 1',
+      summary: 'Secure area, evacuate, establish perimeter',
+      detail: `<strong>Isolate</strong> is the 5-Step's first and most urgent action. Evacuate the immediate area, deny entry, and establish a perimeter using ERG initial isolation distances as a starting point.<br><br>
+        The decision to isolate does not require product identity. If something is wrong, isolate first — keeping people away from the hazard while you gather information. This principle applies regardless of responder level.`,
+      note: 'The 5-Step makes Isolate the first action for a reason — life safety takes priority over information gathering. Isolate before you identify.'
+    }
+  },
+  {
+    num: '02',
+    name: 'Product Identification',
+    f8: {
+      step: 'Step 2 — Identify the Problem',
+      badge: 'STEP 2',
+      summary: 'Product ID, container, behavior, quantity',
+      detail: `<strong>Identify the Problem</strong> in the 8-Step is broader than just product identity. It includes container type and condition, physical and chemical behavior observed at the scene, quantity involved, and what the container is telling you about likely breach mode (BLEVE, pressure release, liquid spill, etc.).<br><br>
+        The 8-Step explicitly teaches that the container is a data source — shape, markings, damage pattern, and behavior are all part of identification. SDS, ERG, CHEMTREC, and technical specialists are resources in this step.`,
+      note: 'Product identity in the 8-Step is not just a UN number — it is a full characterization of what you are dealing with and what it is doing.'
+    },
+    f5: {
+      step: 'Step 2 — Identify',
+      badge: 'STEP 2',
+      summary: 'ERG, placards, shipping papers',
+      detail: `<strong>Identify</strong> in the 5-Step is focused on practical identification tools: placards, ERG, shipping papers, container markings, and CHEMTREC. The goal is establishing enough product identity to make safe decisions.<br><br>
+        The depth of identification within this step scales with the responder's training level and resources. At any level, the identification objective is the same: gather enough information to inform isolation distance, drive notifications, and support the next action.`,
+      note: 'Identification in the 5-Step serves a specific purpose: inform the isolation decision and notify the right people. Additional characterization continues as resources and information become available.'
+    }
+  },
+  {
+    num: '03',
+    name: 'Hazard & Risk Evaluation',
+    f8: {
+      step: 'Step 3 — Hazard & Risk Evaluation',
+      badge: 'STEP 3',
+      summary: 'What can it do? What will it do to you?',
+      detail: `<strong>Hazard & Risk Evaluation</strong> is the step that distinguishes the 8-Step from simpler frameworks. <strong>Hazard</strong> is what a material is capable of doing — flammability, toxicity, reactivity. <strong>Risk</strong> is the probability that the hazard will actually affect personnel given the current conditions.<br><br>
+        A highly toxic gas in a sealed container is a hazard. If the container is intact and unbreached with no release, the risk to personnel may be manageable. The 8-Step forces this distinction explicitly — preventing both over-reaction and under-reaction.`,
+      note: 'This is the step most often skipped under pressure. The 8-Step builds it in deliberately because the distinction between hazard and risk drives every downstream decision — PPE, tactics, staffing.'
+    },
+    f5: {
+      step: 'Embedded in Isolate & Identify',
+      badge: 'EMBEDDED',
+      summary: 'Not an explicit step — embedded in earlier actions',
+      detail: `The 5-Step does not have a dedicated hazard and risk evaluation step. This analysis is expected to occur within the Isolate and Identify steps — driven by ERG guidance, observable conditions, and the responder's training and knowledge base.<br><br>
+        The depth of this analysis scales with training level. ERG isolation and protective action distances provide a baseline for any responder. More detailed evaluation — toxicological analysis, air monitoring interpretation, GEBMO modeling — occurs as training level and resources allow.`,
+      note: 'The absence of an explicit risk evaluation step in the 5-Step reflects its streamlined structure — not a gap in the process. The depth of analysis applied within Isolate and Identify will vary by training level and available information.'
+    }
+  },
+  {
+    num: '04',
+    name: 'Notifications & Resource Coordination',
+    f8: {
+      step: 'Step 5 — Information Management & Resource Coordination',
+      badge: 'STEP 5',
+      summary: 'Notifications, reachback, mutual aid, documentation',
+      detail: `In the 8-Step, notifications and resource coordination come in <strong>Step 5</strong> — after hazard evaluation and PPE selection have been initiated. This is not because notification is less important — it is because the response is already underway, and notifications happen in parallel with initial actions.<br><br>
+        Step 5 covers CHEMTREC reachback, agency notifications, mutual aid requests, documentation initiation, and specialist resource coordination. The IC or Operations Section Chief typically manages this while entry team preparations continue.`,
+      note: 'Notifications in the 8-Step are a parallel track, not a sequential gate. The IC and entry team can operate simultaneously — this is ICS functioning as designed.'
+    },
+    f5: {
+      step: 'Step 3 — Notify',
+      badge: 'STEP 3',
+      summary: 'Dispatch, hazmat team, agencies, CHEMTREC',
+      detail: `<strong>Notify</strong> is Step 3 in the 5-Step — and it occupies a dedicated position because notification may be the most important early action at a hazmat incident.<br><br>
+        You are calling people who know more than you do and have resources you don't. Dispatch, hazmat team, CHEMTREC (1-800-424-9300), local agencies, and potentially NRCC/NRC depending on the nature of the release. The 5-Step makes notification explicit and sequential because it cannot be assumed to happen automatically.`,
+      note: 'Notification is its own step because it cannot be assumed. A responder who isolates and identifies but never calls anyone has not managed the incident — they have just observed it.'
+    }
+  },
+  {
+    num: '05',
+    name: 'PPE Selection',
+    f8: {
+      step: 'Step 4 — Select Personal Protective Equipment',
+      badge: 'STEP 4',
+      summary: 'PPE level driven by hazard/risk evaluation',
+      detail: `<strong>PPE selection</strong> in the 8-Step is a discrete step that follows directly from hazard and risk evaluation. It is not done by default or habit — it is a deliberate decision driven by what Step 3 produced.<br><br>
+        The 8-Step framework expects the IC or Safety Officer to document the basis for PPE level selection. What hazard data drove the decision? What monitoring data supports it? What would change this decision? These questions are part of the selection process.`,
+      note: 'PPE selection in the 8-Step is auditable — there should be a documented rationale. "We always wear Level B" is not a hazard/risk-driven selection.'
+    },
+    f5: {
+      step: 'Embedded in Isolate & Identify',
+      badge: 'EMBEDDED',
+      summary: 'Not an explicit step — driven by ERG guidance',
+      detail: `The 5-Step does not have a dedicated PPE selection step. PPE selection is expected to occur within the Isolate and Identify steps — informed by product identity, ERG guidance, and the responder's training level and available equipment.<br><br>
+        The depth of this decision scales with training level and jurisdiction. At any level, the principle is the same: PPE selection must be driven by identified hazards and known conditions, not habit or default.`,
+      note: 'The 5-Step embeds PPE selection rather than naming it explicitly. That does not make it less important — it means the framework expects the responder to apply their training to make that call within the context of Isolate and Identify.'
+    }
+  },
+  {
+    num: '06',
+    name: 'Tactical Action / Mitigation',
+    f8: {
+      step: 'Step 6 — Implement Response',
+      badge: 'STEP 6',
+      summary: 'Execute selected tactical options',
+      detail: `<strong>Implement Response</strong> is where the 8-Step's deliberate pre-action steps pay off. By Step 6, the IC has: established control, identified the product, evaluated hazard and risk, selected PPE, and coordinated resources. Entry teams know what they are doing and why.<br><br>
+        Tactical options include offensive and defensive actions — product control, leak control, fire suppression, rescue, containment. The specific option is selected based on Steps 3–5. The 8-Step does not prescribe the tactic — it prescribes the process for selecting and implementing it safely.`,
+      note: 'Step 6 is where the preparation work shows. A well-executed 8-Step process means entry teams enter with a clear mission, known hazards, appropriate PPE, and resources in place. The action itself is almost the easy part.'
+    },
+    f5: {
+      step: 'Step 4 — Mitigate',
+      badge: 'STEP 4',
+      summary: 'Defensive actions only — no hot zone entry',
+      detail: `<strong>Mitigate</strong> in the 5-Step encompasses actions taken to reduce harm — scoped to the responder's training level and AHJ authority. The framework does not prescribe a specific scope of mitigation, because that scope is determined by jurisdiction and training.<br><br>
+        Actions may include: establishing protective action zones, protecting storm drains, setting up emergency decon hoseline, controlling ignition sources, and supporting resource staging. What falls within mitigation authority at any given incident is an AHJ and training-level determination.`,
+      note: 'The word "Mitigate" in the 5-Step does not mean "fix the problem at any cost." It means: take the actions within your training and authority that reduce harm. Know where your authority ends before you act.'
+    }
+  },
+  {
+    num: '07',
+    name: 'Decontamination',
+    f8: {
+      step: 'Step 7 — Decontamination',
+      badge: 'STEP 7',
+      summary: 'Personnel and equipment decon before exit',
+      detail: `<strong>Decontamination</strong> occupies its own step in the 8-Step framework — and that placement is intentional. Decon is not an afterthought that happens when the entry team is ready to leave. It is a planned, set-up, and supervised operation that begins before entry teams go in.<br><br>
+        Step 7 covers the full decon corridor: gross decon, formal decon, medical monitoring at the exit point, equipment decon, and waste disposal. The 8-Step establishes the principle that decon should be set up before the first entry — not improvised when the team exits.`,
+      note: 'Decon planning happens before entry, not after. The decon corridor should be set and staffed before the entry team crosses into the warm zone. This is Step 7 in sequence but its setup begins much earlier.'
+    },
+    f5: {
+      step: 'Not an Explicit Step',
+      badge: 'NOT NAMED',
+      summary: 'Not a standalone step in this framework',
+      detail: `The 5-Step does not name decontamination as a standalone step. Whether formal decon is required depends on whether personnel entered a contaminated area — which in turn depends on the scope of the response and the training level of the responder.<br><br>
+        Emergency gross decon capability exists at multiple training levels and may be initiated under the Mitigate step if contaminated victims are present. The 5-Step's absence of an explicit decon step is not permission to skip decon when it is needed — it reflects a streamlined structure that expects the responder to apply their training.`,
+      note: 'Decon requirements are driven by what happened during Mitigate — not by which framework was used. If personnel or victims were exposed or contaminated, decon applies regardless of which framework is being followed.'
+    }
+  },
+  {
+    num: '08',
+    name: 'Termination & After-Action',
+    f8: {
+      step: 'Step 8 — Termination',
+      badge: 'STEP 8',
+      summary: 'Debriefing, documentation, critique, cost recovery',
+      detail: `<strong>Termination</strong> in the 8-Step is a structured conclusion covering four components: debriefing (what happened), critique (what should change), documentation (what is the written record), and cost recovery (what financial restitution is sought from the responsible party).<br><br>
+        The critique is a no-blame, process-focused review conducted as close to the incident as possible while details are fresh. Documentation includes the site safety plan, air monitoring logs, entry logs, decon records, and medical surveillance records. Cost recovery documentation begins here.`,
+      note: 'The critique is often skipped in field practice — and it is among the most valuable learning tools available. The 8-Step makes it a formal step, not optional. No critique means no improvement.'
+    },
+    f5: {
+      step: 'Step 5 — Terminate',
+      badge: 'STEP 5',
+      summary: 'Scene turnover, documentation, after-action',
+      detail: `<strong>Terminate</strong> in the 5-Step covers scene turnover, documentation of the response, and after-action review.<br><br>
+        Termination also includes the handoff briefing to incoming resources or the responsible party — what was observed, what actions were taken, what resources are on scene, and what product information was gathered. This handoff is critical and often poorly executed regardless of responder level.`,
+      note: 'The handoff at termination is one of the most important information transfers at a hazmat incident. What was observed in the first minutes of response may not be observable by the time additional resources arrive. Document it and brief it clearly.'
+    }
+  }
+];
+
+// ─── BUILD MATRIX ────────────────────────────────────────────
+function buildMatrix() {
+  const wrap = document.getElementById('matrixWrap');
+
+  // Header
+  const header = document.createElement('div');
+  header.className = 'matrix-header';
+  header.innerHTML = `
+    <div class="mh-cell"><span class="mh-phase">Incident Phase</span></div>
+    <div class="mh-cell">
+      <div class="mh-fw">
+        <div class="mh-dot f8"></div>
+        <span class="mh-fw-name f8">8-Step Process</span>
+      </div>
+    </div>
+    <div class="mh-cell">
+      <div class="mh-fw">
+        <div class="mh-dot f5"></div>
+        <span class="mh-fw-name f5">5-Step Process</span>
+      </div>
+    </div>
+  `;
+  wrap.appendChild(header);
+
+  phases.forEach((phase, idx) => {
+    // Row
+    const row = document.createElement('div');
+    row.className = 'matrix-row';
+    row.id = `row-${idx}`;
+    row.innerHTML = `
+      <div class="phase-cell">
+        <span class="phase-num">${phase.num}</span>
+        <span class="phase-name">${phase.name}</span>
+        <span class="phase-expand">▸ Select to compare</span>
+      </div>
+      <div class="fw-cell">
+        <div class="fw-step-tag">
+          <span class="fw-step-tag-label f8">${phase.f8.step.split('—')[0].trim()}</span>
+          <span class="fw-step-badge f8">${phase.f8.badge}</span>
+        </div>
+        <div class="fw-cell-summary">${phase.f8.summary}</div>
+      </div>
+      <div class="fw-cell">
+        <div class="fw-step-tag">
+          <span class="fw-step-tag-label f5">${phase.f5.step.split('—')[0].trim()}</span>
+          <span class="fw-step-badge ${phase.f5.badge === 'EMBEDDED' || phase.f5.badge === 'NOT NAMED' ? 'none' : 'f5'}">${phase.f5.badge}</span>
+        </div>
+        <div class="fw-cell-summary">${phase.f5.summary}</div>
+      </div>
+    `;
+    row.onclick = () => toggleDetail(idx);
+    wrap.appendChild(row);
+
+    // Detail row
+    const detail = document.createElement('div');
+    detail.className = 'row-detail';
+    detail.id = `detail-${idx}`;
+    detail.innerHTML = `
+      <div class="detail-grid">
+        <div class="detail-col f8">
+          <div class="detail-fw-label f8">8-Step Process</div>
+          <div class="detail-step-name">${phase.f8.step}</div>
+          <div class="detail-body">${phase.f8.detail}</div>
+          <div class="detail-note f8">${phase.f8.note}</div>
+        </div>
+        <div class="detail-col f5">
+          <div class="detail-fw-label f5">5-Step Process</div>
+          <div class="detail-step-name">${phase.f5.step}</div>
+          <div class="detail-body">${phase.f5.detail}</div>
+          <div class="detail-note ${phase.f5.badge === 'EMBEDDED' || phase.f5.badge === 'NOT NAMED' ? 'none' : 'f5'}">${phase.f5.note}</div>
+        </div>
+      </div>
+    `;
+    wrap.appendChild(detail);
+  });
+}
+
+let openRow = null;
+
+function toggleDetail(idx) {
+  const row = document.getElementById(`row-${idx}`);
+  const detail = document.getElementById(`detail-${idx}`);
+
+  if (openRow !== null && openRow !== idx) {
+    document.getElementById(`row-${openRow}`).classList.remove('expanded');
+    document.getElementById(`detail-${openRow}`).classList.remove('open');
+  }
+
+  if (detail.classList.contains('open')) {
+    row.classList.remove('expanded');
+    detail.classList.remove('open');
+    openRow = null;
+  } else {
+    row.classList.add('expanded');
+    detail.classList.add('open');
+    openRow = idx;
+    detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
+buildMatrix();
+</script>
+</body>
+</html>
