@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Level of Protection | Hazmat Tactical</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Rajdhani:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0a0e1a;
+  --navy-mid: #111827;
+  --navy-card: #141c2e;
+  --navy-elevated: #1a2340;
+  --amber: #f0a500;
+  --amber-dim: rgba(240,165,0,0.15);
+  --amber-glow: rgba(240,165,0,0.08);
+  --red: #e03a3a;
+  --red-dim: rgba(224,58,58,0.12);
+  --cyan: #00d9ff;
+  --cyan-dim: rgba(0,217,255,0.1);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,0.12);
+  --orange: #f97316;
+  --orange-dim: rgba(249,115,22,0.12);
+  --border: rgba(255,255,255,0.07);
+  --border-amber: rgba(240,165,0,0.3);
+  --text: #e8eaf0;
+  --text-muted: #6b7280;
+  --text-dim: #9ca3af;
+
+  /* Level colors */
+  --level-a: #e03a3a;
+  --level-a-dim: rgba(224,58,58,0.12);
+  --level-b: #f97316;
+  --level-b-dim: rgba(249,115,22,0.12);
+  --level-c: #f0a500;
+  --level-c-dim: rgba(240,165,0,0.12);
+  --level-d: #22c55e;
+  --level-d-dim: rgba(34,197,94,0.12);
+  --level-struct: #00d9ff;
+  --level-struct-dim: rgba(0,217,255,0.1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--navy);
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 400px;
+  background: radial-gradient(ellipse, rgba(240,165,0,0.05) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+/* HEADER */
+.site-header { border-bottom: 1px solid var(--border); padding: 16px 0; }
+.header-inner { display: flex; align-items: center; gap: 16px; }
+.back-link { color: var(--text-muted); text-decoration: none; font-family: 'Barlow Condensed', sans-serif; font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+.back-link:hover { color: var(--amber); }
+.breadcrumb-sep { color: var(--border); }
+.page-label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.8rem; letter-spacing: 1px; text-transform: uppercase; color: var(--amber); }
+
+/* HERO */
+.hero { padding: 48px 0 36px; border-bottom: 1px solid var(--border); }
+.hero-tag { font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: var(--amber); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+.hero-tag::before { content: ''; width: 32px; height: 1px; background: var(--amber); }
+.hero h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2.8rem, 7vw, 5rem); line-height: 0.9; letter-spacing: 2px; margin-bottom: 16px; }
+.hero h1 span { color: var(--amber); }
+.hero-sub { font-size: 1rem; color: var(--text-dim); max-width: 600px; line-height: 1.6; font-weight: 500; }
+.training-badge { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; padding: 6px 14px; border: 1px solid rgba(224,58,58,0.4); border-radius: 4px; font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: var(--red); background: var(--red-dim); }
+
+/* MAIN LAYOUT */
+.main-layout { display: grid; grid-template-columns: 1fr 380px; gap: 32px; padding: 36px 0 60px; align-items: start; }
+
+/* FACTORS COLUMN */
+.factors-col {}
+
+.col-label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 20px; }
+
+.factor-group { margin-bottom: 24px; background: var(--navy-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+
+.fg-header { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+
+.fg-num { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; color: var(--amber); background: var(--amber-dim); border: 1px solid var(--border-amber); border-radius: 3px; padding: 2px 7px; flex-shrink: 0; }
+
+.fg-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 1px; color: var(--text); }
+
+.fg-subtitle { font-family: 'Barlow Condensed', sans-serif; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-left: auto; }
+
+.fg-required { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; color: var(--red); margin-left: auto; }
+
+.fg-options { padding: 16px 20px; display: flex; flex-direction: column; gap: 8px; }
+
+.fg-options.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+.option-card { padding: 12px 14px; background: var(--navy-elevated); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; transition: all 0.2s; position: relative; user-select: none; }
+.option-card:hover { border-color: var(--border-amber); }
+.option-card.selected { border-color: var(--amber); background: var(--amber-dim); }
+.option-card.selected-danger { border-color: var(--red); background: var(--red-dim); }
+.option-card.selected-warning { border-color: var(--orange); background: var(--orange-dim); }
+.option-card.selected-safe { border-color: var(--green); background: var(--green-dim); }
+.option-card.selected-neutral { border-color: var(--cyan); background: var(--cyan-dim); }
+
+.option-input { display: none; }
+
+.option-label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.95rem; font-weight: 700; letter-spacing: 0.5px; color: var(--text); margin-bottom: 3px; }
+
+.option-desc { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; font-weight: 400; }
+
+.option-card.selected .option-label,
+.option-card.selected-danger .option-label,
+.option-card.selected-warning .option-label,
+.option-card.selected-safe .option-label,
+.option-card.selected-neutral .option-label { color: var(--text); }
+
+.check-dot { position: absolute; top: 10px; right: 10px; width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--border); background: transparent; transition: all 0.2s; }
+.option-card.selected .check-dot,
+.option-card.selected-danger .check-dot,
+.option-card.selected-warning .check-dot,
+.option-card.selected-safe .check-dot,
+.option-card.selected-neutral .check-dot { background: var(--amber); border-color: var(--amber); }
+
+/* MULTI-SELECT */
+.multi-options { padding: 16px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+.multi-card { padding: 12px 14px; background: var(--navy-elevated); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; transition: all 0.2s; position: relative; user-select: none; }
+.multi-card:hover { border-color: var(--border-amber); }
+.multi-card.checked { border-color: var(--amber); background: var(--amber-dim); }
+
+.multi-card .option-label { padding-right: 20px; }
+.multi-card .check-dot { border-radius: 3px; }
+.multi-card.checked .check-dot { background: var(--amber); border-color: var(--amber); }
+
+/* EVALUATE BUTTON */
+.evaluate-row { margin-top: 8px; }
+.btn-evaluate { width: 100%; padding: 16px; background: var(--amber); color: var(--navy); border: none; border-radius: 6px; font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 3px; cursor: pointer; transition: all 0.2s; }
+.btn-evaluate:hover { background: #ffc107; transform: translateY(-1px); }
+.btn-evaluate:active { transform: translateY(0); }
+
+.validation-msg { margin-top: 10px; padding: 10px 14px; background: var(--red-dim); border: 1px solid rgba(224,58,58,0.3); border-radius: 4px; font-family: 'Barlow Condensed', sans-serif; font-size: 0.8rem; letter-spacing: 1px; color: var(--red); display: none; }
+.validation-msg.visible { display: block; }
+
+/* RESULTS COLUMN */
+.results-col { position: sticky; top: 24px; }
+
+.results-placeholder { background: var(--navy-card); border: 1px solid var(--border); border-radius: 8px; padding: 40px 24px; text-align: center; }
+.placeholder-icon { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.4; }
+.placeholder-text { font-family: 'Barlow Condensed', sans-serif; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); line-height: 1.8; }
+
+.results-panel { display: none; animation: fadeUp 0.3s ease; }
+.results-panel.visible { display: block; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* LEVEL INDICATOR */
+.level-indicator { border-radius: 8px 8px 0 0; padding: 24px; border: 1px solid var(--border); border-bottom: none; position: relative; overflow: hidden; }
+.level-indicator::before { content: ''; position: absolute; inset: 0; opacity: 0.06; }
+
+.level-eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+
+.level-display { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+.level-letter { font-family: 'Bebas Neue', sans-serif; font-size: 5rem; line-height: 0.85; }
+.level-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 2px; }
+
+.level-tagline { font-size: 0.85rem; color: var(--text-dim); line-height: 1.5; margin-top: 8px; }
+
+.level-a-theme { background: linear-gradient(135deg, rgba(224,58,58,0.15) 0%, transparent 60%); border-color: rgba(224,58,58,0.4) !important; }
+.level-a-theme .level-letter, .level-a-theme .level-name { color: var(--level-a); }
+
+.level-b-theme { background: linear-gradient(135deg, rgba(249,115,22,0.12) 0%, transparent 60%); border-color: rgba(249,115,22,0.4) !important; }
+.level-b-theme .level-letter, .level-b-theme .level-name { color: var(--level-b); }
+
+.level-c-theme { background: linear-gradient(135deg, rgba(240,165,0,0.12) 0%, transparent 60%); border-color: rgba(240,165,0,0.4) !important; }
+.level-c-theme .level-letter, .level-c-theme .level-name { color: var(--level-c); }
+
+.level-d-theme { background: linear-gradient(135deg, rgba(34,197,94,0.12) 0%, transparent 60%); border-color: rgba(34,197,94,0.4) !important; }
+.level-d-theme .level-letter, .level-d-theme .level-name { color: var(--level-d); }
+
+.level-struct-theme { background: linear-gradient(135deg, rgba(0,217,255,0.1) 0%, transparent 60%); border-color: rgba(0,217,255,0.4) !important; }
+.level-struct-theme .level-letter, .level-struct-theme .level-name { color: var(--level-struct); }
+
+/* RESULTS BODY */
+.results-body { border: 1px solid var(--border); border-top: none; border-radius: 0 0 8px 8px; overflow: hidden; }
+
+.result-section { padding: 16px 20px; border-bottom: 1px solid var(--border); }
+.result-section:last-child { border-bottom: none; }
+
+.rs-label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.rs-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.driver-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; font-size: 0.85rem; color: var(--text-dim); line-height: 1.5; }
+.driver-item:last-child { margin-bottom: 0; }
+.driver-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--amber); flex-shrink: 0; margin-top: 6px; }
+
+.provides-list, .not-list { display: flex; flex-direction: column; gap: 6px; }
+
+.provides-item { display: flex; align-items: flex-start; gap: 8px; font-size: 0.82rem; color: var(--text-dim); line-height: 1.4; }
+.provides-icon { flex-shrink: 0; width: 14px; text-align: center; margin-top: 1px; }
+.provides-icon.yes { color: var(--green); }
+.provides-icon.no { color: var(--red); }
+
+.escalation-item { padding: 8px 12px; background: rgba(224,58,58,0.06); border-left: 3px solid var(--red); border-radius: 0 4px 4px 0; font-size: 0.82rem; color: var(--text-dim); line-height: 1.5; margin-bottom: 6px; }
+.escalation-item:last-child { margin-bottom: 0; }
+
+.teaching-note { padding: 12px 14px; background: var(--amber-glow); border-left: 3px solid var(--amber); border-radius: 0 4px 4px 0; font-size: 0.8rem; color: var(--text-dim); line-height: 1.5; }
+.teaching-note strong { color: var(--amber); display: block; font-family: 'Barlow Condensed', sans-serif; font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+
+.btn-reset { width: 100%; margin-top: 12px; padding: 10px; background: transparent; border: 1px solid var(--border); border-radius: 4px; color: var(--text-muted); font-family: 'Barlow Condensed', sans-serif; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+.btn-reset:hover { border-color: var(--border-amber); color: var(--amber); }
+
+/* FOOTER */
+.module-footer { margin-top: 20px; padding: 24px 0; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.footer-disclaimer { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; color: var(--text-muted); line-height: 1.6; max-width: 560px; }
+.footer-brand { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 3px; color: var(--amber); opacity: 0.5; }
+
+@media (max-width: 768px) {
+  .main-layout { grid-template-columns: 1fr; }
+  .results-col { position: static; }
+  .fg-options.grid-2 { grid-template-columns: 1fr; }
+  .multi-options { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <div class="container">
+    <div class="header-inner">
+      <a href="index.html" class="back-link">← Hazmat Tactical</a>
+      <span class="breadcrumb-sep">|</span>
+      <span class="page-label">Concept Guides</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="hero">
+    <div class="hero-tag">Concept Guide — PPE Selection</div>
+    <h1>Level of <span>Protection</span></h1>
+    <p class="hero-sub">Understanding what drives PPE selection decisions — and why. Work through the scenario conditions to explore the reasoning behind each level.</p>
+    <div class="training-badge">⚠ Training Use Only — Not a Field Reference</div>
+  </div>
+
+  <div class="main-layout">
+
+    <!-- FACTORS COLUMN -->
+    <div class="factors-col">
+      <div class="col-label">Scenario Conditions — Select One Per Group</div>
+
+      <!-- GROUP 1: PRODUCT IDENTITY -->
+      <div class="factor-group">
+        <div class="fg-header">
+          <span class="fg-num">01</span>
+          <span class="fg-title">Product Identity</span>
+          <span class="fg-required">Required</span>
+        </div>
+        <div class="fg-options" id="g1">
+          <div class="option-card" data-group="g1" data-val="known" data-risk="0" onclick="selectOption(this)">
+            <div class="check-dot"></div>
+            <div class="option-label">Known Product</div>
+            <div class="option-desc">Identity confirmed — SDS, ERG, or placard data available. Hazard profile established.</div>
+          </div>
+          <div class="option-card" data-group="g1" data-val="partial" data-risk="1" onclick="selectOption(this)">
+            <div class="check-dot"></div>
+            <div class="option-label">Class Identified — Product Unknown</div>
+            <div class="option-desc">Hazard class known (e.g., flammable liquid, corrosive) but specific product unconfirmed.</div>
+          </div>
+          <div class="option-card" data-group="g1" data-val="unknown" data-risk="2" onclick="selectOption(this)">
+            <div class="check-dot"></div>
+            <div class="option-label">Unknown Product</div>
+            <div class="option-desc">No identity, no placard, conflicting information, or no reliable data available.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GROUP 2: INHALATION HAZARD -->
+      <div class="factor-group">
+        <div class="fg-header">
+          <span class="fg-num">02</span>
+          <span class="fg-title">Inhalation / Vapor Hazard</span>
+          <span class="fg-required">Required</span>
+        </div>
+        <div class="fg-options" id="g2">
+          <div class="option-card" data-group="g2" data-val="none" data-risk="0" onclick="selectOption(this)">
+            <div class="check-dot"></div>
+            <div class="option-label">None or Negligible</div>
+            <div class="option-desc">Non-volatile solid, no airborne hazard, or vapor hazard confirmed absent.</div>
+          </div>
+          <div class="option-card" data-group="g2" data-val="low" data-risk="1" onclick="selectOption(this)">
+            <div class="check-dot"></div>
+            <div class="option-label">Low — APR Likely Adequate</div>
+            <div class="option-desc">Vapor present, TLV well above typical exposure. Air-purifying respirator with appropriate cartridge likely sufficient.</div>
+          </div>
+          <div class="option-card" data-group="g2" data-val="moderate" data-risk="1" onclick="selectOption(this)">
+            <div class="check-dot"></div>
+            <div class="option-label">Moderate — APR Required</div>
+            <div class="option-desc">Vapor present, TLV requires respiratory protection. Specific filter cartridge available and appropriate.</div>
+          </div>
+          <div class="option-card" data-group="g2" data-val="high" data-risk="3" onclick="selectOption(this)">
+            <div class="check-dot"></div>
+            <div class="option-label">High — Highly Toxic Vapor</div>
+            <div class="option-desc">Low TLV/IDLH, immediately dangerous to life, or IDLH-level exposure confirmed or suspected. APR not appropriate.</div>
+          </div>
+          <div class="option-card" data-group="g2" data-val="unknown" data-risk="2" onclick="selectOption(this)">
+            <div class="check-dot"></div>
+            <div class="option-label">Unknown</div>
+            <div class="option-desc">Vapor characteristics not yet established. Cannot confirm safety of air-purifying approach.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GROUP 3: SKIN/CONTACT HAZARD -->
+      <div class="factor-group">
+        <div class="fg-header">
+          <span class="fg-num">03</span>
+          <span class="fg-title">Skin &amp; Contact Hazard</span>
+          <span class="fg-required">Required</span>
+        </div>
+        <div class="fg-options" id="g3">
+          <div class="option-card" data-group="g3" data-val="none" data-risk="0" onclick="selectOption(this)">
+            <div class="check-dot"></div>
+            <div class="option-label">None</div>
+            <div class="option-desc">No significant skin hazard. Contact would cause no meaningful harm.</div>
+          </div>
+          <div class="option-card" data-group="g3" data-val="irritant" data-risk="1" onclick="selectOption(this)">
+            <div class="check-dot"></div>
+            <div class="option-label">Irritant — Localized Effect</div>
+            <div class="option-desc">Contact causes localized irritation. No significant systemic risk. Standard chemical protective clothing manages risk.</div>
+          </div>
+          <div class="option-card" data-group="g3" data-val="high" data-risk="3" onclick="selectOption(this)">
+            <div class="check-dot"></div>
+            <div class="option-label">High — Corrosive or Systemic Absorption</div>
+            <div class="option-desc">Acid, base, or chemical causing tissue destruction — OR absorbed through intact skin causing systemic toxicity.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GROUP 4: ATMOSPHERIC CONDITIONS -->
+      <div class="factor-group">
+        <div class="fg-header">
+          <span class="fg-num">04</span>
+          <span class="fg-title">Atmospheric Conditions</span>
+          <span class="fg-required">Required</span>
+        </div>
+        <div class="fg-options" id="g4">
+          <div class="option-card" data-group="g4" data-val="safe" data-risk="0" onclick="selectOption(this)">
+            <div class="check-dot"></div>
+            <div class="option-label">Normal O₂, Concentration Below IDLH</div>
+            <div class="option-desc">O₂ 19.5–23.5%, hazardous concentration measured and confirmed below IDLH.</div>
+          </div>
+          <div class="option-card" data-group="g4" data-val="unknown_conc" data-risk="2" onclick="selectOption(this)">
+            <div class="check-dot"></div>
+            <div class="option-label">Concentration Unknown</div>
+            <div class="option-desc">Hazard present or suspected but true atmospheric concentration not yet established.</div>
+          </div>
+          <div class="option-card" data-group="g4" data-val="above_idlh" data-risk="3" onclick="selectOption(this)">
+            <div class="check-dot"></div>
+            <div class="option-label">At or Above IDLH</div>
+            <div class="option-desc">Measured or estimated at IDLH level or higher. Air-purifying respirators are not appropriate above IDLH.</div>
+          </div>
+          <div class="option-card" data-group="g4" data-val="o2_abnormal" data-risk="3" onclick="selectOption(this)">
+            <div class="check-dot"></div>
+            <div class="option-label">O₂ Deficient or Enriched</div>
+            <div class="option-desc">Below 19.5% (deficient) or above 23.5% (enriched). APR cannot address oxygen abnormality — supplied air required.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GROUP 5: ADDITIONAL HAZARDS (multi-select) -->
+      <div class="factor-group">
+        <div class="fg-header">
+          <span class="fg-num">05</span>
+          <span class="fg-title">Additional Hazards</span>
+          <span class="fg-subtitle">Select all that apply</span>
+        </div>
+        <div class="multi-options" id="g5">
+          <div class="multi-card" data-val="fire" onclick="toggleMulti(this)">
+            <div class="check-dot"></div>
+            <div class="option-label">Fire Involvement</div>
+            <div class="option-desc">Active combustion present at or near the release.</div>
+          </div>
+          <div class="multi-card" data-val="radiological" onclick="toggleMulti(this)">
+            <div class="check-dot"></div>
+            <div class="option-label">Radiological Hazard</div>
+            <div class="option-desc">Radiation source confirmed or suspected.</div>
+          </div>
+          <div class="multi-card" data-val="biological" onclick="toggleMulti(this)">
+            <div class="check-dot"></div>
+            <div class="option-label">Biological Hazard</div>
+            <div class="option-desc">Biological agent confirmed, suspected, or cannot be ruled out.</div>
+          </div>
+          <div class="multi-card" data-val="temperature" onclick="toggleMulti(this)">
+            <div class="check-dot"></div>
+            <div class="option-label">Temperature Extremes</div>
+            <div class="option-desc">Cryogenic release or high-temperature environment.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="evaluate-row">
+        <button class="btn-evaluate" onclick="runEvaluation()">Evaluate Conditions →</button>
+        <div class="validation-msg" id="validationMsg">Complete all required fields (01–04) before evaluating.</div>
+      </div>
+    </div>
+
+    <!-- RESULTS COLUMN -->
+    <div class="results-col">
+      <div class="results-placeholder" id="resultsPlaceholder">
+        <div class="placeholder-icon">🛡</div>
+        <div class="placeholder-text">Select scenario conditions<br>and evaluate to see the<br>reasoning behind PPE selection.</div>
+      </div>
+
+      <div class="results-panel" id="resultsPanel">
+        <div class="level-indicator" id="levelIndicator">
+          <div class="level-eyebrow">Indicated Protection Level</div>
+          <div class="level-display">
+            <div class="level-letter" id="levelLetter">—</div>
+            <div class="level-name" id="levelName">—</div>
+          </div>
+          <div class="level-tagline" id="levelTagline">—</div>
+        </div>
+
+        <div class="results-body">
+          <div class="result-section">
+            <div class="rs-label">What Drove This Recommendation</div>
+            <div id="driversContent"></div>
+          </div>
+
+          <div class="result-section">
+            <div class="rs-label">What This Level Provides</div>
+            <div class="provides-list" id="providesContent"></div>
+          </div>
+
+          <div class="result-section">
+            <div class="rs-label">What This Level Does Not Protect Against</div>
+            <div class="not-list" id="notContent"></div>
+          </div>
+
+          <div class="result-section" id="escalationSection">
+            <div class="rs-label">What Would Change This Recommendation</div>
+            <div id="escalationContent"></div>
+          </div>
+
+          <div class="result-section" id="additionalNotesSection" style="display:none;">
+            <div class="rs-label">Additional Considerations</div>
+            <div id="additionalNotes"></div>
+          </div>
+
+          <div class="result-section">
+            <div class="teaching-note">
+              <strong>Training Note</strong>
+              This module presents the reasoning behind PPE selection decisions. Actual level selection requires IC authority, AHJ protocols, available resources, and real-time field assessment. No training tool replaces that process.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-reset" id="resetBtn" style="display:none;" onclick="resetAll()">← Reset Conditions</button>
+    </div>
+
+  </div>
+</div>
+
+<div class="container">
+  <div class="module-footer">
+    <div class="footer-disclaimer">FOR TRAINING USE ONLY. This module supports instructional objectives aligned to NFPA 470 (2022) Chapter 5/6/8 and OSHA 29 CFR 1910.120(q). It does not replace department SOPs, IC authority, or AHJ-approved PPE selection protocols. PPE selection in the field must account for factors beyond what any training tool can capture.</div>
+    <div class="footer-brand">Hazmat Tactical</div>
+  </div>
+</div>
+
+<script>
+// ─── STATE ───────────────────────────────────────────────────
+const selections = { g1: null, g2: null, g3: null, g4: null };
+const multiSelections = new Set();
+
+// ─── INTERACTION ─────────────────────────────────────────────
+function selectOption(el) {
+  const group = el.dataset.group;
+  document.querySelectorAll(`[data-group="${group}"]`).forEach(c => {
+    c.classList.remove('selected', 'selected-danger', 'selected-warning', 'selected-safe', 'selected-neutral');
+  });
+  const risk = parseInt(el.dataset.risk);
+  const cls = risk === 0 ? 'selected-safe' : risk === 1 ? 'selected' : risk === 2 ? 'selected-warning' : 'selected-danger';
+  el.classList.add(cls);
+  selections[group] = el.dataset.val;
+}
+
+function toggleMulti(el) {
+  const val = el.dataset.val;
+  if (multiSelections.has(val)) {
+    multiSelections.delete(val);
+    el.classList.remove('checked');
+  } else {
+    multiSelections.add(val);
+    el.classList.add('checked');
+  }
+}
+
+function resetAll() {
+  Object.keys(selections).forEach(k => selections[k] = null);
+  multiSelections.clear();
+  document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected','selected-danger','selected-warning','selected-safe','selected-neutral'));
+  document.querySelectorAll('.multi-card').forEach(c => c.classList.remove('checked'));
+  document.getElementById('resultsPanel').classList.remove('visible');
+  document.getElementById('resultsPlaceholder').style.display = '';
+  document.getElementById('resetBtn').style.display = 'none';
+  document.getElementById('validationMsg').classList.remove('visible');
+}
+
+// ─── EVALUATION LOGIC ────────────────────────────────────────
+function runEvaluation() {
+  const { g1, g2, g3, g4 } = selections;
+  if (!g1 || !g2 || !g3 || !g4) {
+    document.getElementById('validationMsg').classList.add('visible');
+    return;
+  }
+  document.getElementById('validationMsg').classList.remove('visible');
+
+  const additional = Array.from(multiSelections);
+  const hasFire = additional.includes('fire');
+  const hasBio = additional.includes('biological');
+  const hasRad = additional.includes('radiological');
+  const hasTemp = additional.includes('temperature');
+
+  let level = null;
+  const drivers = [];
+  const escalations = [];
+  const additionalNotes = [];
+
+  // SCBA required?
+  const needsSCBA =
+    g4 === 'o2_abnormal' ||
+    g4 === 'above_idlh' ||
+    (g4 === 'unknown_conc' && g2 !== 'none') ||
+    g2 === 'high' ||
+    g2 === 'unknown' ||
+    g1 === 'unknown' ||
+    hasBio;
+
+  // Full encapsulation required?
+  const needsFullEncap =
+    (g3 === 'high' && needsSCBA) ||
+    (g2 === 'high' && g3 === 'high') ||
+    (g1 === 'unknown' && g4 !== 'safe') ||
+    (g2 === 'unknown' && (g4 === 'above_idlh' || g4 === 'o2_abnormal'));
+
+  // ── LEVEL A ──
+  if (needsFullEncap) {
+    level = 'A';
+    if (g3 === 'high' && needsSCBA) drivers.push('Corrosive or skin-absorbing chemical combined with an atmosphere requiring supplied air — partial protection is not sufficient. Full vapor encapsulation is the only option that addresses both hazards simultaneously.');
+    if (g2 === 'high' && g3 === 'high') drivers.push('Highly toxic vapor combined with a high skin hazard creates a dual exposure pathway. Both require the highest protection simultaneously.');
+    if (g1 === 'unknown' && g4 !== 'safe') drivers.push('Unknown product in a hazardous atmosphere. When you cannot characterize the hazard, you cannot select lesser protection with confidence. Level A is the conservative default.');
+    if (g2 === 'unknown' && (g4 === 'above_idlh' || g4 === 'o2_abnormal')) drivers.push('Vapor hazard unknown in an atmosphere that already requires SCBA. Skin hazard cannot be ruled out without product identity.');
+  }
+
+  // ── LEVEL B ──
+  else if (needsSCBA) {
+    level = 'B';
+    if (g4 === 'o2_abnormal') drivers.push('Abnormal oxygen level — supplied air is required. APR cannot address O₂ deficiency or enrichment. Skin hazard does not require full encapsulation at this hazard profile.');
+    if (g4 === 'above_idlh') drivers.push('Concentration at or above IDLH — APR is not appropriate above IDLH regardless of filter type. SCBA is required. Skin hazard profile does not indicate full encapsulation.');
+    if (g4 === 'unknown_conc' && g2 !== 'none') drivers.push('Unknown concentration with an inhalation hazard present. Cannot confirm APR adequacy without knowing concentration. SCBA is the conservative choice.');
+    if (g2 === 'high') drivers.push('Highly toxic vapor requires supplied air. Skin hazard profile does not indicate full encapsulation at this time.');
+    if (g1 === 'unknown') drivers.push('Unknown product — cannot confirm that lesser respiratory protection is adequate. SCBA provides the protection margin for an uncharacterized inhalation hazard.');
+    if (hasBio) drivers.push('Biological hazard requires SCBA to eliminate inhalation route of exposure. Splash protection addresses contact hazard without full encapsulation at this assessment.');
+
+    // Escalation to A
+    if (g3 !== 'high') escalations.push('If skin hazard were corrosive or systemic absorption — the combination of SCBA need and high skin hazard drives to Level A.');
+    if (g1 === 'unknown') escalations.push('If the unknown product is characterized and found to have a high skin hazard — reassess immediately.');
+  }
+
+  // ── LEVEL C ──
+  else if (g1 === 'known' && (g2 === 'moderate' || g2 === 'low') && g4 === 'safe') {
+    level = 'C';
+    drivers.push('Product is known — hazard profile can be evaluated. An appropriate APR cartridge can be selected.');
+    drivers.push('O₂ is normal and concentration is confirmed below IDLH — APR is appropriate for this atmospheric condition.');
+    if (g2 === 'moderate') drivers.push('Moderate vapor hazard present — respiratory protection is required, but APR with the correct cartridge is adequate given the confirmed below-IDLH concentration.');
+    if (g3 === 'irritant') drivers.push('Skin irritant hazard present — chemical-resistant clothing provides adequate protection. No systemic absorption concern.');
+    if (g3 === 'none') drivers.push('No significant skin hazard — splash protection is precautionary rather than critical at this level.');
+
+    escalations.push('If O₂ drops below 19.5% — APR cannot address oxygen deficiency. Level B or higher immediately.');
+    escalations.push('If concentration rises to or above IDLH — APR is no longer appropriate. Level B or higher.');
+    escalations.push('If product identity is lost or called into question — cannot confirm APR cartridge is appropriate.');
+    if (g3 !== 'high') escalations.push('If skin hazard is reassessed as corrosive or systemic absorption — Level B or A depending on atmospheric conditions.');
+  }
+
+  // ── STRUCTURAL CONSIDERATION ──
+  else if (hasFire && g2 === 'none' && g3 === 'none' && g1 !== 'unknown' && g4 === 'safe') {
+    level = 'structural';
+    drivers.push('Fire is the primary hazard. No significant chemical vapor or skin hazard has been identified. Structural gear addresses the thermal and physical hazards of fire operations.');
+    drivers.push('Product is identified or partially identified with no significant chemical exposure pathway established.');
+
+    escalations.push('If any vapor or skin hazard is identified — structural gear provides NO chemical vapor protection. Upgrade immediately.');
+    escalations.push('If product identity is uncertain or chemical contamination is possible — structural gear is not adequate as chemical PPE.');
+    escalations.push('As the incident evolves and chemical exposure pathways develop — structural gear must be treated as a bridge, not a solution.');
+  }
+
+  // ── LEVEL D ──
+  else {
+    level = 'D';
+    drivers.push('No significant inhalation hazard, no skin hazard, product is known, and atmospheric conditions are confirmed safe.');
+    drivers.push('This represents support zone or peripheral operations where contamination risk is not present.');
+
+    escalations.push('Any change in atmospheric conditions, product identity, or proximity to hazard area changes this assessment.');
+    escalations.push('Level D is appropriate only when all four primary hazard factors have been evaluated and confirmed low — not assumed low.');
+  }
+
+  // ── ADDITIONAL NOTES ──
+  if (hasRad) additionalNotes.push({ icon: '☢', text: 'Radiological hazard present: PPE levels A–D address contamination spread (alpha and beta particles). They do not protect against penetrating gamma or neutron radiation. Shielding, distance, and time (ALARA) govern radiation dose — not PPE level. Address contamination and radiation dose as separate problems.' });
+  if (hasTemp) additionalNotes.push({ icon: '🌡', text: 'Temperature extremes: Chemical protective suits have thermal limitations. Cryogenic releases may cause suit materials to fail. High-temperature environments require heat-resistant outer layers. Verify that selected PPE is rated for the temperature conditions present.' });
+  if (hasFire && level !== 'structural') additionalNotes.push({ icon: '🔥', text: 'Fire involvement with chemical hazard: Structural gear may be worn over or with chemical PPE in some configurations, but this combination has significant limitations. Verify compatibility and thermal protection with your specific suit and AHJ protocols.' });
+
+  // Safety check — should never be null given else clause, but defensive
+  if (!level) {
+    document.getElementById('validationMsg').textContent = 'Unable to evaluate — check all selections and try again.';
+    document.getElementById('validationMsg').classList.add('visible');
+    return;
+  }
+
+  renderResults(level, drivers, escalations, additionalNotes);
+}
+
+// ─── RENDER ──────────────────────────────────────────────────
+const levelData = {
+  A: {
+    letter: 'A', name: 'Level A', theme: 'level-a-theme',
+    tagline: 'Maximum respiratory, skin, and eye protection. Fully encapsulating vapor-protective suit with SCBA inside.',
+    provides: [
+      { yes: true, text: 'Fully encapsulating vapor-tight suit — no vapor can reach skin or eyes' },
+      { yes: true, text: 'SCBA worn inside suit — supplied air, not dependent on outside atmosphere' },
+      { yes: true, text: 'Maximum protection against vapor, gas, and liquid chemical contact' },
+      { yes: true, text: 'Protects against skin-absorbing toxics and corrosive vapors' }
+    ],
+    notProvides: [
+      { text: 'Protection against penetrating radiation (gamma, neutron)' },
+      { text: 'Unlimited work duration — SCBA air supply constrains entry time' },
+      { text: 'Protection against all temperature extremes without verified rating' },
+      { text: 'Tactical mobility — fully encapsulating suits significantly restrict movement' }
+    ]
+  },
+  B: {
+    letter: 'B', name: 'Level B', theme: 'level-b-theme',
+    tagline: 'Supplied air (SCBA) with non-encapsulating chemical-resistant splash protection.',
+    provides: [
+      { yes: true, text: 'SCBA — supplied air for O₂-deficient or toxic atmospheres' },
+      { yes: true, text: 'Chemical-resistant clothing — splash and liquid contact protection' },
+      { yes: true, text: 'Highest level of respiratory protection' },
+      { yes: false, text: 'Not vapor-tight — lower skin protection than Level A' }
+    ],
+    notProvides: [
+      { text: 'Vapor-tight protection — suit seams and openings are not vapor-sealed' },
+      { text: 'Protection against highly toxic vapor with significant skin absorption hazard' },
+      { text: 'Penetrating radiation protection' },
+      { text: 'Extended air supply without cylinder change or airline' }
+    ]
+  },
+  C: {
+    letter: 'C', name: 'Level C', theme: 'level-c-theme',
+    tagline: 'Air-purifying respirator (APR) with chemical-resistant clothing. Requires known product and confirmed below-IDLH concentration.',
+    provides: [
+      { yes: true, text: 'Full-face or half-mask APR with appropriate cartridge for known contaminant' },
+      { yes: true, text: 'Chemical-resistant clothing — splash and contact protection' },
+      { yes: true, text: 'Adequate for confirmed below-IDLH concentrations with normal O₂' },
+      { yes: false, text: 'Not appropriate if O₂ abnormal or concentration unknown/above IDLH' }
+    ],
+    notProvides: [
+      { text: 'Protection in O₂-deficient or enriched atmospheres' },
+      { text: 'Protection above IDLH — APR filter does not protect at IDLH-level concentrations' },
+      { text: 'Appropriate response to unknown products — filter selection requires product identity' },
+      { text: 'Vapor-tight suit protection' }
+    ]
+  },
+  D: {
+    letter: 'D', name: 'Level D', theme: 'level-d-theme',
+    tagline: 'Standard work uniform with basic personal protective equipment. No significant chemical hazard present.',
+    provides: [
+      { yes: true, text: 'Standard work uniform — minimum physical protection' },
+      { yes: true, text: 'Safety footwear, safety glasses — basic PPE minimums' },
+      { yes: false, text: 'No respiratory protection component' },
+      { yes: false, text: 'No chemical-protective clothing component' }
+    ],
+    notProvides: [
+      { text: 'Any chemical vapor or gas protection' },
+      { text: 'Any chemical skin/splash protection beyond standard clothing' },
+      { text: 'Respiratory protection of any kind' },
+      { text: 'Appropriate for anything other than confirmed safe support zone operations' }
+    ]
+  },
+  structural: {
+    letter: 'SFG', name: 'Structural Gear', theme: 'level-struct-theme',
+    tagline: 'Structural firefighting gear. Addresses thermal and physical hazards. Provides NO chemical vapor protection.',
+    provides: [
+      { yes: true, text: 'Thermal protection against heat and flame' },
+      { yes: true, text: 'Physical protection from debris and structural hazards' },
+      { yes: true, text: 'Self-contained breathing apparatus capability (SCBA with structural)' },
+      { yes: false, text: 'NOT rated for chemical vapor or liquid chemical protection' }
+    ],
+    notProvides: [
+      { text: 'Chemical vapor protection — structural gear is not a chemical suit' },
+      { text: 'Splash protection against corrosives or reactive liquids' },
+      { text: 'Adequate protection once a chemical hazard is identified' },
+      { text: 'A substitute for hazmat PPE levels A–D in a chemical environment' }
+    ]
+  }
+};
+
+function renderResults(level, drivers, escalations, additionalNotes) {
+  const data = levelData[level];
+
+  const indicator = document.getElementById('levelIndicator');
+  indicator.className = `level-indicator ${data.theme}`;
+  document.getElementById('levelLetter').textContent = data.letter;
+  document.getElementById('levelName').textContent = data.name;
+  document.getElementById('levelTagline').textContent = data.tagline;
+
+  document.getElementById('driversContent').innerHTML = drivers.map(d => `
+    <div class="driver-item"><div class="driver-dot"></div><div>${d}</div></div>
+  `).join('');
+
+  document.getElementById('providesContent').innerHTML = data.provides.map(p => `
+    <div class="provides-item">
+      <span class="provides-icon ${p.yes ? 'yes' : 'no'}">${p.yes ? '✓' : '✗'}</span>
+      <span>${p.text}</span>
+    </div>
+  `).join('');
+
+  document.getElementById('notContent').innerHTML = data.notProvides.map(p => `
+    <div class="provides-item">
+      <span class="provides-icon no">✗</span>
+      <span>${p.text}</span>
+    </div>
+  `).join('');
+
+  document.getElementById('escalationContent').innerHTML = escalations.map(e => `
+    <div class="escalation-item">${e}</div>
+  `).join('');
+
+  const notesSection = document.getElementById('additionalNotesSection');
+  if (additionalNotes.length > 0) {
+    document.getElementById('additionalNotes').innerHTML = additionalNotes.map(n => `
+      <div class="teaching-note" style="margin-bottom:8px;">
+        <strong>${n.icon} Note</strong>${n.text}
+      </div>
+    `).join('');
+    notesSection.style.display = '';
+  } else {
+    notesSection.style.display = 'none';
+  }
+
+  document.getElementById('resultsPlaceholder').style.display = 'none';
+  document.getElementById('resultsPanel').classList.add('visible');
+  document.getElementById('resetBtn').style.display = '';
+
+  // Scroll results into view on mobile
+  if (window.innerWidth < 769) {
+    document.getElementById('resultsPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+</script>
+</body>
+</html>
