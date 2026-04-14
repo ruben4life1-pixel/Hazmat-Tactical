@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cross-Sensitivity | Hazmat Tactical</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Rajdhani:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0a0e1a;
+  --navy-mid: #111827;
+  --navy-card: #141c2e;
+  --navy-elevated: #1a2340;
+  --amber: #f0a500;
+  --amber-dim: rgba(240,165,0,0.15);
+  --amber-glow: rgba(240,165,0,0.08);
+  --red: #e03a3a;
+  --red-dim: rgba(224,58,58,0.12);
+  --cyan: #00d9ff;
+  --cyan-dim: rgba(0,217,255,0.1);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,0.12);
+  --border: rgba(255,255,255,0.07);
+  --border-amber: rgba(240,165,0,0.3);
+  --text: #e8eaf0;
+  --text-muted: #6b7280;
+  --text-dim: #9ca3af;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--navy);
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* NOISE TEXTURE */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* AMBIENT GLOW */
+body::after {
+  content: '';
+  position: fixed;
+  top: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 400px;
+  background: radial-gradient(ellipse, rgba(240,165,0,0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px;
+  position: relative;
+  z-index: 1;
+}
+
+/* HEADER */
+.site-header {
+  border-bottom: 1px solid var(--border);
+  padding: 16px 0;
+  margin-bottom: 0;
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.back-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s;
+}
+.back-link:hover { color: var(--amber); }
+
+.breadcrumb-sep { color: var(--border); }
+
+.page-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+/* HERO */
+.hero {
+  padding: 56px 0 40px;
+  border-bottom: 1px solid var(--border);
+}
+
+.hero-tag {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hero-tag::before {
+  content: '';
+  width: 32px;
+  height: 1px;
+  background: var(--amber);
+}
+
+.hero h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3rem, 8vw, 5.5rem);
+  line-height: 0.9;
+  letter-spacing: 2px;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+
+.hero h1 span { color: var(--amber); }
+
+.hero-sub {
+  font-size: 1.1rem;
+  color: var(--text-dim);
+  max-width: 620px;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+.training-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 6px 14px;
+  border: 1px solid rgba(224,58,58,0.4);
+  border-radius: 4px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--red);
+  background: var(--red-dim);
+}
+
+/* PROGRESS TRACK */
+.progress-track {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 40px;
+}
+
+.progress-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.step-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: all 0.3s;
+}
+
+.step-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  transition: color 0.3s;
+}
+
+.step-connector {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+  margin: 0 12px;
+  max-width: 60px;
+}
+
+.progress-step.active .step-num {
+  border-color: var(--amber);
+  color: var(--amber);
+  background: var(--amber-dim);
+}
+.progress-step.active .step-label { color: var(--amber); }
+
+.progress-step.complete .step-num {
+  border-color: var(--green);
+  color: var(--green);
+  background: var(--green-dim);
+}
+.progress-step.complete .step-label { color: var(--green); }
+
+/* SECTION TITLES */
+.section-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  letter-spacing: 2px;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.section-desc {
+  font-size: 0.95rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+/* PHASE SECTIONS */
+.phase { display: none; }
+.phase.active { display: block; }
+
+/* SENSOR CARDS */
+.sensor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.sensor-card {
+  background: var(--navy-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.sensor-card:hover {
+  border-color: var(--border-amber);
+  transform: translateY(-2px);
+}
+
+.sensor-card.revealed {
+  border-color: var(--amber);
+}
+
+.sensor-card-header {
+  padding: 20px 20px 16px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sensor-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--amber-dim);
+  border: 1px solid var(--border-amber);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.sensor-card-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.sensor-card-sub {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.reveal-hint {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--amber);
+  opacity: 0.7;
+  flex-shrink: 0;
+  transition: opacity 0.2s;
+}
+
+.sensor-card:hover .reveal-hint { opacity: 1; }
+.sensor-card.revealed .reveal-hint { display: none; }
+
+.sensor-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sensor-card.revealed .sensor-body { max-height: 600px; }
+
+.sensor-body-inner {
+  padding: 0 20px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.sensor-plain {
+  font-size: 0.95rem;
+  color: var(--text-dim);
+  line-height: 1.7;
+  margin-top: 14px;
+  margin-bottom: 16px;
+}
+
+.sensor-plain strong { color: var(--text); }
+
+.sensor-instruments {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.inst-chip {
+  padding: 4px 10px;
+  border-radius: 3px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: var(--navy-elevated);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+}
+
+.sensor-key-point {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: var(--amber-glow);
+  border-left: 3px solid var(--amber);
+  border-radius: 0 4px 4px 0;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.sensor-key-point strong { color: var(--amber); }
+
+.check-icon {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 20px;
+  height: 20px;
+  background: var(--green);
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  color: white;
+}
+.sensor-card.revealed .check-icon { display: flex; }
+
+/* CONTINUE BUTTON */
+.continue-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0;
+  border-top: 1px solid var(--border);
+}
+
+.reveal-counter {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.reveal-counter span { color: var(--amber); }
+
+.btn-continue {
+  padding: 12px 28px;
+  background: var(--amber);
+  color: var(--navy);
+  border: none;
+  border-radius: 4px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.btn-continue.ready {
+  opacity: 1;
+  pointer-events: all;
+}
+.btn-continue.ready:hover {
+  background: #ffc107;
+  transform: translateY(-1px);
+}
+
+/* PHASE 2 — CROSS-SENSITIVITY EXPLORER */
+.instrument-selector {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.inst-btn {
+  flex: 1;
+  min-width: 140px;
+  padding: 16px 20px;
+  background: var(--navy-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.inst-btn:hover {
+  border-color: var(--border-amber);
+}
+
+.inst-btn.selected {
+  border-color: var(--amber);
+  background: var(--amber-dim);
+}
+
+.inst-btn-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.inst-btn-sensors {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.inst-btn.selected .inst-btn-name { color: var(--amber); }
+
+/* CHEMICAL SELECTOR */
+.chem-section {
+  display: none;
+  animation: fadeUp 0.3s ease;
+}
+.chem-section.visible { display: block; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.chem-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.chem-btn {
+  padding: 12px 14px;
+  background: var(--navy-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+
+.chem-btn:hover { border-color: var(--cyan-dim); background: var(--navy-elevated); }
+
+.chem-btn.selected {
+  border-color: var(--cyan);
+  background: var(--cyan-dim);
+}
+
+.chem-name-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.chem-class-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+/* RESULTS PANEL */
+.results-panel {
+  display: none;
+  animation: fadeUp 0.3s ease;
+}
+.results-panel.visible { display: block; }
+
+.results-header {
+  padding: 20px 24px;
+  background: var(--navy-card);
+  border: 1px solid var(--border);
+  border-radius: 8px 8px 0 0;
+  border-bottom: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.results-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 2px;
+  color: var(--amber);
+}
+
+.results-context {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.sensor-results {
+  border: 1px solid var(--border);
+  border-radius: 0 0 8px 8px;
+  overflow: hidden;
+}
+
+.sensor-result-row {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+.sensor-result-row:last-child { border-bottom: none; }
+
+.sr-sensor-info { }
+
+.sr-sensor-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.sr-reading-badge {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+.badge-false-high { background: var(--red-dim); color: var(--red); border: 1px solid rgba(224,58,58,0.4); }
+.badge-false-low { background: rgba(240,165,0,0.12); color: var(--amber); border: 1px solid rgba(240,165,0,0.4); }
+.badge-suppressed { background: rgba(240,165,0,0.12); color: var(--amber); border: 1px solid rgba(240,165,0,0.4); }
+.badge-accurate { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,0.4); }
+.badge-unreliable { background: rgba(168,85,247,0.12); color: #c084fc; border: 1px solid rgba(168,85,247,0.4); }
+.badge-no-response { background: var(--navy-elevated); color: var(--text-muted); border: 1px solid var(--border); }
+.badge-sensor-poison { background: var(--red-dim); color: var(--red); border: 1px solid rgba(224,58,58,0.4); }
+
+.sr-detail { }
+
+.sr-why {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.sr-why strong { color: var(--text); }
+
+.sr-operational {
+  padding: 10px 14px;
+  background: var(--amber-glow);
+  border-left: 3px solid var(--amber);
+  border-radius: 0 4px 4px 0;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.sr-operational .op-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--amber);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.not-applicable {
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  color: var(--text-muted);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  gap: 6px;
+}
+
+/* RESET ROW */
+.reset-row {
+  margin-top: 24px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-secondary {
+  padding: 10px 20px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-muted);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-secondary:hover { border-color: var(--border-amber); color: var(--amber); }
+
+/* FOOTER */
+.module-footer {
+  margin-top: 60px;
+  padding: 24px 0;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: gap;
+  gap: 16px;
+}
+
+.footer-disclaimer {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  max-width: 560px;
+}
+
+.footer-brand {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 3px;
+  color: var(--amber);
+  opacity: 0.5;
+}
+
+@media (max-width: 640px) {
+  .sensor-result-row { grid-template-columns: 1fr; gap: 12px; }
+  .progress-track { gap: 4px; }
+  .step-connector { max-width: 20px; }
+  .step-label { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <div class="container">
+    <div class="header-inner">
+      <a href="index.html" class="back-link">← Hazmat Tactical</a>
+      <span class="breadcrumb-sep">|</span>
+      <span class="page-label">Concept Guides</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="hero">
+    <div class="hero-tag">Concept Guide — Sensor Behavior</div>
+    <h1>Cross-<span>Sensitivity</span></h1>
+    <p class="hero-sub">Why your meter is reading — and why that reading might be wrong. A training exploration of sensor technology and cross-sensitivity by instrument type.</p>
+    <div class="training-badge">⚠ Training Use Only — Not a Field Reference</div>
+  </div>
+
+  <div class="progress-track">
+    <div class="progress-step active" id="step1">
+      <div class="step-num">01</div>
+      <div class="step-label">Sensor Foundation</div>
+    </div>
+    <div class="step-connector"></div>
+    <div class="progress-step" id="step2">
+      <div class="step-num">02</div>
+      <div class="step-label">Cross-Sensitivity Explorer</div>
+    </div>
+  </div>
+
+  <!-- PHASE 1: FOUNDATION -->
+  <div class="phase active" id="phase1">
+    <div class="section-label">Phase 01 — Foundation</div>
+    <div class="section-title">How These Sensors Work</div>
+    <p class="section-desc">Before cross-sensitivity makes sense, you need to understand what each sensor is actually doing. Select each card to reveal the explanation.</p>
+
+    <div class="sensor-grid">
+
+      <!-- ELECTROCHEMICAL -->
+      <div class="sensor-card" id="card-echem" onclick="revealCard('echem')">
+        <div class="check-icon">✓</div>
+        <div class="sensor-card-header">
+          <div class="sensor-icon">⚡</div>
+          <div>
+            <div class="sensor-card-title">Electrochemical</div>
+            <div class="sensor-card-sub">O₂ · CO · H₂S · Toxic Gas</div>
+          </div>
+          <div class="reveal-hint">Tap to reveal</div>
+        </div>
+        <div class="sensor-body">
+          <div class="sensor-body-inner">
+            <p class="sensor-plain">
+              Think of it like a tiny battery that runs on gas. The target gas enters the sensor, <strong>reacts with an electrode</strong>, and that reaction produces an electrical current. The meter measures the current and converts it to a reading.<br><br>
+              The problem is the electrode doesn't care <em>which</em> gas caused the reaction — it only cares that a reaction happened. <strong>Any gas that triggers a similar reaction will produce a current.</strong> The meter has no way to tell the difference.
+            </p>
+            <div class="sensor-instruments">
+              <span class="inst-chip">4-Gas</span>
+              <span class="inst-chip">5-Gas</span>
+            </div>
+            <div class="sensor-key-point">
+              <strong>Key concept:</strong> The sensor responds to the reaction, not the gas. Anything that reacts similarly will register — sometimes higher, sometimes lower than the true value.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CATALYTIC BEAD -->
+      <div class="sensor-card" id="card-catbead" onclick="revealCard('catbead')">
+        <div class="check-icon">✓</div>
+        <div class="sensor-card-header">
+          <div class="sensor-icon">🔥</div>
+          <div>
+            <div class="sensor-card-title">Catalytic Bead</div>
+            <div class="sensor-card-sub">LEL / Combustible Gas</div>
+          </div>
+          <div class="reveal-hint">Tap to reveal</div>
+        </div>
+        <div class="sensor-body">
+          <div class="sensor-body-inner">
+            <p class="sensor-plain">
+              Two tiny beads — one heated with a catalyst, one without. When combustible gas reaches the hot bead, it <strong>burns on the surface</strong>. That burn raises the temperature of the bead, which changes its electrical resistance. The difference in resistance between the two beads is your LEL reading.<br><br>
+              It's calibrated to <strong>methane</strong> by default. Every other combustible gas burns differently — some hotter, some cooler — so the reading is already an approximation unless you apply a correction factor.
+            </p>
+            <div class="sensor-instruments">
+              <span class="inst-chip">4-Gas</span>
+              <span class="inst-chip">5-Gas</span>
+            </div>
+            <div class="sensor-key-point">
+              <strong>Key concept:</strong> Certain chemicals don't just give a wrong reading — they permanently damage the catalyst, killing the sensor silently. It won't alarm. It won't error. It just stops working.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PID -->
+      <div class="sensor-card" id="card-pid" onclick="revealCard('pid')">
+        <div class="check-icon">✓</div>
+        <div class="sensor-card-header">
+          <div class="sensor-icon">💡</div>
+          <div>
+            <div class="sensor-card-title">Photoionization</div>
+            <div class="sensor-card-sub">PID · VOC Detection</div>
+          </div>
+          <div class="reveal-hint">Tap to reveal</div>
+        </div>
+        <div class="sensor-body">
+          <div class="sensor-body-inner">
+            <p class="sensor-plain">
+              A UV lamp fires high-energy light at the air sample. If a gas molecule <strong>absorbs enough energy</strong>, it loses an electron and becomes an ion. The meter collects those ions and measures the current — that current is your reading.<br><br>
+              Calibrated to <strong>isobutylene</strong>. Every other chemical ionizes at a different efficiency. The ratio between isobutylene's efficiency and the target chemical's efficiency is the <strong>correction factor</strong>. Without it, your reading is directionally useful but numerically wrong.
+            </p>
+            <div class="sensor-instruments">
+              <span class="inst-chip">5-Gas</span>
+              <span class="inst-chip">PID Standalone</span>
+            </div>
+            <div class="sensor-key-point">
+              <strong>Key concept:</strong> Methane and many simple gases are invisible to a PID — they can't be ionized by the lamp energy. A zero PID reading does not mean no VOCs. It may mean the VOC present is one the PID can't see.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="continue-row">
+      <div class="reveal-counter">Sensors reviewed: <span id="revealCount">0</span> / 3</div>
+      <button class="btn-continue" id="continueBtn" onclick="goToPhase2()">Continue to Explorer →</button>
+    </div>
+  </div>
+
+  <!-- PHASE 2: EXPLORER -->
+  <div class="phase" id="phase2">
+    <div class="section-label">Phase 02 — Cross-Sensitivity Explorer</div>
+    <div class="section-title">Select Your Instrument</div>
+    <p class="section-desc">Choose the instrument you're working with, then select a chemical environment to see how each sensor responds — and why.</p>
+
+    <div class="instrument-selector">
+      <button class="inst-btn" onclick="selectInstrument('4gas', this)">
+        <div class="inst-btn-name">4-Gas Monitor</div>
+        <div class="inst-btn-sensors">O₂ · LEL · CO · H₂S<br>Electrochemical + Cat Bead</div>
+      </button>
+      <button class="inst-btn" onclick="selectInstrument('5gas', this)">
+        <div class="inst-btn-name">5-Gas Monitor</div>
+        <div class="inst-btn-sensors">O₂ · LEL · CO · H₂S · VOC<br>Electrochemical + Cat Bead + PID<br><span style="color: var(--amber); font-size: 0.6rem; letter-spacing: 1px;">Includes all 4-gas sensors + PID</span></div>
+      </button>
+      <button class="inst-btn" onclick="selectInstrument('pid', this)">
+        <div class="inst-btn-name">PID Standalone</div>
+        <div class="inst-btn-sensors">VOC / ppm<br>Photoionization only</div>
+      </button>
+    </div>
+
+    <div class="chem-section" id="chemSection">
+      <div class="section-label" style="margin-bottom:12px;">Select a Chemical Environment</div>
+      <div class="chem-grid" id="chemGrid"></div>
+    </div>
+
+    <div class="results-panel" id="resultsPanel">
+      <div class="results-header">
+        <div>
+          <div class="results-context" id="resultsContext">—</div>
+          <div class="results-title" id="resultsTitle">—</div>
+        </div>
+      </div>
+      <div class="sensor-results" id="sensorResults"></div>
+    </div>
+
+    <div class="reset-row">
+      <button class="btn-secondary" onclick="resetExplorer()">← Change Instrument</button>
+      <button class="btn-secondary" onclick="goToPhase1()">← Review Sensor Foundation</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="container">
+  <div class="module-footer">
+    <div class="footer-disclaimer">
+      FOR TRAINING USE ONLY. This module is designed to support instructional objectives aligned to NFPA 470 (2022) and OSHA 29 CFR 1910.120(q). It does not replace manufacturer documentation, department SOPs, or AHJ-approved training programs. Always verify sensor behavior against your specific instrument model and calibration status.
+    </div>
+    <div class="footer-brand">Hazmat Tactical</div>
+  </div>
+</div>
+
+<script>
+// ─── STATE ───────────────────────────────────────────────────
+let revealed = new Set();
+let selectedInstrument = null;
+let selectedChem = null;
+
+// ─── DATA ────────────────────────────────────────────────────
+const chemicals = [
+  { id: 'hydrogen', name: 'Hydrogen (H₂)', cls: 'Flammable Gas' },
+  { id: 'ethanol', name: 'Ethanol / Alcohol', cls: 'Flammable Liquid Vapor' },
+  { id: 'tce', name: 'Trichloroethylene', cls: 'Chlorinated Solvent' },
+  { id: 'h2s_high', name: 'H₂S (High Conc.)', cls: 'Toxic Gas' },
+  { id: 'ammonia', name: 'Ammonia (NH₃)', cls: 'Toxic Gas / Corrosive' },
+  { id: 'gasoline', name: 'Gasoline Vapor', cls: 'Flammable Liquid Vapor' },
+  { id: 'acetone', name: 'Acetone', cls: 'Flammable Solvent' },
+  { id: 'benzene', name: 'Benzene', cls: 'Flammable / Carcinogen' },
+  { id: 'silicone', name: 'Silicone Compounds', cls: 'Sensor Poison' },
+  { id: 'methylene', name: 'Methylene Chloride', cls: 'Chlorinated Solvent' },
+  { id: 'methane', name: 'Methane (Natural Gas)', cls: 'Flammable Gas' },
+  { id: 'co2_high', name: 'CO₂ (High Conc.)', cls: 'Asphyxiant' },
+];
+
+// Results data: instrument → chemical → array of sensor results
+const results = {
+  '4gas': {
+    'hydrogen': [
+      {
+        sensor: 'O₂ Sensor', type: 'echem',
+        badge: 'badge-accurate', badgeLabel: 'ACCURATE',
+        why: 'O₂ sensors measure oxygen displacement. Hydrogen does not interfere with the electrochemical O₂ reaction. Reading reflects true oxygen level.',
+        op: 'O₂ reading is reliable in a hydrogen environment. Rely on it for entry decisions.'
+      },
+      {
+        sensor: 'LEL Sensor', type: 'catbead',
+        badge: 'badge-false-low', badgeLabel: 'FALSE LOW',
+        why: '<strong>Hydrogen produces significantly less heat at the bead surface than methane at the same %LEL concentration.</strong> The sensor measures combustion heat — not molecular presence — so lower heat output means a lower reading. Hydrogen\'s faster diffusion partially compensates in some sensor designs, but does not overcome the combustion energy deficit. The net result across most instruments is an under-read. Correction factors for hydrogen typically range from 1.6 to 2.1 depending on manufacturer and sensor design, meaning the meter may display as little as 40–60% of the true LEL value.',
+        op: 'Treat LEL readings in a confirmed or suspected hydrogen environment as potentially underreported by up to half. Apply your specific instrument\'s correction factor — do not assume a universal value. Always reference manufacturer documentation for the correction factor applicable to your sensor.'
+      },
+      {
+        sensor: 'CO Sensor', type: 'echem',
+        badge: 'badge-false-high', badgeLabel: 'FALSE HIGH — CO',
+        why: '<strong>Hydrogen cross-reacts on the CO electrochemical sensor.</strong> The electrode cannot distinguish between the CO reaction and the H₂ reaction. The meter will display a CO alarm even with zero CO present. This is one of the most common false alarms in fire service gas detection. The effect varies by instrument — some manufacturers incorporate hydrogen-blocking filters into their CO sensors specifically to address this.',
+        op: 'A CO alarm in a hydrogen environment is presumed cross-sensitivity until proven otherwise. Do not conclude CO presence from this reading alone without corroborating information. Common hydrogen-generating environments include battery charging rooms, fuel cell operations, and certain industrial processes — a CO alarm on arrival at these locations warrants immediate context evaluation.'
+      },
+      {
+        sensor: 'H₂S Sensor', type: 'echem',
+        badge: 'badge-accurate', badgeLabel: 'MINIMAL EFFECT',
+        why: 'Hydrogen has minimal cross-sensitivity on the H₂S sensor in most modern 4-gas configurations. Some older sensor designs show minor cross-response, but it is generally not operationally significant.',
+        op: 'H₂S reading is generally reliable, but verify with your specific instrument documentation.'
+      }
+    ],
+    'ethanol': [
+      {
+        sensor: 'O₂ Sensor', type: 'echem',
+        badge: 'badge-accurate', badgeLabel: 'ACCURATE',
+        why: 'Ethanol vapor does not interfere with the electrochemical O₂ reaction at typical atmospheric concentrations.',
+        op: 'O₂ reading is reliable.'
+      },
+      {
+        sensor: 'LEL Sensor', type: 'catbead',
+        badge: 'badge-unreliable', badgeLabel: 'CORRECTION NEEDED',
+        why: 'Ethanol has a higher combustion heat than methane, causing the catalytic bead to run hotter. The meter will over-read — a displayed 50% LEL reflects a true value lower than that. Correction factors for ethanol typically fall in the range of 0.5–0.6 depending on the instrument — always consult your specific meter\'s documentation rather than applying a generic value.',
+        op: 'Apply the ethanol correction factor from your meter\'s manual. Do not use raw LEL readings in an ethanol environment for go/no-go decisions without adjustment.'
+      },
+      {
+        sensor: 'CO Sensor', type: 'echem',
+        badge: 'badge-false-high', badgeLabel: 'FALSE HIGH — CO',
+        why: '<strong>Alcohol vapors are well-documented cross-sensitivity agents on CO electrochemical sensors.</strong> Ethanol oxidizes at the electrode similarly to CO, generating a false positive. The effect is concentration-dependent — higher ethanol concentration produces a higher false CO reading.',
+        op: 'CO alarms in environments with alcohol vapors (spills, production facilities, fermentation) are unreliable. Document and report. Do not make rescue or entry decisions on CO reading alone.'
+      },
+      {
+        sensor: 'H₂S Sensor', type: 'echem',
+        badge: 'badge-accurate', badgeLabel: 'MINIMAL EFFECT',
+        why: 'Ethanol does not significantly cross-react with standard H₂S electrochemical sensors.',
+        op: 'H₂S reading is generally reliable in an ethanol environment.'
+      }
+    ],
+    'tce': [
+      {
+        sensor: 'O₂ Sensor', type: 'echem',
+        badge: 'badge-accurate', badgeLabel: 'ACCURATE',
+        why: 'TCE does not interfere with the O₂ electrochemical reaction.',
+        op: 'O₂ reading is reliable.'
+      },
+      {
+        sensor: 'LEL Sensor', type: 'catbead',
+        badge: 'badge-suppressed', badgeLabel: '⚠ SUPPRESSED READING',
+        why: '<strong>This is the most dangerous cross-sensitivity scenario for the LEL sensor.</strong> Chlorinated solvents like TCE act as catalytic inhibitors — they coat the catalyst surface and reduce its ability to burn combustibles. The result is a reading that is falsely LOW, or even zero, in a legitimately combustible atmosphere. The meter will not alarm at the true hazard level.',
+        op: 'In any environment with confirmed or suspected chlorinated solvents, treat LEL readings as potentially untrustworthy. A zero or low LEL reading does not confirm a safe atmosphere. Document suppression concern in your size-up.'
+      },
+      {
+        sensor: 'CO Sensor', type: 'echem',
+        badge: 'badge-unreliable', badgeLabel: 'UNRELIABLE',
+        why: 'TCE and related chlorinated compounds can cross-react on CO sensors. The effect varies by sensor design but can produce both false highs and suppressed readings depending on concentration and sensor age.',
+        op: 'Treat CO readings in chlorinated solvent environments with skepticism. Identify the product first — then evaluate your sensor outputs in context.'
+      },
+      {
+        sensor: 'H₂S Sensor', type: 'echem',
+        badge: 'badge-accurate', badgeLabel: 'MINIMAL EFFECT',
+        why: 'TCE does not significantly interfere with H₂S sensor performance under normal conditions.',
+        op: 'H₂S reading is generally reliable.'
+      }
+    ],
+    'h2s_high': [
+      {
+        sensor: 'O₂ Sensor', type: 'echem',
+        badge: 'badge-accurate', badgeLabel: 'ACCURATE',
+        why: 'H₂S does not interfere with the O₂ electrochemical reaction.',
+        op: 'O₂ reading is reliable.'
+      },
+      {
+        sensor: 'LEL Sensor', type: 'catbead',
+        badge: 'badge-false-low', badgeLabel: 'CORRECTION NEEDED',
+        why: 'H₂S is combustible but produces less heat at the catalytic bead than methane at the same %LEL concentration. The LEL sensor will underread H₂S. Correction factors typically range from 1.3 to 1.7 depending on the instrument. At extremely high concentrations, H₂S may also overload the dedicated H₂S electrochemical sensor — causing that reading to drop rather than rise.',
+        op: 'In confirmed H₂S environments, apply the appropriate LEL correction factor from your instrument documentation. At very high concentrations, watch for the H₂S sensor reading to peak and drop — this is sensor overload, not a reduction in hazard.'
+      },
+      {
+        sensor: 'CO Sensor', type: 'echem',
+        badge: 'badge-false-high', badgeLabel: 'FALSE HIGH — CO',
+        why: '<strong>H₂S is a well-documented cross-sensitivity agent on CO sensors.</strong> Even moderate concentrations of H₂S will produce a significant false CO reading. In confined space environments with both H₂S and CO present, isolating the true CO contribution is extremely difficult without a selective filter.',
+        op: 'If H₂S is detected and CO alarm triggers simultaneously, you cannot confirm true CO level from this instrument alone. Assume worst case and make decisions accordingly.'
+      },
+      {
+        sensor: 'H₂S Sensor', type: 'echem',
+        badge: 'badge-accurate', badgeLabel: 'READING TARGET GAS',
+        why: 'The H₂S sensor is the appropriate sensor for this gas. Reading is accurate within calibration and range limits.',
+        op: 'Monitor for sensor saturation at very high concentrations — some sensors will max out and require time to recover.'
+      }
+    ],
+    'ammonia': [
+      {
+        sensor: 'O₂ Sensor', type: 'echem',
+        badge: 'badge-accurate', badgeLabel: 'ACCURATE',
+        why: 'Ammonia does not significantly interfere with O₂ electrochemical sensor operation at typical incident concentrations.',
+        op: 'O₂ reading is generally reliable.'
+      },
+      {
+        sensor: 'LEL Sensor', type: 'catbead',
+        badge: 'badge-unreliable', badgeLabel: 'UNRELIABLE',
+        why: 'Ammonia is combustible but burns poorly on a standard catalytic bead, and its flammability range is unusually wide — roughly 15–28% in air. That means you are already at an extremely high atmospheric concentration before you are even approaching LEL. The LEL sensor will significantly underestimate even those elevated concentrations. At high concentrations, ammonia can also degrade catalytic bead performance over time.',
+        op: 'LEL readings in an ammonia environment are not reliable for go/no-go decisions. Use ammonia-specific detection if available. The wide flammability range also means the toxicological hazard — IDLH is 300 ppm — is reached at concentrations orders of magnitude below LEL. Shift your concern to exposure limits, not combustibility thresholds.'
+      },
+      {
+        sensor: 'CO Sensor', type: 'echem',
+        badge: 'badge-false-high', badgeLabel: 'FALSE HIGH — CO',
+        why: 'Ammonia cross-reacts on CO electrochemical sensors. The effect is significant — ammonia is one of the more aggressive cross-sensitivity agents for CO sensors.',
+        op: 'CO readings in an ammonia environment are suspect. Do not rely on CO sensor output for air monitoring decisions without corroborating data.'
+      },
+      {
+        sensor: 'H₂S Sensor', type: 'echem',
+        badge: 'badge-accurate', badgeLabel: 'MINIMAL EFFECT',
+        why: 'Ammonia does not typically cross-react with H₂S sensors in standard 4-gas configurations.',
+        op: 'H₂S reading is generally reliable.'
+      }
+    ],
+    'gasoline': [
+      {
+        sensor: 'O₂ Sensor', type: 'echem',
+        badge: 'badge-accurate', badgeLabel: 'ACCURATE',
+        why: 'Gasoline vapor components do not interfere with the O₂ electrochemical reaction.',
+        op: 'O₂ reading is reliable.'
+      },
+      {
+        sensor: 'LEL Sensor', type: 'catbead',
+        badge: 'badge-unreliable', badgeLabel: 'CORRECTION NEEDED',
+        why: 'Gasoline is a mixture — pentane, hexane, octane, and benzene among others. Each component has a different correction factor. The meter will produce a blended response that can over or underread depending on mixture composition. No single correction factor is precise.',
+        op: 'Treat LEL readings in a gasoline environment as directional, not precise. Trending matters more than absolute value. Rising reading = escalating hazard regardless of displayed number.'
+      },
+      {
+        sensor: 'CO Sensor', type: 'echem',
+        badge: 'badge-false-high', badgeLabel: 'POSSIBLE FALSE HIGH',
+        why: 'Some aromatic components in gasoline (benzene, toluene) can cross-react on CO sensors, particularly at higher vapor concentrations.',
+        op: 'Elevated CO readings at a gasoline spill incident with no ignition source warrant scrutiny. Identify the product first.'
+      },
+      {
+        sensor: 'H₂S Sensor', type: 'echem',
+        badge: 'badge-accurate', badgeLabel: 'MINIMAL EFFECT',
+        why: 'Gasoline vapor does not typically cross-react with H₂S sensors under normal conditions.',
+        op: 'H₂S reading is generally reliable. Note: some crude products contain H₂S naturally — a real reading is possible.'
+      }
+    ],
+    'acetone': [
+      {
+        sensor: 'O₂ Sensor', type: 'echem',
+        badge: 'badge-accurate', badgeLabel: 'ACCURATE',
+        why: 'Acetone does not interfere with the O₂ electrochemical reaction.',
+        op: 'O₂ reading is reliable.'
+      },
+      {
+        sensor: 'LEL Sensor', type: 'catbead',
+        badge: 'badge-unreliable', badgeLabel: 'CORRECTION NEEDED',
+        why: 'Acetone burns efficiently on the catalytic bead and produces a higher response than methane for the same LEL percentage. The meter will overread. Correction factor is approximately 0.5 — the true concentration may be half of what is displayed.',
+        op: 'Apply the acetone correction factor. An instrument reading of 50% LEL could represent a true value near 25% — but that is still a significant hazard, and the true value is still escalating as you approach it.'
+      },
+      {
+        sensor: 'CO Sensor', type: 'echem',
+        badge: 'badge-false-high', badgeLabel: 'FALSE HIGH — CO',
+        why: 'Acetone is a ketone and can cross-react on CO sensors, though the effect is generally less pronounced than with alcohols or hydrogen. At high concentrations the false CO reading can be operationally significant.',
+        op: 'CO alarms in a confirmed acetone environment require verification. Note the acetone presence in your air monitoring documentation.'
+      },
+      {
+        sensor: 'H₂S Sensor', type: 'echem',
+        badge: 'badge-accurate', badgeLabel: 'MINIMAL EFFECT',
+        why: 'Acetone does not cross-react with H₂S sensors under normal conditions.',
+        op: 'H₂S reading is generally reliable.'
+      }
+    ],
+    'benzene': [
+      {
+        sensor: 'O₂ Sensor', type: 'echem',
+        badge: 'badge-accurate', badgeLabel: 'ACCURATE',
+        why: 'Benzene does not interfere with the O₂ electrochemical reaction.',
+        op: 'O₂ reading is reliable.'
+      },
+      {
+        sensor: 'LEL Sensor', type: 'catbead',
+        badge: 'badge-unreliable', badgeLabel: 'CORRECTION NEEDED',
+        why: 'Benzene has a different combustion profile than methane on the catalytic bead. Correction factor is approximately 0.55. The meter will overread the true LEL percentage.',
+        op: 'Apply correction factor for benzene. Additionally, because of benzene\'s toxicity at very low concentrations, the LEL threshold is not the primary hazard concern — IDLH and carcinogenic risk thresholds are reached far below LEL.'
+      },
+      {
+        sensor: 'CO Sensor', type: 'echem',
+        badge: 'badge-false-high', badgeLabel: 'POSSIBLE FALSE HIGH',
+        why: 'Benzene and aromatic hydrocarbons can produce cross-response on CO sensors at elevated concentrations.',
+        op: 'Treat CO readings in a benzene environment with caution. Benzene\'s primary risk is not combustion — it is acute toxicity and carcinogenicity at sub-LEL concentrations. Shift your concern from CO alarm to PPE adequacy for benzene exposure.'
+      },
+      {
+        sensor: 'H₂S Sensor', type: 'echem',
+        badge: 'badge-accurate', badgeLabel: 'MINIMAL EFFECT',
+        why: 'Benzene does not significantly cross-react with H₂S sensors.',
+        op: 'H₂S reading is generally reliable.'
+      }
+    ],
+    'silicone': [
+      {
+        sensor: 'O₂ Sensor', type: 'echem',
+        badge: 'badge-accurate', badgeLabel: 'ACCURATE',
+        why: 'Silicone compounds do not directly interfere with the O₂ electrochemical reaction.',
+        op: 'O₂ reading remains reliable, but the overall instrument status is compromised — see LEL.'
+      },
+      {
+        sensor: 'LEL Sensor', type: 'catbead',
+        badge: 'badge-sensor-poison', badgeLabel: '☠ SENSOR POISONING',
+        why: '<strong>Silicone compounds are a primary catalyst poison for LEL sensors.</strong> Even brief exposure deposits a silicone film on the catalyst bead that permanently reduces its activity. The sensor does not fail dramatically — it degrades gradually and silently. A poisoned sensor may read zero in a truly explosive atmosphere and never alarm.',
+        op: 'Any known or suspected silicone exposure requires post-incident bump testing of the LEL sensor before the instrument is returned to service. If bump test fails: the sensor is compromised and requires replacement. This is not a field fix.'
+      },
+      {
+        sensor: 'CO Sensor', type: 'echem',
+        badge: 'badge-accurate', badgeLabel: 'GENERALLY UNAFFECTED',
+        why: 'Silicone compounds do not significantly affect electrochemical CO sensor performance.',
+        op: 'CO reading is generally reliable — but verify instrument operability post-incident given LEL sensor concerns.'
+      },
+      {
+        sensor: 'H₂S Sensor', type: 'echem',
+        badge: 'badge-accurate', badgeLabel: 'GENERALLY UNAFFECTED',
+        why: 'Silicone compounds do not significantly affect H₂S sensor performance.',
+        op: 'H₂S reading is generally reliable. Prioritize LEL sensor evaluation post-incident.'
+      }
+    ],
+    'methylene': [
+      {
+        sensor: 'O₂ Sensor', type: 'echem',
+        badge: 'badge-accurate', badgeLabel: 'ACCURATE',
+        why: 'Methylene chloride does not interfere with the O₂ electrochemical reaction.',
+        op: 'O₂ reading is reliable.'
+      },
+      {
+        sensor: 'LEL Sensor', type: 'catbead',
+        badge: 'badge-suppressed', badgeLabel: '⚠ SUPPRESSED READING',
+        why: '<strong>Like TCE, methylene chloride is a halogenated compound and acts as a catalytic inhibitor.</strong> It suppresses the LEL sensor, producing readings that are falsely low — potentially zero in a legitimately hazardous atmosphere. The suppression effect can be temporary or cause lasting sensor degradation.',
+        op: 'In methylene chloride environments, a zero or low LEL reading must not be interpreted as a safe atmosphere. This is a direct threat to personnel safety. Decision-making must account for the known limitation.'
+      },
+      {
+        sensor: 'CO Sensor', type: 'echem',
+        badge: 'badge-unreliable', badgeLabel: 'UNRELIABLE',
+        why: 'Methylene chloride can interfere with CO electrochemical sensors. Effects include both false positive responses and potential sensor suppression.',
+        op: 'CO readings in a methylene chloride environment are not reliable. Use product identity and known hazard profile for decision-making, not CO sensor output.'
+      },
+      {
+        sensor: 'H₂S Sensor', type: 'echem',
+        badge: 'badge-accurate', badgeLabel: 'MINIMAL EFFECT',
+        why: 'Methylene chloride does not significantly cross-react with the H₂S sensor.',
+        op: 'H₂S reading is generally reliable.'
+      }
+    ],
+    'methane': [
+      {
+        sensor: 'O₂ Sensor', type: 'echem',
+        badge: 'badge-accurate', badgeLabel: 'ACCURATE',
+        why: 'Methane does not interfere with O₂ electrochemical response.',
+        op: 'O₂ reading is reliable and critical — methane displaces oxygen in confined spaces.'
+      },
+      {
+        sensor: 'LEL Sensor', type: 'catbead',
+        badge: 'badge-accurate', badgeLabel: 'MOST ACCURATE',
+        why: 'The LEL sensor is calibrated to methane. This is the target gas for the default calibration. No correction factor needed. Reading reflects true LEL percentage as closely as any single-point calibration allows.',
+        op: 'Methane is the one environment where you can trust the raw LEL reading without applying a correction factor. Verify that last calibration was performed with methane, not an alternate gas.'
+      },
+      {
+        sensor: 'CO Sensor', type: 'echem',
+        badge: 'badge-accurate', badgeLabel: 'MINIMAL EFFECT',
+        why: 'Methane does not significantly cross-react on CO electrochemical sensors at typical concentrations.',
+        op: 'CO reading is reliable in a methane environment.'
+      },
+      {
+        sensor: 'H₂S Sensor', type: 'echem',
+        badge: 'badge-accurate', badgeLabel: 'MINIMAL EFFECT',
+        why: 'Methane does not interfere with H₂S sensor response.',
+        op: 'H₂S reading is reliable. Note: natural gas with mercaptan odorant can produce trace H₂S — a low real reading is possible and normal.'
+      }
+    ],
+    'co2_high': [
+      {
+        sensor: 'O₂ Sensor', type: 'echem',
+        badge: 'badge-false-low', badgeLabel: 'FALSE LOW — O₂',
+        why: '<strong>In O₂ sensors that use an alkaline electrolyte — the most common design in 4-gas monitors — high CO₂ concentrations can react with the electrolyte and alter the electrochemical reaction, producing a falsely low O₂ reading.</strong> This is sensor-design dependent, not universal across all instruments. In affected designs, a CO₂-rich environment (suppression system discharge, fermentation spaces, confined space accumulation) may trigger an oxygen deficiency alarm when true O₂ is normal.',
+        op: 'In environments with confirmed high CO₂, treat O₂ sensor readings with caution and verify against your instrument documentation. The deficiency alarm may be cross-sensitivity, not true displacement. Know whether your specific instrument is susceptible — not all are.'
+      },
+      {
+        sensor: 'LEL Sensor', type: 'catbead',
+        badge: 'badge-accurate', badgeLabel: 'MINIMAL EFFECT',
+        why: 'CO₂ is not combustible and does not react on the catalytic bead under normal conditions.',
+        op: 'LEL reading is reliable in a CO₂ environment.'
+      },
+      {
+        sensor: 'CO Sensor', type: 'echem',
+        badge: 'badge-accurate', badgeLabel: 'MINIMAL EFFECT',
+        why: 'CO₂ does not typically cross-react on CO electrochemical sensors at standard configurations.',
+        op: 'CO reading is generally reliable.'
+      },
+      {
+        sensor: 'H₂S Sensor', type: 'echem',
+        badge: 'badge-accurate', badgeLabel: 'MINIMAL EFFECT',
+        why: 'CO₂ does not cross-react with H₂S sensors.',
+        op: 'H₂S reading is reliable.'
+      }
+    ]
+  }
+};
+
+// 5-gas adds PID to everything
+function build5Gas(chemId) {
+  const base = results['4gas'][chemId];
+  if (!base) return null;
+  const pidResults = {
+    'hydrogen':    { badge: 'badge-no-response', badgeLabel: 'NO RESPONSE', why: '<strong>Hydrogen cannot be ionized by a standard PID UV lamp.</strong> Its ionization potential (15.4 eV) exceeds what a standard 10.6 eV lamp can deliver. The PID will read zero regardless of hydrogen concentration.', op: 'A zero PID reading in a suspected hydrogen environment means nothing. The PID is the wrong tool for this gas.' },
+    'ethanol':     { badge: 'badge-unreliable', badgeLabel: 'MARGINALLY DETECTABLE', why: 'Ethanol\'s ionization potential (≈ 10.47 eV) is right at the threshold of a standard 10.6 eV lamp. Detection is possible at high concentrations but highly inconsistent. Published correction factors for ethanol on 10.6 eV instruments vary enormously across manufacturers — some list values above 7.0, meaning the meter dramatically underreads. A usable single CF does not exist across instruments.', op: 'Do not rely on PID output for ethanol quantification with a standard 10.6 eV lamp. Treat any reading as a positive indicator only — not a reliable concentration. Confirm with instrument-specific documentation if your instrument lists an ethanol CF.' },
+    'tce':         { badge: 'badge-accurate', badgeLabel: 'DETECTABLE — CF NEEDED', why: 'TCE is readily detected by PID. Correction factor is approximately 0.54 — the meter will overread the true concentration. Directionally valuable.', op: 'PID is actually useful for TCE detection where the LEL sensor is unreliable. Apply the correction factor. Use the PID trend as your primary combustible indicator for chlorinated solvents.' },
+    'h2s_high':    { badge: 'badge-unreliable', badgeLabel: 'UNRELIABLE', why: 'H₂S has an ionization potential of approximately 10.5 eV — right at the limit of a standard 10.6 eV lamp. Detection is possible at high concentrations but highly unreliable and humidity-dependent. A PID is not a reliable H₂S detector.', op: 'Do not use PID output as your H₂S indicator. Rely on the dedicated H₂S electrochemical sensor.' },
+    'ammonia':     { badge: 'badge-no-response', badgeLabel: 'NO RESPONSE', why: 'Ammonia\'s ionization potential (10.18 eV) is at the threshold of a 10.6 eV lamp. Detection is inconsistent, humidity-dependent, and not operationally reliable. A standard PID should not be relied upon for ammonia detection.', op: 'Zero PID does not confirm absence of ammonia. Use ammonia-specific detection.' },
+    'gasoline':    { badge: 'badge-unreliable', badgeLabel: 'CORRECTION NEEDED', why: 'Gasoline is a mixture — the PID responds to aromatic components (benzene, toluene) more than aliphatic ones. The reading reflects the ionizable fraction of the vapor, not total vapor concentration. No single correction factor is precise for a mixture.', op: 'PID response to gasoline is directionally useful for detecting aromatic components. Treat as a trending tool, not an absolute measurement.' },
+    'acetone':     { badge: 'badge-unreliable', badgeLabel: 'CORRECTION NEEDED', why: 'Acetone is detectable by PID — IP (9.7 eV) is well within lamp range. Published correction factors cluster around 0.8–1.1 depending on the instrument, meaning acetone response is close to isobutylene and the direction of error varies. A generic CF applied without instrument-specific verification introduces its own inaccuracy.', op: 'PID is a useful detector for acetone, but apply only the CF listed in your specific instrument documentation. Do not use a generic value — at CF values this close to 1.0, instrument variability matters.' },
+    'benzene':     { badge: 'badge-accurate', badgeLabel: 'DETECTABLE — CF NEEDED', why: 'Benzene is reliably detected by PID, but it underreads relative to isobutylene — benzene\'s IP (9.25 eV) is higher than isobutylene\'s (8.85 eV), meaning it ionizes less efficiently per ppm. Correction factor is approximately 0.6, meaning a true concentration of 1 ppm benzene will display as approximately 0.6 ppm. Divide the displayed reading by the CF to estimate true concentration.', op: 'PID is highly suitable for benzene detection. At sub-LEL concentrations where the toxicological risk is the primary concern, the PID gives you the data you need. Apply the correction factor and compare to OSHA action level (0.5 ppm) and IDLH (500 ppm) — not just LEL thresholds.' },
+    'silicone':    { badge: 'badge-sensor-poison', badgeLabel: '☠ LAMP CONTAMINATION', why: '<strong>Silicone compounds are a primary PID lamp contaminant.</strong> Silicone deposits on the UV lamp window, reducing light output and sensor response over time. A contaminated lamp will underread — progressively approaching zero as contamination worsens. The instrument does not alert you to a dirty lamp.', op: 'Inspect and clean PID lamp windows per manufacturer schedule, especially after silicone exposure. If contamination is suspected, clean the lamp and bump test before trusting readings.' },
+    'methylene':   { badge: 'badge-no-response', badgeLabel: 'NO RESPONSE — 10.6 eV', why: '<strong>Methylene chloride has an ionization potential of approximately 11.32 eV — which exceeds what a standard 10.6 eV krypton lamp can deliver.</strong> The PID cannot ionize it. In a methylene chloride environment where the LEL sensor is already suppressed, a standard PID gives you nothing either. Detection requires an 11.7 eV argon lamp, which is not standard equipment on most field instruments.', op: 'Do not expect PID response to methylene chloride on a standard 10.6 eV instrument. If your instrument has an 11.7 eV lamp, detection is possible — verify your lamp type before drawing any conclusions from a zero reading.' },
+    'methane':     { badge: 'badge-no-response', badgeLabel: 'NO RESPONSE', why: '<strong>Methane cannot be ionized by a standard PID lamp.</strong> Ionization potential (12.6 eV) far exceeds the 10.6 eV lamp. The PID will read zero in a pure methane atmosphere at any concentration, including explosive concentrations.', op: 'A zero PID does not rule out methane. For methane, the LEL sensor is your only sensor on this instrument. Do not use PID output as any indicator of methane presence.' },
+    'co2_high':    { badge: 'badge-no-response', badgeLabel: 'NO RESPONSE', why: 'CO₂ has an ionization potential above the range of standard PID lamps and will not be detected.', op: 'PID provides no relevant data for CO₂. Rely on O₂ sensor trend and dedicated CO₂ detection if available.' }
+  };
+  const pidEntry = pidResults[chemId];
+  if (!pidEntry) return base;
+  return [...base, {
+    sensor: 'PID (VOC)', type: 'pid',
+    badge: pidEntry.badge,
+    badgeLabel: pidEntry.badgeLabel,
+    why: pidEntry.why,
+    op: pidEntry.op
+  }];
+}
+
+// PID standalone
+const pidStandaloneResults = {
+  'hydrogen':  { badge: 'badge-no-response', badgeLabel: 'NO RESPONSE', why: '<strong>Hydrogen cannot be ionized by a standard 10.6 eV PID lamp.</strong> The PID is blind to hydrogen entirely.', op: 'A zero PID reading in a hydrogen environment is expected and meaningless. The PID gives you nothing here — identify the hazard through other means.' },
+  'ethanol':   { badge: 'badge-unreliable', badgeLabel: 'MARGINALLY DETECTABLE', why: 'Ethanol IP ≈ 10.47 eV — at the lamp threshold. Detection is inconsistent and instrument-dependent. Published CFs vary widely across manufacturers, making reliable quantification impractical with a standard 10.6 eV lamp.', op: 'Treat any ethanol reading on a standard PID as a positive indicator at best — not a reliable ppm value. Check your specific instrument documentation. Do not apply a generic CF.' },
+  'tce':       { badge: 'badge-accurate', badgeLabel: 'DETECTABLE — CF NEEDED', why: 'TCE is well-detected by PID. CF ≈ 0.54 — the meter overreads. Multiply the displayed value by 0.54 to estimate the true ppm concentration.', op: 'PID is the better detection method for TCE compared to a suppressed LEL sensor. Apply the correction factor. Use the PID trend as your primary indicator for chlorinated solvents — but confirm CF against your specific instrument documentation.' },
+  'h2s_high':  { badge: 'badge-unreliable', badgeLabel: 'MARGINALLY DETECTABLE', why: 'H₂S ionization potential (10.5 eV) is at the lamp threshold. Detection is inconsistent and humidity-dependent. Not a reliable H₂S detector.', op: 'Do not use PID as your primary H₂S indicator. If this is your only instrument, note the limitation and act conservatively.' },
+  'ammonia':   { badge: 'badge-no-response', badgeLabel: 'UNRELIABLE / NO RESPONSE', why: 'Ammonia at the lamp threshold — inconsistent detection, not operationally reliable.', op: 'Do not rely on PID for ammonia detection.' },
+  'gasoline':  { badge: 'badge-unreliable', badgeLabel: 'PARTIAL DETECTION', why: 'PID reads the aromatic fraction (benzene, toluene). Not a complete picture of total vapor load. No reliable single correction factor for a mixture.', op: 'Useful as a trend indicator for aromatic components. Notably, benzene in gasoline will register — an elevated PID at a gasoline incident warrants PPE escalation consideration.' },
+  'acetone':   { badge: 'badge-unreliable', badgeLabel: 'CORRECTION NEEDED', why: 'Detectable. Published CFs range from approximately 0.8–1.1 across instruments — close enough to 1.0 that the direction of error is instrument-dependent. Always use your specific instrument\'s CF.', op: 'PID is a suitable primary detector for acetone. Apply only the CF from your instrument documentation — do not assume a direction of error.' },
+  'benzene':   { badge: 'badge-accurate', badgeLabel: 'BEST SENSOR FOR THIS GAS', why: 'Benzene is reliably detected by PID. It underreads relative to isobutylene — IP of 9.25 eV vs isobutylene\'s 8.85 eV. CF ≈ 0.6, meaning true concentration is higher than displayed. Divide displayed reading by CF to estimate true ppm.', op: 'This is where the PID earns its place. Apply CF. Compare to OSHA action level (0.5 ppm) and IDLH (500 ppm) — not just LEL thresholds.' },
+  'silicone':  { badge: 'badge-sensor-poison', badgeLabel: '☠ LAMP CONTAMINATION', why: 'Silicone deposits on the UV lamp window and degrades readings progressively. No instrument alert — it just stops working accurately.', op: 'Clean lamp window post-exposure. Bump test before returning to service. Lamp replacement may be required for significant exposure.' },
+  'methylene': { badge: 'badge-no-response', badgeLabel: 'NO RESPONSE — 10.6 eV', why: '<strong>Methylene chloride IP ≈ 11.32 eV — above the 10.6 eV krypton lamp threshold.</strong> A standard PID cannot ionize it. Zero reading is expected and tells you nothing about actual concentration.', op: 'Do not use a standard 10.6 eV PID as a detection method for methylene chloride. An 11.7 eV argon lamp is required. Verify your lamp type. In this environment, both your LEL sensor and standard PID are compromised — product identity and SDS data are your primary hazard assessment tools.' },
+  'methane':   { badge: 'badge-no-response', badgeLabel: 'NO RESPONSE', why: '<strong>Methane is invisible to PID.</strong> Zero reading is expected and uninformative.', op: 'A PID standalone gives you nothing in a methane environment. You need a CGI or 4-gas monitor for methane hazard assessment.' },
+  'co2_high':  { badge: 'badge-no-response', badgeLabel: 'NO RESPONSE', why: 'CO₂ not detectable by standard PID lamp.', op: 'PID provides no relevant data for CO₂ environments.' }
+};
+
+// ─── PHASE FUNCTIONS ─────────────────────────────────────────
+function revealCard(id) {
+  if (revealed.has(id)) return;
+  revealed.add(id);
+  document.getElementById('card-' + id).classList.add('revealed');
+  document.getElementById('revealCount').textContent = revealed.size;
+  if (revealed.size === 3) {
+    document.getElementById('continueBtn').classList.add('ready');
+  }
+}
+
+function goToPhase2() {
+  document.getElementById('phase1').classList.remove('active');
+  document.getElementById('phase2').classList.add('active');
+  document.getElementById('step1').classList.remove('active');
+  document.getElementById('step1').classList.add('complete');
+  document.getElementById('step2').classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goToPhase1() {
+  document.getElementById('phase2').classList.remove('active');
+  document.getElementById('phase1').classList.add('active');
+  document.getElementById('step2').classList.remove('active');
+  document.getElementById('step1').classList.remove('complete');
+  document.getElementById('step1').classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function selectInstrument(id, el) {
+  selectedInstrument = id;
+  selectedChem = null;
+  document.querySelectorAll('.inst-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('resultsPanel').classList.remove('visible');
+  buildChemGrid();
+  document.getElementById('chemSection').classList.add('visible');
+}
+
+function buildChemGrid() {
+  const grid = document.getElementById('chemGrid');
+  grid.innerHTML = chemicals.map(c => `
+    <button class="chem-btn" onclick="selectChem('${c.id}', this)">
+      <div class="chem-name-label">${c.name}</div>
+      <div class="chem-class-label">${c.cls}</div>
+    </button>
+  `).join('');
+}
+
+function selectChem(id, el) {
+  selectedChem = id;
+  document.querySelectorAll('.chem-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  renderResults();
+}
+
+function renderResults() {
+  let rows = [];
+  const chem = chemicals.find(c => c.id === selectedChem);
+  if (!chem) return;
+
+  if (selectedInstrument === '4gas') {
+    rows = results['4gas'][selectedChem] || [];
+    document.getElementById('resultsContext').textContent = '4-Gas Monitor';
+  } else if (selectedInstrument === '5gas') {
+    rows = build5Gas(selectedChem) || [];
+    document.getElementById('resultsContext').textContent = '5-Gas Monitor';
+  } else if (selectedInstrument === 'pid') {
+    const r = pidStandaloneResults[selectedChem];
+    if (r) {
+      rows = [{
+        sensor: 'PID (VOC)',
+        type: 'pid',
+        badge: r.badge,
+        badgeLabel: r.badgeLabel,
+        why: r.why,
+        op: r.op
+      }];
+    }
+    document.getElementById('resultsContext').textContent = 'PID Standalone';
+  }
+
+  document.getElementById('resultsTitle').textContent = chem.name;
+
+  const html = rows.map(r => `
+    <div class="sensor-result-row">
+      <div class="sr-sensor-info">
+        <div class="sr-sensor-name">${r.sensor}</div>
+        <span class="sr-reading-badge ${r.badge}">${r.badgeLabel}</span>
+      </div>
+      <div class="sr-detail">
+        <p class="sr-why">${r.why}</p>
+        <div class="sr-operational">
+          <span class="op-label">Training Consideration</span>
+          ${r.op}
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('sensorResults').innerHTML = html;
+  document.getElementById('resultsPanel').classList.add('visible');
+  document.getElementById('resultsPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function resetExplorer() {
+  selectedInstrument = null;
+  selectedChem = null;
+  document.querySelectorAll('.inst-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('chemSection').classList.remove('visible');
+  document.getElementById('resultsPanel').classList.remove('visible');
+}
+</script>
+</body>
+</html>
