@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EV Scene Size-Up Drill | Hazmat Tactical</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Rajdhani:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0a0e1a;
+  --navy-mid: #111827;
+  --navy-card: #141c2e;
+  --navy-elevated: #1a2340;
+  --amber: #f0a500;
+  --amber-dim: rgba(240,165,0,0.15);
+  --amber-glow: rgba(240,165,0,0.08);
+  --red: #e03a3a;
+  --red-dim: rgba(224,58,58,0.12);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,0.12);
+  --border: rgba(255,255,255,0.07);
+  --border-amber: rgba(240,165,0,0.3);
+  --text: #e8eaf0;
+  --text-muted: #6b7280;
+  --text-dim: #9ca3af;
+  --display: 'Bebas Neue', sans-serif;
+  --ui: 'Barlow Condensed', sans-serif;
+  --body: 'Rajdhani', sans-serif;
+  --mono: 'IBM Plex Mono', monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--navy);color:var(--text);font-family:var(--body);min-height:100vh;overflow-x:hidden;line-height:1.6}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(240,165,0,0.04) 0%,transparent 60%),radial-gradient(ellipse 40% 40% at 80% 90%,rgba(224,58,58,0.03) 0%,transparent 50%),url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+.site-header{border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:16px;height:64px;background:rgba(10,14,26,0.92);backdrop-filter:blur(20px);position:sticky;top:0;z-index:50;box-shadow:0 1px 0 var(--border),0 8px 32px rgba(0,0,0,.5)}
+.site-title{font-family:var(--body);font-size:1.2rem;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--text)}
+.site-title span{color:var(--amber)}
+.header-badge{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.2em;text-transform:uppercase;margin-left:auto;border:1px solid var(--border);padding:4px 10px;border-radius:2px}
+.wrap{max-width:820px;margin:0 auto;padding:0 20px 80px;position:relative;z-index:1}
+.hero{text-align:center;padding:48px 0 36px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--amber);border:1px solid var(--border-amber);padding:6px 16px;border-radius:2px;margin-bottom:20px;background:var(--amber-dim);box-shadow:0 0 16px rgba(240,165,0,.12)}
+.hero h1{font-family:var(--display);font-size:clamp(2.4rem,6vw,3.8rem);letter-spacing:4px;text-transform:uppercase;line-height:1.0;margin-bottom:8px;color:var(--text)}
+.hero-sub{font-family:var(--body);font-size:1.1rem;font-weight:500;color:var(--text-dim);max-width:520px;margin:0 auto 24px}
+.hero-rule{width:60px;height:2px;background:linear-gradient(90deg,transparent,var(--amber),transparent);margin:0 auto 28px}
+.level-controls{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:28px;flex-wrap:wrap}
+.level-label{font-family:var(--ui);font-size:.8rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted)}
+.toggle-group{display:flex;border:1px solid var(--border);border-radius:3px;overflow:hidden}
+.toggle-btn{padding:8px 22px;background:transparent;color:var(--text-dim);border:none;font-family:var(--ui);font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;cursor:pointer;transition:all .2s}
+.toggle-btn.active{background:var(--amber);color:var(--navy)}
+.toggle-btn:not(.active):hover{color:var(--text);background:rgba(255,255,255,0.04)}
+.gen-btn{padding:12px 32px;background:var(--amber);color:var(--navy);border:none;border-radius:3px;font-family:var(--ui);font-size:.9rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .2s;box-shadow:0 0 20px rgba(240,165,0,.25)}
+.gen-btn:hover{background:#d4920a;box-shadow:0 0 28px rgba(240,165,0,.4)}
+.disclaimer{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.6rem;color:var(--text-muted);letter-spacing:.15em;text-transform:uppercase;border:1px solid var(--border);padding:6px 16px;border-radius:2px;margin-top:20px}
+.scenario-card{background:var(--navy-card);border:1px solid var(--border);border-left:3px solid var(--amber);border-radius:4px;margin-bottom:16px;overflow:hidden}
+.sc-header{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sc-label{font-family:var(--ui);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--amber)}
+.sc-body{padding:16px;font-family:var(--body);font-size:.95rem;color:var(--text-dim);line-height:1.8}
+.sc-body strong{color:var(--text);font-weight:600}
+.sc-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 24px}
+.sc-volt{display:inline-block;font-family:var(--mono);font-size:.75rem;color:var(--amber);background:rgba(240,165,0,0.1);border:1px solid var(--border-amber);border-radius:2px;padding:2px 8px;margin-left:4px}
+.q-card{background:var(--navy-card);border:1px solid var(--border);border-radius:4px;margin-bottom:14px;overflow:hidden;transition:opacity .25s}
+.q-card.locked{opacity:.28;pointer-events:none}
+.q-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:12px;background:rgba(0,0,0,.15)}
+.q-num{font-family:var(--ui);font-size:.78rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--amber)}
+.q-skill{font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);text-align:right;flex-shrink:0}
+.ref-panel{margin:0;padding:14px 16px;border-bottom:1px solid var(--border);background:rgba(240,165,0,0.04);border-left:3px solid rgba(240,165,0,0.25)}
+.ref-title{font-family:var(--ui);font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);margin-bottom:6px}
+.ref-body{font-family:var(--body);font-size:.9rem;color:var(--text-dim);line-height:1.65}
+.ref-src{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-top:8px}
+.hl{color:var(--amber);font-weight:600}
+.warn{color:var(--red);font-weight:600}
+.q-text{padding:16px 16px 12px;font-family:var(--body);font-size:1.05rem;font-weight:500;color:var(--text);line-height:1.6;border-bottom:1px solid var(--border)}
+.q-options{padding:12px}
+.opt-btn{display:block;width:100%;margin-bottom:8px;padding:12px 16px;background:var(--navy-elevated);border:1px solid var(--border);border-radius:3px;text-align:left;color:var(--text-dim);font-family:var(--body);font-size:.95rem;cursor:pointer;transition:all .15s;line-height:1.5}
+.opt-btn:last-of-type{margin-bottom:12px}
+.opt-btn:hover:not(.locked-opt){border-color:rgba(240,165,0,.4);color:var(--text);background:rgba(240,165,0,0.05)}
+.opt-btn.selected{border-color:var(--amber);color:var(--text);background:var(--amber-glow)}
+.opt-btn.correct{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+.opt-btn.incorrect{border-color:var(--red);background:var(--red-dim);color:var(--red)}
+.opt-btn.locked-opt{cursor:default}
+.commit-btn{display:block;width:100%;padding:11px;background:transparent;border:1px solid var(--border-amber);border-radius:3px;color:var(--amber);font-family:var(--ui);font-size:.82rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .2s;margin-top:4px}
+.commit-btn:not(:disabled):hover{background:var(--amber-dim);box-shadow:0 0 12px rgba(240,165,0,.2)}
+.commit-btn:disabled{opacity:.3;cursor:not-allowed;border-color:var(--border)}
+.fb-panel{padding:0 16px;max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s}
+.fb-panel.show{max-height:300px;padding:16px}
+.fb-label{font-family:var(--ui);font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px}
+.fb-label.correct{color:var(--green)}
+.fb-label.incorrect{color:var(--red)}
+.fb-text{font-family:var(--body);font-size:.92rem;color:var(--text-dim);line-height:1.6}
+.fb-panel.correct-fb{border-top:1px solid rgba(34,197,94,0.2);background:rgba(34,197,94,0.04)}
+.fb-panel.incorrect-fb{border-top:1px solid rgba(224,58,58,0.2);background:rgba(224,58,58,0.04)}
+.drill-refs{background:var(--navy-card);border:1px solid var(--border);border-radius:4px;margin-top:16px;max-height:0;overflow:hidden;transition:max-height .5s ease}
+.drill-refs.show{max-height:1200px}
+.dr-inner{padding:24px}
+.dr-title{font-family:var(--display);font-size:1.4rem;letter-spacing:3px;color:var(--text);margin-bottom:4px}
+.dr-sub{font-family:var(--body);font-size:.88rem;color:var(--text-muted);margin-bottom:20px}
+.ref-item{padding:14px 0;border-bottom:1px solid var(--border)}
+.ref-item:last-of-type{border-bottom:none}
+.ri-name{font-family:var(--ui);font-size:.88rem;font-weight:700;letter-spacing:.08em;color:var(--text);margin-bottom:3px}
+.ri-pub{font-family:var(--mono);font-size:.6rem;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.ri-link{font-family:var(--mono);font-size:.62rem;color:var(--amber);letter-spacing:.08em;text-decoration:none;border-bottom:1px solid var(--border-amber)}
+.ri-link:hover{color:#d4920a}
+.score-bar{display:flex;align-items:center;gap:20px;padding:16px 0;border-top:1px solid var(--border);margin-top:16px}
+.score-val{font-family:var(--display);font-size:2.4rem;color:var(--amber);line-height:1}
+.score-lbl{font-family:var(--ui);font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted)}
+@media(max-width:600px){.sc-grid{grid-template-columns:1fr}.q-head{flex-direction:column;gap:4px}.q-skill{text-align:left}}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <svg width="32" height="36" viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+    <path d="M50 5 L95 25 L95 60 C95 82 75 100 50 108 C25 100 5 82 5 60 L5 25 Z" fill="#f0a500" fill-opacity=".12" stroke="#f0a500" stroke-width="2"/>
+    <text x="50" y="70" text-anchor="middle" font-family="Bebas Neue" font-size="36" fill="#f0a500">HT</text>
+  </svg>
+  <div class="site-title">HAZMAT <span>TACTICAL</span></div>
+  <div class="header-badge">Training Use Only</div>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="hero-badge">⚡ Scenario-Based Drill</div>
+    <h1>EV Scene<br>Size-Up</h1>
+    <p class="hero-sub">Reference-backed scenario drills for electric vehicle emergency response — hazard recognition, isolation, PPE, suppression, and post-incident authority.</p>
+    <div class="hero-rule"></div>
+    <div class="level-controls">
+      <span class="level-label">Training Level</span>
+      <div class="toggle-group">
+        <button class="toggle-btn active" data-level="ops" onclick="setLevel('ops')">Operations</button>
+        <button class="toggle-btn" data-level="tech" onclick="setLevel('tech')">Technician</button>
+      </div>
+    </div>
+    <button class="gen-btn" onclick="generateDrill()">Generate Drill</button>
+    <div><span class="disclaimer">⚠ Not for use during live incidents</span></div>
+  </div>
+
+  <div id="drillArea"></div>
+</div>
+<script>
+// ================================================================
+// SOURCES
+// ================================================================
+var SRC={
+  erg147:{n:'ERG 2024, Guide 147 — Lithium Ion Batteries',p:'U.S. DOT PHMSA',u:'https://www.phmsa.dot.gov/hazmat/erg/emergency-response-guidebook-erg'},
+  oshaLiIon:{n:'OSHA — Lithium Ion Battery Hazards',p:'OSHA / U.S. Department of Labor',u:'https://www.osha.gov/lithium-batteries'},
+  teexEmissions:{n:'TEEX / UL FSRI — EV Battery Fire Emissions Research',p:'Texas A&M TEEX / UL Fire Safety Research Institute',u:'https://fsri.org'},
+  nfpaAFV:{n:'NFPA — Alternative Fuel Vehicles Emergency Response',p:'NFPA',u:'https://www.nfpa.org/resources/resources-and-tools/for-first-responders/alternative-fuel-vehicles'},
+  nfpa855:{n:'NFPA 855 (2023) — Standard for ESS Installation',p:'NFPA',u:'https://www.nfpa.org/codes-and-standards/nfpa-855'},
+  ntsbEV:{n:'NTSB — EV Battery Fire Safety Findings',p:'National Transportation Safety Board',u:'https://www.ntsb.gov'},
+  niosh:{n:'NIOSH — IDLH Documentation',p:'NIOSH / Centers for Disease Control',u:'https://www.cdc.gov/niosh/idlh'},
+  faaVent:{n:'FAA — Battery Vent Gas Flammability Research',p:'FAA William J. Hughes Technical Center',u:'https://www.fire.tc.faa.gov'}
+};
+
+// ================================================================
+// REFERENCE LIBRARY — reusable ref panels
+// ================================================================
+var R={
+  erg_fire:{t:'ERG 2024, Guide 147 — Fire Response',c:'A lithium ion battery fire may <span class="hl">reignite at any point</span> after the initial fire is extinguished, <span class="warn">up to weeks later</span> where pack cooling was incomplete. Use thermal imaging, if available, to continuously monitor the battery pack.',src:SRC.erg147},
+  erg_iso:{t:'ERG 2024, Guide 147 — Isolation Distances',c:'Initial isolation: <span class="hl">100 ft (30 m) in all directions</span>. LARGE BATTERY FIRE: Consider initial evacuation of emergency responders for <span class="hl">330 ft (100 m)</span> in all directions. BESS or multi-vehicle events may warrant extended isolation.',src:SRC.erg147},
+  erg_water:{t:'ERG 2024, Guide 147 — Suppression Guidance',c:'If available, use <span class="hl">large amount of water</span> to extinguish or suppress a high-voltage battery fire. <span class="warn">CAUTION: Salt water is not recommended</span> as it may increase hydrogen and hydrogen fluoride gas production. Water cannot stop an established internal thermal runaway — the goal is external cooling and exposure management.',src:SRC.erg147},
+  osha_gas:{t:'OSHA — Thermal Runaway Off-Gas Hazards',c:'Thermal runaway can produce: <span class="warn">hydrogen fluoride (HF)</span>, hydrogen chloride (HCl), <span class="warn">hydrogen cyanide (HCN)</span>, phosphoryl fluoride (POF₃), <span class="warn">carbon monoxide (CO)</span>, CO₂, black carbon, and other hazardous chemicals and particulates. All are produced with or without visible flame.',src:SRC.oshaLiIon},
+  teex_conc:{t:'TEEX / UL FSRI — Measured Toxic Concentrations',c:'CO: up to <span class="warn">25,000 ppm</span> (IDLH 1,200 ppm). HF: measured at <span class="warn">IDLH levels (30 ppm)</span> in both cell-stack and module tests. HCN: <span class="warn">34–200 ppm</span> (IDLH 50 ppm). Formaldehyde: up to <span class="warn">150× OSHA 8-hr limit</span>.',src:SRC.teexEmissions},
+  niosh_idlh:{t:'NIOSH — IDLH Values for Primary EV Off-Gases',c:'HF IDLH: <span class="warn">30 ppm</span> | HCN IDLH: <span class="warn">50 ppm</span> | CO IDLH: <span class="warn">1,200 ppm</span><br>Perimeter readings are floor values. Approach-zone concentrations are significantly higher. IDLH is not a safe-entry threshold — it defines <span class="hl">immediately dangerous to life and health</span>.',src:SRC.niosh},
+  ntsb_reinit:{t:'NTSB — EV Battery Re-Ignition Data',c:'Documented re-ignition events have occurred <span class="hl">20 minutes to more than 24 hours</span> after apparent suppression. The HV battery pack retains <span class="warn">full voltage internally</span> even after 12V disconnect. Pack temperature drop is not confirmation of thermal stabilization.',src:SRC.ntsbEV},
+  nfpa855_auth:{t:'NFPA 855 (2023) — Post-Incident Authority',c:'The <span class="hl">Authority Having Jurisdiction (AHJ)</span> holds post-incident disposition authority. Manufacturer emergency guidance must be obtained for pack condition assessment. The <span class="hl">Fire Marshal</span> coordinates release authorization. Responding crew coordinates and documents — it does not unilaterally authorize or deny release.',src:SRC.nfpa855},
+  nfpa_hvac:{t:'NFPA / OSHA — HVAC Distribution Hazard',c:'EV battery off-gas travels through <span class="warn">HVAC ductwork, stairwells, and elevator shafts</span> into occupied areas beyond the immediate fire floor. The primary hazard is chemical distribution — not oxygen supply to the fire. <span class="hl">NMC thermal runaway is self-oxidizing</span>; the cathode releases its own oxygen during decomposition.',src:SRC.oshaLiIon},
+  nfpa_scba:{t:'NFPA / OSHA — Minimum Respiratory Protection',c:'Full structural PPE with <span class="hl">SCBA positive pressure</span> is required for all operations within the isolation zone of an active or recently active EV battery event. APRs cannot filter HF, HCN, or CO at concentrations produced during thermal runaway. SCBA is required <span class="warn">with or without visible flame</span>.',src:SRC.nfpaAFV},
+  faa_chem:{t:'FAA — Battery Chemistry and Vent Gas Profile',c:'<span class="hl">NMC (Nickel Manganese Cobalt):</span> Onset ~150°C (302°F). Cathode releases oxygen — self-sustaining fire without external air supply.<br><span class="hl">LFP (Lithium Iron Phosphate):</span> Onset ~270°C (518°F). Does not release oxygen but still produces HF, CO, and flammable vent gases. All lithium-ion chemistries contain LiPF₆ electrolyte — HF production is chemistry-independent.',src:SRC.faaVent},
+  nfpa_phev:{t:'NFPA AFV Guide — PHEV Hazard Profile',c:'Plug-in hybrids present <span class="warn">dual hazard</span>: conventional gasoline fuel fire risk PLUS lithium-ion battery thermal runaway risk. Both must be managed simultaneously. Pack size is smaller than full EVs but thermal runaway risk is equivalent. Fuel spill ignition can trigger battery thermal event and vice versa.',src:SRC.nfpaAFV},
+  erg_water_goal:{t:'ERG 2024 / NFPA — What Water Actually Does',c:'Water cannot stop an <span class="warn">established internal thermal runaway</span>. Once the internal exothermic cascade is underway, it is self-sustaining. Water manages <span class="hl">external fire, cools exposures, and slows heat transfer to adjacent cells</span>. The internal reaction must exhaust available fuel.',src:SRC.erg147}
+};
+
+// ================================================================
+// SCENARIO DATA
+// ================================================================
+var VEHICLES=[
+  {type:'Passenger EV Sedan',volt:'200–400V',energy:'40–100 kWh',chem:'NMC (common)',batteryLoc:'Underfloor slab, full vehicle length'},
+  {type:'Passenger EV SUV / Crossover',volt:'300–800V*',energy:'60–200 kWh',chem:'NMC (common)',batteryLoc:'Underfloor slab',note:'*800V on select high-performance platforms only'},
+  {type:'Plug-in Hybrid (PHEV)',volt:'100–350V',energy:'8–40 kWh',chem:'NMC or LFP',batteryLoc:'Under rear seat / trunk floor'},
+  {type:'Electric Delivery Van',volt:'400–700V',energy:'80–200 kWh',chem:'NMC or LFP',batteryLoc:'Underfloor or frame-mounted'},
+  {type:'Electric Transit Bus',volt:'600–750V',energy:'150–600 kWh',chem:'LFP (common)',batteryLoc:'Roof-mounted or underfloor modules'},
+  {type:'E-Bike / E-Scooter',volt:'36–72V',energy:'0.5–2 kWh',chem:'NMC (common)',batteryLoc:'Frame-integrated or removable pack'},
+  {type:'Electric Motorcycle',volt:'48–96V',energy:'5–20 kWh',chem:'NMC or LFP',batteryLoc:'Frame-integrated'},
+  {type:'BESS Module (Commercial)',volt:'480–1,500V',energy:'100–2,000+ kWh',chem:'NMC or LFP',batteryLoc:'Fixed installation — rack or containerized'}
+];
+var INCIDENTS=[
+  {type:'Active Battery Fire',desc:'Vehicle / unit confirmed on fire with visible flame and/or heavy smoke from battery area'},
+  {type:'Thermal Runaway — No Visible Flame',desc:'Chemical odor, audible hissing, and/or heat signature with no open flame — early thermal event suspected'},
+  {type:'Post-Collision Battery Damage',desc:'Structural impact to battery area confirmed — thermal event has not yet manifested but cell damage is suspected'},
+  {type:'Submerged Vehicle Recovery',desc:'Vehicle submerged for extended period — recovery underway with confirmed battery damage'},
+  {type:'ESS / BESS Facility Alarm',desc:'Facility battery alarm active — no visible fire or smoke; facility worker reports possible false alarm'},
+  {type:'Charging Station Fire',desc:'Fire at or near active charging infrastructure — one or more plugged-in vehicles involved'},
+  {type:'Overheating / Smoking Pack',desc:'Smoke or chemical odor from battery area — thermal runaway may be developing'},
+  {type:'Post-Suppression Monitoring',desc:'Fire appears knocked down — unit on scene for re-ignition monitoring and disposition'}
+];
+var LOCATIONS=[
+  {name:'Highway / Interstate',conf:'Open roadway',vent:'Wind-dependent',exp:'Adjacent traffic, guardrail barriers, overpass below'},
+  {name:'Parking Structure',conf:'Enclosed — multiple levels',vent:'Mechanical HVAC — off-gas distributes to all floors',exp:'Occupied vehicle, HVAC intakes, stairwells, elevator shafts'},
+  {name:'Residential Street',conf:'Semi-open',vent:'Natural — wind-dependent',exp:'Adjacent structures, HVAC intakes, pedestrians'},
+  {name:'Shopping Center Lot',conf:'Open with adjacent structures',vent:'Natural with HVAC exposure',exp:'Adjacent occupied building, charging infrastructure, high pedestrian traffic'},
+  {name:'Transit Depot',conf:'Partially enclosed',vent:'Mechanical — duct network',exp:'Adjacent buses, maintenance personnel, fuel storage'},
+  {name:'Public Charging Station',conf:'Open or semi-covered canopy',vent:'Natural ventilation',exp:'Multiple plugged-in vehicles, electrical infrastructure'},
+  {name:'Waterway / Canal',conf:'Open — water access',vent:'Wind-dependent',exp:'Recovery crew, waterway contamination, marine traffic'},
+  {name:'ESS / BESS Facility',conf:'Enclosed — purpose-built',vent:'Engineered suppression and ventilation',exp:'Rack-mounted adjacent modules, facility personnel, built-in suppression systems'}
+];
+var CONDITIONS=[
+  {time:'Night — 0230 hours',wx:'Clear, wind calm',note:'Reduced visibility. Delayed discovery likely.'},
+  {time:'Daytime — 1400 hours',wx:'Hot, 95°F (35°C) ambient',note:'High ambient temperature may accelerate external heat transfer to adjacent cells.'},
+  {time:'Daytime — 1000 hours',wx:'Rain, 45°F (7°C)',note:'Water runoff management required. Cold ambient does NOT suppress established internal thermal runaway.'},
+  {time:'Evening — 1830 hours',wx:'Overcast, moderate wind 15 mph (24 km/h)',note:'Wind affecting plume direction. Account for off-gas dispersion downwind.'},
+  {time:'Night — 2100 hours',wx:'Freezing, 25°F (-4°C)',note:'Cold ambient temperature does not meaningfully slow an established internal thermal runaway. Do not reduce operational urgency based on ambient temperature.'}
+];
+// ================================================================
+// QUESTION BANKS
+// ================================================================
+// Format: {cat, skill, refs:[{t,c,src}], q, ans:[{text,correct,trap?}], sources:[SRC.x]}
+
+var BANKS={
+hr:{ops:[
+  {cat:'Initial Size-Up',skill:'Thermal Event Recognition',refs:[R.erg_fire,R.osha_gas],
+   q:'First-arriving unit reports a parked EV with no visible smoke or flame but a strong chemical odor and audible hissing. What is the correct immediate action?',
+   ans:[
+    {text:'Establish initial isolation, don full structural PPE and SCBA, and treat as thermal runaway in progress.',correct:true},
+    {text:'Approach the vehicle without PPE to confirm the odor source before committing resources.',correct:false,trap:'Chemical odor and audible hissing are confirmed thermal runaway indicators. HF and HCN are present in the off-gas before visible flame. Approaching without SCBA and structural PPE risks immediate toxic exposure.'},
+    {text:'Ventilate the area and monitor for 15 minutes before committing resources.',correct:false,trap:'Delaying intervention allows thermal runaway to progress. Ventilating without monitoring can spread toxic off-gas through HVAC pathways to occupied areas.'},
+    {text:'Contact the manufacturer before any on-scene action.',correct:false,trap:'Manufacturer contact is appropriate later. Initial isolation and life safety do not wait for manufacturer guidance.'}
+   ],sources:[SRC.erg147,SRC.oshaLiIon]},
+  {cat:'Cold Weather Assessment',skill:'Risk-Benefit Analysis',refs:[R.erg_fire],
+   q:'A crew member states that freezing temperatures at the scene will slow the thermal runaway reaction. Is this accurate, and how should it affect your operational urgency?',
+   ans:[
+    {text:'Inaccurate. Cold ambient temperature does not meaningfully slow an established internal thermal runaway. Operational urgency is unchanged.',correct:true},
+    {text:'Accurate — freezing temperatures significantly suppress lithium-ion thermal reactions and allow more time for resource staging.',correct:false,trap:'The exothermic reaction is internally self-sustaining. Ambient temperature does not control the internal cascade once initiated. This misconception has led to delayed action.'},
+    {text:'Partially accurate — cold slows early stages, giving extra time before full thermal runaway develops.',correct:false,trap:'Cold does not reliably slow any stage of established internal thermal runaway in lithium cells. Onset temperature is determined by internal chemistry, not ambient conditions.'},
+    {text:'Accurate — reduce SCBA requirements when ambient temperature is below 32°F (0°C).',correct:false,trap:'PPE requirements are not modified by ambient temperature. Toxic off-gases are produced regardless of ambient conditions.'}
+   ],sources:[SRC.erg147]},
+  {cat:'Re-Ignition Recognition',skill:'Post-Knockdown Hazard Assessment',refs:[R.ntsb_reinit,R.erg_fire],
+   q:'An hour after apparent suppression, a sedan EV begins producing thin white smoke from the battery compartment. What does this indicate and what is your response?',
+   ans:[
+    {text:'Thermal runaway is likely restarting in incompletely cooled cells. Re-ignition risk is real — reassess immediately and prepare to resume suppression.',correct:true},
+    {text:'Residual steam from water application — normal post-suppression behavior. Monitor for 10 minutes.',correct:false,trap:'Thin white smoke appearing an hour after knockdown is not residual steam. Steam dissipates quickly. Late-onset smoke indicates continuing or restarting thermal activity in incompletely cooled cells.'},
+    {text:'Off-gassing is complete. White smoke indicates the reaction is winding down — the scene is stabilizing.',correct:false,trap:'Post-suppression smoke is not a clearance signal. Thermal events can restart in incompletely cooled cells with no warning. White smoke from the pack is the opposite of clearance.'},
+    {text:'Battery chemistry prevents re-ignition after water has been applied.',correct:false,trap:'Water does not chemically prevent re-ignition. It only manages heat — and only while actively applied. Re-ignition has been documented more than 24 hours after knockdown.'}
+   ],sources:[SRC.ntsbEV,SRC.erg147]},
+  {cat:'PHEV Hazard Profile',skill:'Dual-Hazard Recognition',refs:[R.nfpa_phev],
+   q:'You respond to a PHEV post-collision with a confirmed gasoline spill and suspected battery damage. What does the PHEV classification add to your hazard profile compared to a full EV?',
+   ans:[
+    {text:'A gasoline fuel hazard in addition to battery thermal event risk — both must be managed simultaneously.',correct:true},
+    {text:'Nothing significant — PHEVs use the same battery chemistry as full EVs and present the same hazard profile.',correct:false,trap:'While battery chemistry is similar, PHEVs add a gasoline fuel hazard that full EVs do not have. A fuel spill adds ignition risk and hazmat runoff concern as a second simultaneous hazard stream.'},
+    {text:'Reduced battery hazard because PHEV packs are smaller — focus on the fuel spill.',correct:false,trap:'Pack size affects stored energy but does not eliminate thermal runaway risk. The additive fuel hazard is the key change, not a reduced battery risk.'},
+    {text:'Higher system voltage than a full EV due to the combined drivetrain.',correct:false,trap:'PHEV voltage is typically lower than full EVs (100–350V). The hazard change is additive fuel, not higher voltage.'}
+   ],sources:[SRC.nfpaAFV]},
+  {cat:'Submerged Vehicle',skill:'Post-Submersion Risk Assessment',refs:[R.ntsb_reinit],
+   q:'A submerged EV is being recovered from a canal after 8 hours. A bystander says it is safe because the water cooled it. How do you respond?',
+   ans:[
+    {text:'Disagree — damaged cells can reactivate on air exposure. Treat extraction as a potential thermal event with suppression staged and ready.',correct:true},
+    {text:'Agree — 8 hours of submersion provides complete pack cooling and eliminates thermal risk.',correct:false,trap:'Submersion cools externally but does not neutralize damaged cells. Air exposure on extraction can reactivate a thermal event. Post-submersion thermal events have been documented hours after recovery.'},
+    {text:'Agree if submersion time exceeded 6 hours.',correct:false,trap:'There is no submersion duration that guarantees safety. Cell damage determines reactivation risk, not how long the vehicle was submerged.'},
+    {text:'Agree only if the battery compartment appears visually intact.',correct:false,trap:'Damage may not be externally visible. Visual appearance does not confirm cell integrity after submersion and mechanical stress.'}
+   ],sources:[SRC.ntsbEV]},
+  {cat:'Charging Station Fire',skill:'Scene Complexity Recognition',refs:[R.erg_fire,R.osha_gas],
+   q:'A charging station fire involves one fully involved EV and a second plugged-in EV that appears undamaged. What is your priority regarding the second vehicle?',
+   ans:[
+    {text:'Isolate both vehicles. Assess whether the second can be safely unplugged to interrupt charge feedback — do not approach without full PPE and SCBA.',correct:true},
+    {text:'The second vehicle is low priority — no fire is visible.',correct:false,trap:'Electrical proximity to an active thermal event places the second vehicle at risk from charge feedback and sympathetic thermal runaway. Apparent normalcy is not confirmation of safety.'},
+    {text:'Unplug the second vehicle immediately as the first action on scene before donning PPE.',correct:false,trap:'Approaching without PPE and scene assessment is not appropriate. Isolate the area, don PPE, then assess safe access to the second vehicle.'},
+    {text:'The second vehicle has automatic circuit protection that handles charge isolation during fires.',correct:false,trap:'Charging circuit protection does not guarantee isolation from thermal hazards in an active fire scenario.'}
+   ],sources:[SRC.erg147,SRC.oshaLiIon]},
+  {cat:'HF Detection',skill:'Atmospheric Indicator Interpretation',refs:[R.teex_conc,R.niosh_idlh],
+   q:'Air monitoring at the scene perimeter detects hydrogen fluoride at low concentration. What does this indicate tactically?',
+   ans:[
+    {text:'Active thermal decomposition of lithium cell electrolyte is underway. Concentrations may escalate rapidly toward IDLH. SCBA is mandatory for all approach.',correct:true},
+    {text:'The pack has fully vented — HF concentration will decrease from here.',correct:false,trap:'Low initial concentration may indicate early thermal decomposition, not the end of it. Concentrations can increase significantly as the event progresses.'},
+    {text:'Concentrations below IDLH are not actionable. Continue current approach without modification.',correct:false,trap:'IDLH is not a "safe below this value" threshold. Perimeter readings are floor values. Approach-zone concentrations are higher. Any HF detection signals active thermal decomposition.'},
+    {text:'HF at low concentration indicates a separate chemical hazard unrelated to the battery event.',correct:false,trap:'HF is a confirmed thermal decomposition product of LiPF₆-based electrolytes used in lithium-ion batteries. Its presence at the perimeter confirms the battery event is actively off-gassing.'}
+   ],sources:[SRC.teexEmissions,SRC.niosh]},
+  {cat:'Re-Ignition Timeline',skill:'Threshold Recognition',refs:[R.ntsb_reinit],
+   q:'A crew member asks how long re-ignition risk remains after suppression. What is the correct answer?',
+   ans:[
+    {text:'Until pack cooling is fully confirmed — re-ignition risk can extend days to weeks without complete thermal stabilization.',correct:true},
+    {text:'30 minutes — standard overhaul time accounts for this.',correct:false,trap:'Standard 30-minute overhaul was developed for conventional fires and does not account for the re-ignition characteristics of lithium-ion cells.'},
+    {text:'24 hours — the established EV monitoring period.',correct:false,trap:'24 hours is a minimum monitoring baseline, not a definitive endpoint. Pack temperature and cooling completeness determine actual risk duration — not elapsed time.'},
+    {text:'Risk ends when smoke production stops.',correct:false,trap:'Smoke cessation does not indicate thermal stabilization. Internal reactions can continue without visible external indicators.'}
+   ],sources:[SRC.ntsbEV,SRC.erg147]},
+  {cat:'HVAC Pathway Hazard',skill:'Hazard Pathway Recognition',refs:[R.nfpa_hvac],
+   q:'An EV fire in a parking structure appears controlled. Outside the building, HVAC exhaust is producing visible fumes. What is the hazard?',
+   ans:[
+    {text:'HVAC is distributing toxic off-gas through the structure — evacuation must follow ventilation pathways, not just proximity to the vehicle.',correct:true},
+    {text:'HVAC exhaust is a building management concern, not a fire department issue.',correct:false,trap:'Battery off-gas distributed through HVAC exposes building occupants far beyond the vehicle area. Evacuation following ventilation pathways is a fire department life safety function.'},
+    {text:'The fumes are residual steam from suppression water in the ductwork.',correct:false,trap:'Sustained HVAC fumes after apparent suppression indicate continuing off-gas generation, not residual steam.'},
+    {text:'HVAC ventilation is helping by dispersing and diluting the hazard.',correct:false,trap:'HVAC distributes the hazard into occupied areas throughout the building. Dispersion does not make toxic concentrations safe for building occupants.'}
+   ],sources:[SRC.oshaLiIon,SRC.nfpaAFV]},
+  {cat:'BESS Alarm',skill:'Hazard Confirmation Protocol',refs:[R.erg_fire,R.teex_conc],
+   q:'A battery alarm at a commercial BESS facility — no visible fire or smoke. The facility worker says it is probably a false alarm. Your priority?',
+   ans:[
+    {text:'Treat as a confirmed thermal event until monitoring rules it out. Establish isolation and request the facility emergency action plan.',correct:true},
+    {text:'Accept the worker\'s assessment, reset the alarm, and monitor for 15 minutes.',correct:false,trap:'A facility worker\'s assessment does not override hazard confirmation protocol. Thermal runaway can precede visible indicators. Accepting the false alarm assessment has led to delayed response in documented incidents.'},
+    {text:'Apply water to the modules as a precaution before confirming the hazard location.',correct:false,trap:'Applying water before locating and confirming the hazard is not appropriate. Indiscriminate water application may interfere with engineered suppression systems.'},
+    {text:'Wait for visible smoke before committing resources.',correct:false,trap:'Waiting for visible confirmation while thermal runaway progresses risks a much larger event. BESS alarms must be treated as real until confirmed otherwise.'}
+   ],sources:[SRC.erg147,SRC.teexEmissions]}
+],
+tech:[
+  {cat:'Off-Gas Monitoring',skill:'Instrument Selection & Interpretation',refs:[R.teex_conc,R.niosh_idlh],
+   q:'Air monitoring shows HCN at 8 ppm and HF at 2 ppm at the scene perimeter. NIOSH IDLH: HCN = 50 ppm; HF = 30 ppm. What is the correct tactical assessment?',
+   ans:[
+    {text:'Perimeter readings indicate active thermal decomposition. Approach-zone concentrations are higher. SCBA is mandatory for all hot zone entry regardless of perimeter values.',correct:true},
+    {text:'Both values are well below IDLH — monitor and proceed with current approach without modification.',correct:false,trap:'Perimeter values are floor readings. Approach-zone concentrations may be several times higher. IDLH headroom based on perimeter data is not a sound assumption.'},
+    {text:'HCN is the priority at 8 ppm. HF at 2 ppm is below OSHA PEL and negligible.',correct:false,trap:'Both represent active thermal decomposition products. Combined exposure effects are additive. HF at 2 ppm at the perimeter does not mean approach-zone concentrations are safe.'},
+    {text:'Values below 10 ppm for either gas mean SCBA is not required.',correct:false,trap:'SCBA is required for any EV fire approach regardless of monitoring values. Monitoring informs isolation geometry — not the PPE level required.'}
+   ],sources:[SRC.teexEmissions,SRC.niosh]},
+  {cat:'Battery Chemistry Interpretation',skill:'Chemistry-to-Tactics Translation',refs:[R.faa_chem],
+   q:'A transit bus with LFP (Lithium Iron Phosphate) chemistry is involved in a fire. A crew member says LFP is safer and the crew can back off. How do you respond?',
+   ans:[
+    {text:'LFP has a higher onset threshold (~270°C / 518°F), but once thermal runaway begins it still produces HF, CO, and HCN. All electrolyte-based chemistries produce toxic off-gas. SCBA and isolation requirements are unchanged.',correct:true},
+    {text:'Agree — LFP has significantly lower thermal runaway risk and reduced PPE requirements.',correct:false,trap:'LFP has higher thermal stability but does not eliminate toxic off-gas production. All lithium-ion chemistries contain LiPF₆ electrolyte — HF production is chemistry-independent. SCBA is required for all.'},
+    {text:'Agree — LFP does not release oxygen during thermal runaway, so water can extinguish it easily.',correct:false,trap:'While LFP does not release oxygen from the cathode, the fire is still driven by exothermic cell decomposition. Water volume requirements and cooling strategy are similar to NMC.'},
+    {text:'Agree — LFP is used in transit buses because it is inherently non-hazardous.',correct:false,trap:'LFP is selected for transit buses for its longer cycle life and safety profile, not because it is non-hazardous. Thermal events still produce toxic off-gas and require full PPE.'}
+   ],sources:[SRC.faaVent,SRC.teexEmissions]},
+  {cat:'Self-Sustaining Reaction',skill:'Thermal Runaway Mechanism',refs:[R.erg_water_goal,R.faa_chem],
+   q:'Thermal imaging shows a battery pack at 180°C (356°F). NMC thermal runaway onset is approximately 150°C (302°F). A crew member requests confirmation that enough water will stop the reaction. Your response?',
+   ans:[
+    {text:'Negative. At 180°C with NMC chemistry, internal thermal runaway is in progress. Water manages external fire and slows propagation — it cannot halt the internal self-sustaining reaction. The reaction must exhaust available fuel.',correct:true},
+    {text:'Correct — apply 10,000–30,000 gallons directly to the pack to halt the reaction at this temperature.',correct:false,trap:'No volume of water halts an established internal thermal runaway. This is a critical operational misconception. Water manages external fire and exposures — not internal cell chemistry.'},
+    {text:'The pack is near onset but has not yet reached thermal runaway at 180°C.',correct:false,trap:'180°C exceeds the NMC onset threshold of 150°C (302°F). Thermal runaway is in progress, not approaching.'},
+    {text:'Thermal cameras cannot accurately read through battery pack housings — the reading is unreliable.',correct:false,trap:'180°C surface temperature on a pack is a confirmed thermal event indicator. Camera limitations do not change the tactical significance of a high surface temperature reading.'}
+   ],sources:[SRC.erg147,SRC.faaVent]},
+  {cat:'BESS Hazard Scaling',skill:'Energy Scale Assessment',refs:[R.erg_iso,R.teex_conc],
+   q:'A 2 MWh commercial BESS installation has an active alarm. No fire visible. How does the energy scale of this installation change your approach compared to a passenger sedan event?',
+   ans:[
+    {text:'Energy scale dramatically changes isolation geometry, off-gas volume potential, and suppression requirements. Isolation must be established in coordination with the facility emergency action plan and scaled to actual hazard potential.',correct:true},
+    {text:'Same approach — lithium-ion chemistry is the same regardless of installation size.',correct:false,trap:'Same chemistry, radically different energy scale. A 2 MWh system is 20–50 times the energy of a passenger sedan. Off-gas volume, isolation distance, and suppression water volume all scale accordingly.'},
+    {text:'Use the facility isolation plan as-is — it was engineered for this system.',correct:false,trap:'Facility plans are a starting point. Fire department authority and on-scene assessment govern actual isolation. Facility plans may not account for worst-case off-gas distribution.'},
+    {text:'Isolation scales linearly — twice the energy means twice the distance.',correct:false,trap:'Isolation does not scale linearly with energy. Hazard geometry, off-gas volume, ventilation, and plume modeling all influence the calculation.'}
+   ],sources:[SRC.erg147,SRC.teexEmissions]},
+  {cat:'Electrolyte Release Hazard',skill:'Pre-Fire Chemical Hazard Recognition',refs:[R.faa_chem,R.osha_gas],
+   q:'A post-collision EV on a highway overpass shows a ruptured battery pack with visible electrolyte release and no fire. What is the chemical hazard from the electrolyte alone?',
+   ans:[
+    {text:'LiPF₆-based electrolyte reacts with atmospheric moisture to produce HF. This is a chemical hazard independent of fire. Treat as a pre-event hazmat scenario with full PPE.',correct:true},
+    {text:'Electrolyte release is a slip hazard only — no air quality concern exists without active fire.',correct:false,trap:'LiPF₆ electrolyte reacts with atmospheric moisture to form HF on contact. This is a chemical hazard independent of combustion. Ignoring pre-fire electrolyte release is operationally dangerous.'},
+    {text:'Electrolyte spills are equivalent to a fuel spill — use standard fuel spill isolation.',correct:false,trap:'LiPF₆ electrolyte is not equivalent to a fuel spill. HF generation on moisture contact and the delayed thermal runaway risk differentiate it from petroleum products.'},
+    {text:'No hazmat concern until visible smoke or fire confirms a thermal event.',correct:false,trap:'The wait-for-fire approach bypasses the pre-thermal intervention window where isolation and PPE protect responders from both chemical and thermal hazards.'}
+   ],sources:[SRC.faaVent,SRC.oshaLiIon]},
+  {cat:'Salvage Yard Scaling',skill:'Multi-Pack Hazard Multiplication',refs:[R.erg_iso,R.erg_water_goal],
+   q:'A salvage yard reports a smoldering pile of crushed lithium-ion battery components from multiple vehicles. How does this differ from a single-vehicle event?',
+   ans:[
+    {text:'Multiple damaged packs represent a much larger energy release and off-gas volume. Isolation distances, water supply, and runoff containment must all scale accordingly.',correct:true},
+    {text:'No meaningful difference — lithium-ion chemistry is the same regardless of quantity.',correct:false,trap:'Quantity dramatically changes the energy involved, off-gas volume, suppression water requirements, and isolation geometry.'},
+    {text:'Crushed cells are fully discharged — the energy hazard is eliminated on crushing.',correct:false,trap:'Crushing does not discharge cells — it damages them and increases short-circuit risk. Thermal events are common in crushed battery components.'},
+    {text:'Water suppression is contraindicated for all salvage battery fires.',correct:false,trap:'Water is the primary suppression agent for battery fires. Volume requirements and runoff management are the tactical differences from single-vehicle events.'}
+   ],sources:[SRC.erg147]},
+  {cat:'BESS Nitrogen System Entry',skill:'Oxygen-Deficient Atmosphere Recognition',refs:[R.niosh_idlh],
+   q:'A BESS facility automatic suppression system used nitrogen flooding to suppress fire in a sealed module room. Fire department arrives post-flooding. Entry decision?',
+   ans:[
+    {text:'The module room is an IDLH oxygen-deficient atmosphere. SCBA is mandatory for entry. Ventilate before entry if tactically possible, or enter with SCBA and backup team in place.',correct:true},
+    {text:'Nitrogen atmosphere is safe for entry with structural PPE — nitrogen is non-toxic.',correct:false,trap:'Nitrogen flooding displaces oxygen below safe breathing levels. Entry into a nitrogen-flooded space without supplied air is an asphyxiation hazard. Nitrogen is non-toxic but IDLH due to oxygen displacement.'},
+    {text:'Wait 30 minutes for nitrogen to dissipate naturally before entry.',correct:false,trap:'Nitrogen dissipation rate in a sealed room cannot be predicted without ventilation and monitoring. 30 minutes is not a recognized clearance time.'},
+    {text:'SCBA is required only if battery fire products are also present alongside the nitrogen.',correct:false,trap:'Nitrogen displaces oxygen regardless of co-presence of fire products. The oxygen-deficient atmosphere alone makes it IDLH. SCBA is mandatory.'}
+   ],sources:[SRC.niosh]},
+  {cat:'HF Skin Exposure',skill:'Toxicological Emergency Recognition',refs:[R.niosh_idlh,R.teex_conc],
+   q:'A crew member experienced significant HF skin contact during EV fire suppression despite wearing structural PPE and SCBA. What is the specific medical priority?',
+   ans:[
+    {text:'Immediate decon with copious water followed by calcium gluconate gel application to exposed areas. Emergent transport — systemic hypocalcemia from fluoride ion penetration is life-threatening.',correct:true},
+    {text:'Standard burn treatment — HF causes contact burns like other acids.',correct:false,trap:'HF is a systemic toxin, not just a contact irritant. It depletes calcium causing hypocalcemia and can cause fatal cardiac arrhythmia from fluoride ion penetration. Calcium gluconate is the antidote — not standard burn care.'},
+    {text:'Standard wound care — HF burns appear mild and are less severe than other acid burns.',correct:false,trap:'HF burns may appear mild initially while systemic fluoride toxicity progresses internally. Delayed recognition of HF systemic toxicity is a documented cause of death.'},
+    {text:'No treatment beyond decon if SCBA was worn — respiratory protection eliminates all exposure risk.',correct:false,trap:'SCBA prevents respiratory exposure but not dermal exposure. HF at high concentrations penetrates structural gear and causes systemic toxicity through skin absorption.'}
+   ],sources:[SRC.niosh,SRC.teexEmissions]},
+  {cat:'HVAC Oxygen Supply Misconception',skill:'Technical Hazard Correction',refs:[R.nfpa_hvac,R.faa_chem],
+   q:'During a parking structure EV fire, a crew member argues against ventilation because it "feeds oxygen to the thermal runaway." Is this reasoning correct?',
+   ans:[
+    {text:'Incorrect reasoning — NMC thermal runaway is self-oxidizing and does not depend on atmospheric oxygen. The actual HVAC concern is toxic off-gas distribution to building occupants through ductwork and stairwells.',correct:true},
+    {text:'Correct — HVAC ventilation directly accelerates the internal thermal runaway reaction.',correct:false,trap:'NMC thermal runaway releases oxygen from the cathode and does not depend on atmospheric oxygen supply. Ventilation decisions must be evaluated against off-gas distribution risk, not oxygen supply to the fire.'},
+    {text:'Correct — positive pressure ventilation is always appropriate for EV fires in structures.',correct:false,trap:'PPV during an active EV off-gas event would drive toxic products into occupied areas. Ventilation strategy must follow atmospheric monitoring.'},
+    {text:'Partially correct — ventilation feeds the fire but also protects occupants, so it is a tradeoff.',correct:false,trap:'The oxygen-supply concern is technically incorrect for NMC chemistry. The actual tradeoff is between off-gas evacuation and distribution to occupied areas — not fire feeding.'}
+   ],sources:[SRC.oshaLiIon,SRC.faaVent]},
+  {cat:'Pre-Runaway Recognition',skill:'Onset Temperature Assessment',refs:[R.faa_chem],
+   q:'A BESS module registers 140°C (284°F) on thermal imaging during an alarm-only event. NMC thermal runaway onset is approximately 150°C (302°F). What does this reading indicate?',
+   ans:[
+    {text:'The module is 10°C below NMC onset with no external cooling applied. Thermal runaway is imminent without intervention. Prepare for active event transition immediately.',correct:true},
+    {text:'Below onset — this is a monitor-and-wait situation.',correct:false,trap:'At 140°C (284°F) with no cooling applied and no heat sink, temperature will continue rising. Being 10°C below onset is an immediate escalation concern, not a passive monitoring situation.'},
+    {text:'BESS modules require 200°C (392°F) before thermal runaway risk is significant.',correct:false,trap:'NMC onset is approximately 150°C (302°F). Waiting until 200°C means thermal runaway has already been active for some time.'},
+    {text:'A 140°C surface reading indicates the internal cell temperature is much lower.',correct:false,trap:'A 140°C surface temperature indicates a serious internal event in progress. Assuming safer internal temperatures from a surface reading is not sound practice at this proximity to onset.'}
+   ],sources:[SRC.faaVent]}
+]},
+
+iso:{ops:[
+  {cat:'Isolation Distance',skill:'Distance Interpretation',refs:[R.erg_iso],
+   q:'Per ERG Guide 147 (2024), what is the recommended initial isolation distance for a passenger EV battery fire?',
+   ans:[
+    {text:'100 feet (30 m) in all directions. Expand to 330 feet (100 m) for large packs or escalating multi-vehicle events.',correct:true},
+    {text:'25 feet (8 m) — same as a standard vehicle fire.',correct:false,trap:'Standard vehicle fire distances do not account for EV off-gas hazards. ERG 147 provides EV-specific guidance that significantly exceeds standard vehicle perimeters.'},
+    {text:'500 feet (150 m) for all EV fires regardless of size.',correct:false,trap:'500 feet exceeds ERG guidance for standard passenger EV fires and may not be operationally practical. ERG 147 provides tiered guidance scaled to incident size.'},
+    {text:'IC discretion only — no published distance guidance exists for EV fires.',correct:false,trap:'ERG 147 provides specific distance guidance. IC discretion applies to expansion of distances, not elimination of them.'}
+   ],sources:[SRC.erg147]},
+  {cat:'Plume Direction',skill:'Wind and Plume Assessment',refs:[R.erg_iso],
+   q:'Wind is blowing from the southwest at 18 mph (29 km/h). An EV fire is in an open parking lot. Where is your primary evacuation priority?',
+   ans:[
+    {text:'Downwind to the northeast — the toxic off-gas plume follows wind direction. Evacuate downwind and uphill where applicable.',correct:true},
+    {text:'All directions equally — wind disperses the hazard uniformly.',correct:false,trap:'Wind creates a dominant downwind plume. The hazard concentration is highest along the downwind axis, not uniformly distributed.'},
+    {text:'Upwind — personnel there face the greatest heat exposure from the fire.',correct:false,trap:'Upwind personnel face radiant heat from the fire, not the off-gas plume. The chemical hazard moves downwind.'},
+    {text:'Perpendicular to the wind — crosswind areas have the highest plume concentration.',correct:false,trap:'The downwind plume centerline carries the highest concentration. Crosswind areas are transitional zones, not the highest-concentration area.'}
+   ],sources:[SRC.erg147]},
+  {cat:'Enclosed Space Isolation',skill:'Perimeter Geometry Adaptation',refs:[R.erg_iso,R.nfpa_hvac],
+   q:'A burning EV in a parking structure has triggered HVAC alarms in the building. How does this change your evacuation plan?',
+   ans:[
+    {text:'Evacuation must follow HVAC distribution pathways — the entire building may require evacuation if off-gas is confirmed in the system.',correct:true},
+    {text:'Evacuation stays limited to the fire floor — structural walls contain the hazard.',correct:false,trap:'HVAC distributes off-gas beyond the fire floor. Structure walls trap the chemical hazard — they do not contain it.'},
+    {text:'Evacuate the floor above and below the fire floor only.',correct:false,trap:'HVAC coverage can extend throughout the building. Partial floor evacuation is insufficient when HVAC contamination is confirmed.'},
+    {text:'HVAC systems automatically shut off during fire events, limiting spread.',correct:false,trap:'HVAC may not shut down immediately, and gas already in the system continues distributing even after shutdown.'}
+   ],sources:[SRC.erg147,SRC.oshaLiIon]},
+  {cat:'Dual-Hazard Isolation',skill:'Multi-Hazard Perimeter Setting',refs:[R.erg_iso],
+   q:'A PHEV with a confirmed gasoline spill and battery damage is post-collision on a residential street. How do you set isolation?',
+   ans:[
+    {text:'Use the larger of the two required isolation zones and address both hazards simultaneously.',correct:true},
+    {text:'Use only the battery isolation distance — it is larger and covers both hazards by default.',correct:false,trap:'The two hazards have different geometries and plume directions. One distance set to a single hazard may leave parts of the second hazard unaddressed.'},
+    {text:'Use gasoline isolation only — it is the more familiar hazard.',correct:false,trap:'Battery off-gas is a different hazard than gasoline vapor and requires separate isolation geometry. Using only one isolation ignores the other hazard completely.'},
+    {text:'Wait for hazmat to establish isolation — ops-level crews do not have this authority.',correct:false,trap:'Initial isolation is an ops-level function. Hazmat refines isolation — it does not replace the first-in crew\'s responsibility to establish it.'}
+   ],sources:[SRC.erg147]},
+  {cat:'Submerged Vehicle Isolation',skill:'Extraction Zone Safety',refs:[R.ntsb_reinit,R.erg_iso],
+   q:'During recovery of a submerged EV from a waterway, what isolation consideration applies to the extraction operation?',
+   ans:[
+    {text:'Isolate the recovery zone. All non-essential personnel must be clear. Suppression must be staged and ready before extraction begins.',correct:true},
+    {text:'No isolation needed — the vehicle has been cooled by submersion.',correct:false,trap:'Submersion does not neutralize cell damage. Air exposure on extraction is a known thermal event trigger. Isolation before extraction is required.'},
+    {text:'Isolation applies only once fire is visible.',correct:false,trap:'Isolation precedes fire in hazmat response. Waiting for visible fire before isolating is not the ops-level standard.'},
+    {text:'Water rescue personnel determine isolation for all submerged vehicle operations.',correct:false,trap:'Hazmat isolation for a battery event is a fire department function. It is coordinated with rescue personnel, not delegated to them.'}
+   ],sources:[SRC.ntsbEV,SRC.erg147]},
+  {cat:'Large Pack Isolation',skill:'Pack Size to Distance Scaling',refs:[R.erg_iso],
+   q:'An electric transit bus fire involves a 300 kWh roof-mounted pack. How does pack size affect your isolation decision?',
+   ans:[
+    {text:'Expand isolation beyond standard ERG 147 passenger vehicle guidance. A 300 kWh pack represents significantly more energy and off-gas potential than a sedan.',correct:true},
+    {text:'No change — chemistry is the hazard, not pack size.',correct:false,trap:'Pack size determines energy available for release and the volume of off-gas producible. Larger packs require larger isolation.'},
+    {text:'Roof mounting reduces ground-level hazard — standard passenger vehicle isolation applies.',correct:false,trap:'Roof mounting changes the suppression approach but does not reduce off-gas or thermal hazard. Isolation must be commensurate with pack size.'},
+    {text:'Apply BESS facility isolation standards to transit bus fires.',correct:false,trap:'BESS facility protocols apply to fixed installations. Transit bus fires warrant expanded vehicle-level isolation, not fixed-installation protocols.'}
+   ],sources:[SRC.erg147]},
+  {cat:'Reduction Criteria',skill:'Threshold Recognition',refs:[R.ntsb_reinit,R.niosh_idlh],
+   q:'When is it appropriate to reduce isolation distance at an EV fire scene?',
+   ans:[
+    {text:'When air monitoring confirms concentrations below action levels AND pack temperature has stabilized toward ambient.',correct:true},
+    {text:'After 30 minutes with no visible re-ignition.',correct:false,trap:'Elapsed time is not the deciding factor. Air monitoring values and pack temperature — not time — determine when reduction is appropriate.'},
+    {text:'When the IC determines the scene is visually stable.',correct:false,trap:'Visual assessment without objective monitoring data is insufficient for isolation reduction at EV fire scenes.'},
+    {text:'Isolation once established for an EV fire is permanent until hazmat formally clears the scene.',correct:false,trap:'Isolation can be reduced when objective data supports it. Indefinite isolation is not the standard.'}
+   ],sources:[SRC.ntsbEV,SRC.niosh]},
+  {cat:'HVAC Exposure Pathway',skill:'Hazard Zone Extension',refs:[R.nfpa_hvac,R.erg_iso],
+   q:'An EV fire off-gas is confirmed entering a building HVAC intake 250 feet (76 m) away — beyond the ERG 100 ft (30 m) zone. Does your isolation extend to cover the building?',
+   ans:[
+    {text:'Yes — a confirmed HVAC exposure pathway extends the hazard zone to the building. Evacuation of affected areas is required.',correct:true},
+    {text:'No — the building is beyond the ERG guideline distance.',correct:false,trap:'ERG distances are minimums. A confirmed exposure pathway that extends further requires the perimeter to follow the actual hazard, not just the vehicle proximity.'},
+    {text:'Notify building management but do not expand the perimeter.',correct:false,trap:'Notification alone is insufficient when occupants are being actively exposed via HVAC. Evacuation of affected areas is required.'},
+    {text:'HVAC concentration is diluted below IDLH levels at 250 ft (76 m).',correct:false,trap:'HVAC concentrates and distributes off-gas — it does not reliably dilute it below action levels for building occupants.'}
+   ],sources:[SRC.oshaLiIon,SRC.erg147]}
+],tech:[
+  {cat:'Isolation Expansion Criteria',skill:'Technical Isolation Decision',refs:[R.erg_iso],
+   q:'What specific factors justify expanding initial EV fire isolation from 100 ft (30 m) to 330 ft (100 m) per ERG Guide 147?',
+   ans:[
+    {text:'Large pack size (transit bus, BESS, multi-vehicle involvement), active venting with confirmed off-gas, or an unstable scene with re-ignition risk.',correct:true},
+    {text:'Any active flame — all flaming events require the larger isolation.',correct:false,trap:'Isolation scales with energy and quantity involved, not flame presence alone. A small e-bike fire with active flame does not warrant 330 ft (100 m) isolation.'},
+    {text:'Expanded isolation applies only to BESS — vehicle fires use only the 100 ft (30 m) standard.',correct:false,trap:'Transit bus packs (150–600 kWh) and multi-vehicle events can warrant 330 ft (100 m) isolation under ERG 147. The criteria is energy scale, not installation type.'},
+    {text:'Expand only when hazmat requests a tech-level response.',correct:false,trap:'Isolation decisions are driven by hazard characteristics, not administrative escalation levels.'}
+   ],sources:[SRC.erg147]},
+  {cat:'HF Perimeter Data Interpretation',skill:'Toxicological Assessment',refs:[R.niosh_idlh,R.teex_conc],
+   q:'Off-gas monitoring at the perimeter shows HF at 1.5 ppm. OSHA PEL for HF is 3 ppm (TWA). NIOSH IDLH is 30 ppm. How does this inform isolation?',
+   ans:[
+    {text:'Perimeter at 1.5 ppm indicates active off-gassing. Approach-zone concentrations are higher. Maintain or expand isolation until off-gassing stops regardless of PEL headroom.',correct:true},
+    {text:'At 1.5 ppm — below the OSHA PEL — isolation can be reduced.',correct:false,trap:'OSHA PEL is a time-weighted average for 8-hour occupational exposure, not an emergency action threshold. Perimeter readings are floor values, not scene-wide values.'},
+    {text:'IDLH headroom of 28.5 ppm means current readings pose no isolation concern.',correct:false,trap:'Perimeter readings at 1.5 ppm may correspond to IDLH-proximate concentrations in the approach zone. Assuming IDLH headroom from perimeter data is not sound practice.'},
+    {text:'Below IDLH means SCBA is not required for perimeter personnel.',correct:false,trap:'SCBA is required for EV fire approach regardless of perimeter monitoring values. Monitoring informs isolation geometry, not the PPE level required.'}
+   ],sources:[SRC.niosh,SRC.teexEmissions]},
+  {cat:'Wind Shift Response',skill:'Dynamic Perimeter Management',refs:[R.erg_iso,R.osha_gas],
+   q:'Wind shifts 180° during EV fire operations after initial isolation was established. What is required?',
+   ans:[
+    {text:'Reassess and reposition the downwind isolation boundary. Personnel previously upwind may now be in the plume path.',correct:true},
+    {text:'Isolation geometry remains fixed — the perimeter does not move with wind.',correct:false,trap:'Isolation geometry is wind-dependent. A 180° shift moves the plume directly to the previously upwind side. Fixed perimeters expose previously safe personnel.'},
+    {text:'Apply full 360° circular isolation at maximum distance — wind shifts require omnidirectional coverage.',correct:false,trap:'Full circular isolation at maximum distance is operationally impractical in most settings. Directional reassessment is the tactical standard.'},
+    {text:'Wind shift concerns are for plume modeling only, not initial isolation decisions.',correct:false,trap:'Initial isolation geometry must account for wind in real time. Plume modeling is a planning tool, not a substitute for situational awareness.'}
+   ],sources:[SRC.erg147,SRC.oshaLiIon]},
+  {cat:'Post-Suppression Reduction',skill:'Objective Data-Driven Decision',refs:[R.ntsb_reinit,R.niosh_idlh],
+   q:'Post-suppression monitoring shows the pack trending downward from 220°C (428°F) — currently reading 70°C (158°F). Is it appropriate to reduce isolation?',
+   ans:[
+    {text:'Not yet. Monitor until temperature reaches ambient AND air monitoring confirms below action levels. Trending downward is not sufficient.',correct:true},
+    {text:'Yes — 70°C (158°F) is well below thermal runaway onset. Isolation can be reduced now.',correct:false,trap:'Trending downward is positive but insufficient. Pack temperature returning to ambient with confirmed clean air monitoring is the appropriate threshold — not any temperature below onset.'},
+    {text:'Reduce isolation after 1 hour of confirmed cooling trend.',correct:false,trap:'Time-based reduction without confirming both temperature and air quality is not objective standard. Packs can re-ignite after appearing to cool.'},
+    {text:'IC can reduce isolation at any point based on combined scene assessment.',correct:false,trap:'Scene assessment without objective data — temperature AND air monitoring — is insufficient for isolation reduction at EV fire scenes.'}
+   ],sources:[SRC.ntsbEV,SRC.niosh]},
+  {cat:'Multi-Vehicle Depot Isolation',skill:'Compound Energy Assessment',refs:[R.erg_iso],
+   q:'A transit bus fire at a depot involves multiple buses in close formation. What isolation consideration applies beyond the single-vehicle standard?',
+   ans:[
+    {text:'Adjacent vehicles become exposures. Thermal propagation from pack to pack is a real risk. Isolation must account for potential multi-vehicle escalation.',correct:true},
+    {text:'Same isolation — chemistry and hazard are identical regardless of vehicle count.',correct:false,trap:'Multiple vehicles in close proximity change the exposure geometry and create real risk of thermal event propagation between packs.'},
+    {text:'Depot facility suppression systems handle multi-vehicle events — standard isolation applies.',correct:false,trap:'Facility suppression systems are not designed for multi-pack EV thermal events at scale. Fire department authority and isolation protocols apply.'},
+    {text:'Evacuation of the depot replaces isolation in an enclosed multi-vehicle scenario.',correct:false,trap:'Evacuation and isolation are complementary, not alternatives. Both apply in a depot fire scenario.'}
+   ],sources:[SRC.erg147]},
+  {cat:'E-Bike Basement Fire Isolation',skill:'Confined Space Accumulation',refs:[R.osha_gas,R.niosh_idlh],
+   q:'An e-bike fire in a basement garage is generating smoke spreading to the main structure. What isolation consideration is specific to this configuration?',
+   ans:[
+    {text:'Basement configuration creates an accumulation zone. Off-gas from an e-bike fire can reach IDLH concentrations rapidly in this confined low space.',correct:true},
+    {text:'E-bike voltage (36–72V) means the electrical hazard is minimal — focus on smoke management only.',correct:false,trap:'Voltage level does not determine chemical hazard. Thermal decomposition products are a function of battery chemistry, not voltage. HF and HCN are produced regardless of pack voltage.'},
+    {text:'E-bike fires do not generate HF or HCN — only large packs produce these compounds.',correct:false,trap:'All lithium-ion cell thermal events generate toxic decomposition products including HF and HCN, regardless of pack size or voltage.'},
+    {text:'Residential occupancy type does not require hazmat isolation procedures.',correct:false,trap:'The chemistry of the event determines isolation requirements, not the occupancy classification.'}
+   ],sources:[SRC.oshaLiIon,SRC.niosh]},
+  {cat:'Bridge Runoff Isolation',skill:'Environmental Hazard Integration',refs:[R.erg_water,R.erg_iso],
+   q:'An EV fire on a highway bridge raises concerns about contaminated runoff entering the waterway below. How does this affect isolation and tactical decisions?',
+   ans:[
+    {text:'Attempt to block bridge drains before suppression begins. Coordinate with environmental agencies. Balance suppression volume against environmental release if complete containment is not achievable.',correct:true},
+    {text:'Bridge drainage is a post-incident environmental concern — focus on suppression first.',correct:false,trap:'Active environmental harm during operations is a concurrent responsibility. Bridge drains route directly to the waterway below. Containment must be addressed simultaneously with suppression.'},
+    {text:'Reduce water application to eliminate runoff — environmental protection takes priority over suppression.',correct:false,trap:'Life safety and fire control remain primary. Containment must be pursued, but suppression is not abandoned in favor of environmental protection alone.'},
+    {text:'Environmental concerns apply only to hazmat incidents, not vehicle fires.',correct:false,trap:'Any EV fire producing contaminated runoff triggers environmental protection obligations. EV fire suppression water is a hazardous runoff stream.'}
+   ],sources:[SRC.erg147]},
+  {cat:'BESS Scale Isolation',skill:'Fixed Installation Scaling',refs:[R.erg_iso,R.nfpa855_auth],
+   q:'A 2 MWh BESS installation fire — facility suppression system is overwhelmed and no hydrant is within 2 miles. Water supply strategy?',
+   ans:[
+    {text:'Apply available water to protect uninvolved BESS modules. Establish tanker operations with all available resources. Consult the facility emergency action plan for on-site water storage.',correct:true},
+    {text:'Withdraw — no nearby hydrant means no suppression capability.',correct:false,trap:'Rural fire departments operate without hydrants routinely. Tanker operations, on-site storage (often required for BESS installations), and mutual aid are standard resources.'},
+    {text:'Begin aggressive attack on the involved module with all available water.',correct:false,trap:'Committing limited water to aggressive attack without supply secured risks running dry. Exposure protection of uninvolved modules is the priority when supply is limited.'},
+    {text:'Facilities are responsible for their own suppression beyond the initial alarm.',correct:false,trap:'Fire department response mandate is not limited by facility responsibility. Life safety and fire spread prevention are the fire department obligation.'}
+   ],sources:[SRC.erg147,SRC.nfpa855]}
+]},
+ppe:{ops:[
+  {cat:'PPE Minimum Standard',skill:'Exposure Assessment',refs:[R.nfpa_scba,R.osha_gas],
+   q:'What is the minimum PPE for any approach to an EV in thermal runaway, with or without visible flame?',
+   ans:[
+    {text:'Full structural firefighting PPE with SCBA on positive pressure — no exceptions, regardless of whether flames are visible.',correct:true},
+    {text:'Station wear with an air-purifying respirator rated for organic vapors.',correct:false,trap:'APRs cannot filter HF, HCN, or CO at concentrations produced during thermal runaway. CO at 500x the OSHA PEL will overwhelm any cartridge-based filter. SCBA is the only acceptable respiratory protection.'},
+    {text:'Structural PPE without SCBA if no visible smoke is present.',correct:false,trap:'HF and CO are colorless. Toxic off-gas is present before, during, and after visible fire. Crews have been exposed to IDLH atmospheres from EV battery events with no visible flame.'},
+    {text:'Level A chemical protection since HF is present at scene.',correct:false,trap:'Level A is not indicated for initial operations. Structural PPE and SCBA are appropriate for EV fire approach. Level A considerations arise for specific extended tech-level entries, not initial response.'}
+   ],sources:[SRC.nfpaAFV,SRC.oshaLiIon]},
+  {cat:'Post-Knockdown SCBA',skill:'Post-Fire Atmosphere Assessment',refs:[R.osha_gas,R.teex_conc],
+   q:'Visible flame is extinguished after active suppression of an EV fire. A crew member wants to doff SCBA for overhaul. Your call?',
+   ans:[
+    {text:'Deny. Off-gassing continues after knockdown. SCBA stays on until air monitoring confirms safe atmosphere.',correct:true},
+    {text:'Approve — fire is out; the respiratory hazard is eliminated.',correct:false,trap:'Off-gassing continues after visible fire is extinguished. SCBA must remain on until air monitoring confirms a safe atmosphere. Thermal decomposition products are still being produced from a thermally compromised pack.'},
+    {text:'Approve after 15 minutes of apparent stability.',correct:false,trap:'Elapsed time without air monitoring data does not justify SCBA removal at an EV fire scene.'},
+    {text:'Deny only if smell is present. Allow doff if air appears clear.',correct:false,trap:'HF is detectable by smell in some conditions, but HCN is not reliably detected by odor at all concentrations. Sensory assessment is inadequate for this atmosphere.'}
+   ],sources:[SRC.oshaLiIon,SRC.teexEmissions]},
+  {cat:'Non-Firefighting Personnel',skill:'Hazard Zone Access Control',refs:[R.nfpa_scba],
+   q:'A manufacturer technical representative arrives on scene and wants to approach the vehicle to assess the pack. What PPE is required?',
+   ans:[
+    {text:'Full structural PPE and SCBA are required for any entry to the hot zone. Manufacturer credentials do not change PPE requirements.',correct:true},
+    {text:'No PPE — they are not firefighting personnel and have different standards.',correct:false,trap:'Chemical hazard does not distinguish between firefighters and civilians. Anyone in the hot zone requires appropriate PPE regardless of role.'},
+    {text:'Hard hat and safety vest are sufficient for a brief technical assessment.',correct:false,trap:'Hard hat and vest provide no respiratory or thermal protection. They are inadequate for a thermal event scene.'},
+    {text:'Their standard inspection equipment is sufficient if they sign a liability waiver.',correct:false,trap:'PPE requirements are not waivable based on liability documents. Hazard exists regardless of waiver or credentials.'}
+   ],sources:[SRC.nfpaAFV]},
+  {cat:'Staged Personnel PPE',skill:'PPE Readiness Planning',refs:[R.nfpa_scba,R.osha_gas],
+   q:'Personnel are staged 150 feet (46 m) upwind from a smoking EV with no active flame. Minimum PPE requirement for staged personnel?',
+   ans:[
+    {text:'Structural PPE donned, SCBA accessible and ready for immediate use. Air monitoring guides doff/don decisions as scene evolves.',correct:true},
+    {text:'No PPE — they are upwind and outside the hot zone.',correct:false,trap:'Staged personnel should have structural PPE donned and SCBA accessible. Wind shifts are unpredictable and can place previously safe personnel in the plume path rapidly.'},
+    {text:'SCBA only — staging does not require structural PPE.',correct:false,trap:'Both structural PPE and SCBA readiness are appropriate for staged personnel at an active off-gas event.'},
+    {text:'Full Level B chemical protection for all staged personnel.',correct:false,trap:'Level B is not standard for ops-level staging. Structural PPE with SCBA readiness is the appropriate standard.'}
+   ],sources:[SRC.nfpaAFV,SRC.oshaLiIon]},
+  {cat:'Submerged Vehicle PPE',skill:'Extraction Phase PPE',refs:[R.ntsb_reinit,R.nfpa_scba],
+   q:'You are approaching a submerged EV being recovered from a waterway. What PPE consideration is specific to this scenario?',
+   ans:[
+    {text:'Full structural PPE and SCBA. Extraction may trigger a thermal event and off-gassing. Suppression must be staged and ready before recovery begins.',correct:true},
+    {text:'Water rescue suit only — this is a water operation, not a fire operation.',correct:false,trap:'The primary hazard on extraction is thermal event and off-gas, not drowning risk. Structural PPE and SCBA are required for approach.'},
+    {text:'No PPE beyond personal flotation — the vehicle is cooled from submersion.',correct:false,trap:'Submersion does not eliminate thermal event risk. Air exposure on extraction can trigger off-gassing and fire in damaged cells.'},
+    {text:'Level A chemical protective suit due to electrolyte contamination of the water.',correct:false,trap:'Level A is not standard for this scenario at ops level. Structural PPE with SCBA addresses the primary thermal and respiratory hazards.'}
+   ],sources:[SRC.ntsbEV,SRC.nfpaAFV]},
+  {cat:'SCBA Working Time',skill:'Air Management Planning',refs:[R.nfpa_scba],
+   q:'Your 30-minute SCBA bottle is at full rated pressure. Engaged in active EV suppression with a charged handline, how long should you plan for effective working time?',
+   ans:[
+    {text:'15–20 minutes. Exertion during active suppression significantly reduces rated bottle duration.',correct:true},
+    {text:'30 minutes — full rated bottle duration.',correct:false,trap:'Rated duration is measured at rest or light activity. Active suppression is moderate-to-heavy exertion and reduces effective working time to approximately 15–20 minutes.'},
+    {text:'45 minutes with controlled breathing.',correct:false,trap:'Active suppression is not a low-exertion task. Breathing control extends duration slightly at rest but does not bring working time to 45 minutes under active suppression conditions.'},
+    {text:'Unlimited — buddy breathing extends working time as needed.',correct:false,trap:'Buddy breathing is an emergency survival technique, not a planned extension of working time. It should not be used as a supply strategy.'}
+   ],sources:[SRC.nfpaAFV]},
+  {cat:'E-Bike vs Transit Bus PPE',skill:'Chemistry-Based PPE Decision',refs:[R.nfpa_scba,R.osha_gas],
+   q:'Does an e-bike fire require the same structural PPE and SCBA as an electric transit bus fire?',
+   ans:[
+    {text:'Yes — both generate the same thermal decomposition products. Structural PPE and SCBA are required for both. Water volume and tactics differ — not PPE level.',correct:true},
+    {text:'No — e-bike voltage (36–72V) is too low to require SCBA.',correct:false,trap:'Voltage level does not determine respiratory PPE requirements. Thermal decomposition products are a function of battery chemistry, not voltage.'},
+    {text:'No — transit buses require Level B chemical protection that e-bike fires do not.',correct:false,trap:'Transit bus fires do not require Level B at ops level. Structural PPE and SCBA apply to both e-bike and transit bus fires.'},
+    {text:'Only if fire is visible — small pack fires without flame do not require SCBA.',correct:false,trap:'SCBA is required for any approach to a thermally compromised EV, with or without visible fire. E-bike thermal events produce the same toxic off-gas as larger packs.'}
+   ],sources:[SRC.nfpaAFV,SRC.oshaLiIon]},
+  {cat:'HF Detection PPE Response',skill:'Atmospheric Data to PPE Translation',refs:[R.niosh_idlh,R.teex_conc],
+   q:'Air monitoring detects hydrogen fluoride at the scene perimeter during an EV fire. What changes in your PPE approach?',
+   ans:[
+    {text:'Confirm SCBA face seal is properly seated. HF at high concentrations can cause dermal exposure through structural PPE — minimize exposure time and complete thorough decon on exit.',correct:true},
+    {text:'Nothing changes — structural PPE already fully covers HF exposure at any concentration.',correct:false,trap:'Structural PPE does not provide full protection against HF at elevated concentrations. Face seal confirmation and minimized exposure time are the tactical adjustments at ops level.'},
+    {text:'Add an APR acid gas cartridge over your SCBA facepiece.',correct:false,trap:'You do not add APR cartridges to SCBA. SCBA provides respiratory protection via supplied air. Adding an APR to a SCBA facepiece is not a recognized or approved modification.'},
+    {text:'Immediately withdraw all personnel to Level A before continuing.',correct:false,trap:'Level A is not warranted by perimeter HF detection alone. Confirm PPE seal integrity, manage exposure time, and continue monitoring.'}
+   ],sources:[SRC.niosh,SRC.teexEmissions]}
+],tech:[
+  {cat:'HF Dermal Exposure Threshold',skill:'High-Concentration PPE Decision',refs:[R.niosh_idlh,R.osha_gas],
+   q:'NIOSH IDLH for hydrogen fluoride is 30 ppm. At what monitoring value should approach distance be reassessed even with full SCBA in use?',
+   ans:[
+    {text:'At concentrations approaching IDLH (30 ppm), assess whether structural PPE provides adequate dermal protection for the required approach distance.',correct:true},
+    {text:'Never — SCBA covers all HF concentrations regardless of approach distance.',correct:false,trap:'SCBA provides respiratory protection regardless of HF concentration. However, dermal HF exposure at high concentrations becomes a significant concern that structural PPE may not fully address.'},
+    {text:'Below 10 ppm — any HF detection above that level requires full withdrawal.',correct:false,trap:'10 ppm is below IDLH. Detection does not automatically require withdrawal when SCBA is in use and tactical objectives are present.'},
+    {text:'HF concentration is irrelevant with SCBA in place — proceed at any concentration.',correct:false,trap:'Very high HF concentrations create dermal exposure risk that SCBA alone does not address. Concentration informs approach decisions beyond just respiratory protection.'}
+   ],sources:[SRC.niosh,SRC.oshaLiIon]},
+  {cat:'Post-Incident Decontamination',skill:'EV-Specific Decon Planning',refs:[R.osha_gas,R.teex_conc],
+   q:'Following suppression of an EV fire, what is the correct decontamination consideration for the suppression crew?',
+   ans:[
+    {text:'Gross decon with water. Remove structural gear before re-entering apparatus. Document all personnel for exposure records. Isolate gear for thorough cleaning — EV fire residue contains toxic metal compounds and electrolyte decomposition products.',correct:true},
+    {text:'Standard gross decon with water — same as any structural fire. No additional steps needed.',correct:false,trap:'EV fire residue includes lithium compounds, cobalt compounds, and electrolyte decomposition products. These are not equivalent to standard combustion products.'},
+    {text:'No decon needed — SCBA use prevented all exposure.',correct:false,trap:'SCBA prevents respiratory exposure. Exterior gear surfaces carry contaminants. External decon is required regardless of SCBA use.'},
+    {text:'Level A decon procedures for all personnel after every EV fire suppression.',correct:false,trap:'Level A decon procedures exceed what is required following EV fire suppression with structural gear. Thorough gross decon and gear isolation are appropriate.'}
+   ],sources:[SRC.oshaLiIon,SRC.teexEmissions]},
+  {cat:'Transit Bus Electrical Hazard',skill:'Voltage-Level PPE Assessment',refs:[R.faa_chem],
+   q:'Tech-level crew approaching a fully involved transit bus pack at 600–750V. What PPE limitation exists with standard structural gear at this voltage?',
+   ans:[
+    {text:'Standard structural PPE provides no tested electrical protection at transit bus system voltages. Electrical contact must be avoided. High-voltage rated equipment must be used by qualified personnel for any electrical operations.',correct:true},
+    {text:'Standard structural gloves are rated for transit bus system voltage.',correct:false,trap:'Standard structural gloves are not tested or rated for 600–750V DC electrical protection.'},
+    {text:'Transit bus voltage is within safe handling range for structural firefighting gloves.',correct:false,trap:'This is incorrect and hazardous. 600–750V DC is not within safe handling range for standard structural gloves.'},
+    {text:'Level A chemical protection suits provide adequate electrical protection.',correct:false,trap:'Level A suits are not electrical protection equipment. Electrical protection requires specifically rated equipment operated by qualified personnel.'}
+   ],sources:[SRC.faaVent,SRC.nfpaAFV]},
+  {cat:'SCBA Entry into Confirmed Atmosphere',skill:'IDLH Entry Decision',refs:[R.niosh_idlh,R.teex_conc],
+   q:'Entry into a parking structure with confirmed HCN — monitoring at the entrance shows 12 ppm. NIOSH IDLH for HCN is 50 ppm. Entry decision?',
+   ans:[
+    {text:'Entry with full SCBA and backup team in place. Entrance readings of 12 ppm mean interior concentrations are at least 12 ppm and likely significantly higher.',correct:true},
+    {text:'Entry approved — 12 ppm is below IDLH.',correct:false,trap:'Below IDLH does not mean safe entry without SCBA. IDLH defines immediately dangerous to life and health — it is not an entry permission level. Interior concentrations are higher than entrance readings.'},
+    {text:'Entry denied until concentration is below 1 ppm.',correct:false,trap:'1 ppm is not a recognized ops or tech entry threshold. SCBA allows entry into IDLH atmospheres when the tactical objective justifies it.'},
+    {text:'APR with HCN cartridge is acceptable at 12 ppm.',correct:false,trap:'APR is not appropriate for IDLH-proximate atmospheres. SCBA with positive pressure is required regardless of specific concentrations.'}
+   ],sources:[SRC.niosh,SRC.teexEmissions]},
+  {cat:'HF Systemic Toxicity',skill:'Medical Emergency Recognition',refs:[R.niosh_idlh],
+   q:'A crew member experienced significant HF skin contact during EV fire suppression. What is the specific medical priority beyond standard decontamination?',
+   ans:[
+    {text:'Immediate calcium gluconate gel application to exposed areas. Emergent transport — systemic hypocalcemia from fluoride ion penetration is life-threatening and progresses even after apparent decon.',correct:true},
+    {text:'Standard burn treatment — HF causes contact burns like other acids.',correct:false,trap:'HF is a systemic toxin, not just a contact irritant. It depletes calcium systemically causing hypocalcemia and can cause fatal cardiac arrhythmia. Calcium gluconate is the antidote — standard burn care is inadequate.'},
+    {text:'HF burns appear mild — standard wound care and observation is sufficient.',correct:false,trap:'HF burns may appear mild initially while systemic fluoride toxicity progresses. Delayed recognition of HF systemic toxicity is a documented cause of death in HF exposure cases.'},
+    {text:'SCBA use eliminates HF exposure entirely — no specific medical treatment is needed.',correct:false,trap:'SCBA prevents respiratory exposure but not dermal exposure. HF at high concentrations penetrates structural gear and causes systemic toxicity through skin absorption.'}
+   ],sources:[SRC.niosh]},
+  {cat:'BESS Post-Incident Exposure Documentation',skill:'Occupational Health Protocol',refs:[R.teex_conc,R.osha_gas],
+   q:'A BESS facility fire involved confirmed cobalt oxide and lithium compound off-gas. What post-incident medical monitoring is appropriate?',
+   ans:[
+    {text:'Document all hot zone personnel. Initiate exposure records including air monitoring data. Coordinate with occupational health for cobalt-specific follow-up.',correct:true},
+    {text:'Standard post-fire medical evaluation — BESS adds no specific consideration beyond structural fire.',correct:false,trap:'Cobalt compounds and lithium compounds are distinct from standard combustion products. Cobalt oxide is classified as a potential carcinogen. Documented exposure warrants specific follow-up.'},
+    {text:'Medical monitoring only if personnel reported symptoms during the incident.',correct:false,trap:'Asymptomatic exposure to potential carcinogens still warrants documentation and follow-up. Absence of immediate symptoms does not eliminate long-term risk.'},
+    {text:'SCBA use eliminates all exposure risk — no post-incident monitoring is needed.',correct:false,trap:'SCBA prevents respiratory exposure during the incident. Dermal exposure and post-doff contact with contaminated gear are also exposure pathways that require documentation.'}
+   ],sources:[SRC.teexEmissions,SRC.oshaLiIon]},
+  {cat:'Extended Operations SCBA Management',skill:'Resource Planning',refs:[R.nfpa_scba],
+   q:'Tech-level crews planning extended operations (2+ hours) at an EV salvage yard fire. What specific SCBA consideration applies?',
+   ans:[
+    {text:'Plan SCBA bottle rotation with defined rehab intervals. Confirm bottle pressure before every re-entry. Document cumulative exposure at each rehab cycle for post-incident reporting.',correct:true},
+    {text:'Standard bottle exchange as needed — no additional planning required for extended operations.',correct:false,trap:'Extended EV operations require structured bottle management with defined rehab cycles and exposure tracking — not ad hoc bottle changes.'},
+    {text:'Extended SCBA use beyond the first hour requires switching to APR to conserve cylinders.',correct:false,trap:'APR is not appropriate for active EV fire atmospheres regardless of duration. Extended operations require logistics planning, not a shift to APR.'},
+    {text:'Rotate crews every 30 minutes regardless of bottle pressure.',correct:false,trap:'30-minute rotation may be appropriate but is incomplete without pressure tracking, cumulative exposure documentation, and defined rehab protocol.'}
+   ],sources:[SRC.nfpaAFV]},
+  {cat:'SCBA Face Seal Criticality',skill:'Equipment Verification Protocol',refs:[R.niosh_idlh,R.teex_conc],
+   q:'What is the specific reason a complete SCBA face seal check is more critical in an HF atmosphere than a standard fire atmosphere?',
+   ans:[
+    {text:'HF absorbs through facial tissue and mucous membranes from even minor seal leaks, causing rapid systemic fluoride absorption. Any seal compromise allows direct HF contact with high-absorption tissue.',correct:true},
+    {text:'No additional reason — the face seal check is equally critical for all atmosphere types.',correct:false,trap:'While seal checks are always required, HF specifically has high absorption through facial mucous membranes. Even very small seal leaks that would be tolerable in a standard smoke atmosphere become significant in an HF-containing atmosphere.'},
+    {text:'Seal check is not required for structural firefighting SCBA entries.',correct:false,trap:'Seal check is mandatory for all SCBA entries. This is a basic requirement, not optional.'},
+    {text:'Visual inspection of the facepiece is sufficient confirmation of seal for EV entry.',correct:false,trap:'Visual inspection does not confirm seal integrity. Positive and negative pressure checks are required and are the only reliable field confirmation.'}
+   ],sources:[SRC.niosh,SRC.teexEmissions]}
+]},
+supp:{ops:[
+  {cat:'Water Goal Clarification',skill:'Tactical Application',refs:[R.erg_water,R.erg_water_goal],
+   q:'Your IC asks how much water will stop the internal thermal runaway chain reaction. What is your answer?',
+   ans:[
+    {text:'Water cannot stop an established internal thermal runaway. No volume halts the internal reaction. Water manages external fire, cools exposures, and slows heat transfer to adjacent cells.',correct:true},
+    {text:'10,000–30,000 gallons applied directly to the pack area will halt the reaction.',correct:false,trap:'No volume of water halts an established internal thermal runaway. The reaction is self-sustaining and internally sealed. This misconception has led to underestimation of incident duration and resource needs.'},
+    {text:'500 gallons of Class A foam will extinguish the reaction faster than water.',correct:false,trap:'Class A foam has no effect on the internal thermal runaway reaction. Foam may assist with exposure protection but does not address internal cell chemistry.'},
+    {text:'Dry chemical stops thermal runaway more quickly than water by smothering the reaction.',correct:false,trap:'Dry chemical has no effect on thermal runaway. It may briefly knock down external flame while the internal reaction continues completely unaffected.'}
+   ],sources:[SRC.erg147]},
+  {cat:'Rural Water Supply',skill:'Water Supply Logistics',refs:[R.erg_water],
+   q:'Rural highway, no hydrant within 1 mile. A mid-size EV sedan is fully involved. Your tanker holds 3,000 gallons. First tactical priority?',
+   ans:[
+    {text:'Establish a tanker shuttle for sustained water supply. Prioritize exposure protection. Manage water supply before committing to direct attack volumes.',correct:true},
+    {text:'Begin aggressive direct attack immediately with all available water.',correct:false,trap:'Committing all available water without a supply plan risks running dry before the situation is controlled. EV fires require sustained water application, not a single aggressive push.'},
+    {text:'Wait for mutual aid — this event exceeds your water supply capability.',correct:false,trap:'Waiting without any action abandons exposure protection and allows the event to escalate. Exposure protection and water logistics must begin with first-arriving resources.'},
+    {text:'Apply foam to reduce water consumption requirements.',correct:false,trap:'Foam is not a water conservation strategy for EV fires. Volume requirements for cooling remain substantial regardless of foam addition.'}
+   ],sources:[SRC.erg147]},
+  {cat:'Building Suppression Augmentation',skill:'Suppression System Integration',refs:[R.erg_water,R.erg_water_goal],
+   q:'A parking structure has activated its sprinkler system over a burning EV. Should you supplement with handlines?',
+   ans:[
+    {text:'Yes. EV packs require water volumes well beyond standard sprinkler output. Supplement aggressively and monitor for thermal runaway spread to adjacent vehicles.',correct:true},
+    {text:'No — the building system is handling it.',correct:false,trap:'Standard sprinkler systems are not designed for EV pack fire water volume requirements. They are inadequate as the sole suppression for an active pack fire.'},
+    {text:'Shut down the building system and take over with handlines.',correct:false,trap:'The building system provides cooling value. Taking it offline removes that benefit without tactical justification.'},
+    {text:'Augment only if fire has not reduced in 10 minutes.',correct:false,trap:'Waiting 10 minutes to augment loses critical cooling time in the early stages of the event.'}
+   ],sources:[SRC.erg147]},
+  {cat:'Runoff Containment',skill:'Secondary Hazmat Recognition',refs:[R.erg_water,R.osha_gas],
+   q:'High-volume water application during EV fire suppression produces significant runoff. What secondary hazmat concern does this create?',
+   ans:[
+    {text:'Runoff contains electrolyte, thermal decomposition products, and metal compounds. It must be contained to prevent environmental release.',correct:true},
+    {text:'None — water is non-hazardous.',correct:false,trap:'Water that has contacted thermal decomposition products, electrolyte, and metal compounds is contaminated. It cannot be released to storm drains or waterways.'},
+    {text:'Water pressure from runoff can destabilize the vehicle.',correct:false,trap:'Vehicle destabilization from runoff is not the primary concern. Contaminated runoff environmental release is the secondary hazmat issue.'},
+    {text:'Runoff creates a slip hazard — primary concern is personnel footing.',correct:false,trap:'Personnel hazard from runoff is real but secondary. The primary concern is hazmat release to the environment.'}
+   ],sources:[SRC.erg147,SRC.oshaLiIon]},
+  {cat:'Sealed Cell Limitation',skill:'Suppression Effectiveness Assessment',refs:[R.erg_water_goal],
+   q:'Direct handline attack on an EV fire cannot penetrate to the sealed battery cells. External fire is controlled. What is the tactical shift?',
+   ans:[
+    {text:'Shift to exposure protection and thermal monitoring. Direct attack on sealed cells is ineffective once external fire is controlled.',correct:true},
+    {text:'Increase flow rate — sufficient water volume will eventually penetrate sealed cells.',correct:false,trap:'Flow rate increase cannot overcome sealed cell construction. Water cannot reach internal cells regardless of external volume applied.'},
+    {text:'Apply suppression foam directly to the pack to penetrate the cells.',correct:false,trap:'Foam does not penetrate sealed cells and does not address the internal thermal runaway reaction.'},
+    {text:'Abandon operations — sealed cell fires are inherently uncontrollable.',correct:false,trap:'Abandonment is not the standard when external fire is controlled. Exposure protection and monitoring are the appropriate ongoing operations.'}
+   ],sources:[SRC.erg147]},
+  {cat:'BESS Facility Suppression Role',skill:'Coordinated Suppression',refs:[R.erg_water,R.nfpa855_auth],
+   q:'A BESS facility has an active internal fire in one module. The facility built-in suppression system is engaged. What is the fire department role?',
+   ans:[
+    {text:'Coordinate with facility personnel. Support the built-in system rather than interfere. Assess for fire spread and ventilation pathway hazards.',correct:true},
+    {text:'Override the facility system and apply handlines to all modules as a precaution.',correct:false,trap:'Overriding the facility system without coordination may interfere with an engineered suppression solution designed specifically for that installation.'},
+    {text:'The facility system is sufficient — stage outside and monitor only.',correct:false,trap:'Passive staging without coordination abandons assessment of spread risk and ventilation hazards. The fire department role is coordination and assessment, not passive standby.'},
+    {text:'Apply foam to all unaffected modules as a precaution.',correct:false,trap:'Applying foam to unaffected modules without coordination is not appropriate. Facility engineering determines suppression coverage.'}
+   ],sources:[SRC.erg147,SRC.nfpa855]},
+  {cat:'Submersion Container Use',skill:'Tactical Tool Selection',refs:[R.ntsb_reinit,R.erg_water_goal],
+   q:'Your department has a submersion container for EV pack transport. When is submersion the appropriate tactic?',
+   ans:[
+    {text:'After external fire is controlled and the pack remains thermally active. Submersion provides extended cooling for transport and safe storage pending disposition.',correct:true},
+    {text:'Immediately on arrival for any EV fire.',correct:false,trap:'Submersion containers are a post-suppression transport and storage tool, not an initial attack tactic. Initial suppression uses handlines, not submersion.'},
+    {text:'Only for e-bikes and small packs — not appropriate for full-size EVs.',correct:false,trap:'Submersion containers sized for full EV packs are available and are appropriate for managing residual thermal activity during transport.'},
+    {text:'Submersion is not an approved tactic and is not used operationally.',correct:false,trap:'Submersion containers are an approved and commercially available tactic used by departments nationally.'}
+   ],sources:[SRC.ntsbEV,SRC.erg147]},
+  {cat:'Roof-Mounted Pack Attack',skill:'Tactical Geometry Problem-Solving',refs:[R.erg_water],
+   q:'An electric transit bus roof-mounted battery pack is on fire. Ground-level handlines cannot reach the pack. Options?',
+   ans:[
+    {text:'Consider aerial application for direct pack cooling. Maintain exposure protection for structure and occupant compartment. Request aerial resource if not on scene.',correct:true},
+    {text:'Continue ground-level attack — water will eventually reach the pack through runoff.',correct:false,trap:'Ground-level attack on a roof-mounted pack is ineffective for direct cooling. Water flowing over the vehicle body does not cool the roof-mounted pack.'},
+    {text:'Abandon the bus — roof-mounted packs are not accessible from ground level.',correct:false,trap:'Abandonment is not the standard when aerial resources are available or can be requested.'},
+    {text:'Wait for the pack to vent and self-extinguish.',correct:false,trap:'Thermal runaway does not self-extinguish safely. Allowing uninhibited burning increases exposures and structural damage.'}
+   ],sources:[SRC.erg147]}
+],tech:[
+  {cat:'Flow Rate Estimation',skill:'Suppression Resource Calculation',refs:[R.erg_water,R.erg_water_goal],
+   q:'A 200 kWh electric delivery van pack is in full thermal runaway. Using the operational estimate of 100–150 gpm per 100 kWh of pack energy, what minimum sustained flow is needed for external temperature management?',
+   ans:[
+    {text:'200–300 gpm minimum sustained flow. This is for external temperature management only — not internal pack control, which is not achievable with water alone.',correct:true},
+    {text:'50 gpm — similar to a standard vehicle fire.',correct:false,trap:'50 gpm is far below the operational estimate for a 200 kWh pack. Standard vehicle fire flows do not account for EV pack thermal output.'},
+    {text:'10,000 gallons total volume will control the event.',correct:false,trap:'Total volume without sustained flow rate is not a suppression standard. Flow rate determines cooling effect. Total volume must support the required sustained flow.'},
+    {text:'Water flow is irrelevant — only submersion stops thermal runaway.',correct:false,trap:'Submersion is a post-attack transport and storage tool. Sustained water flow during active events manages external temperature and exposures.'}
+   ],sources:[SRC.erg147]},
+  {cat:'Temperature Plateau Assessment',skill:'Suppression Effectiveness Interpretation',refs:[R.erg_water_goal,R.ntsb_reinit],
+   q:'Thermal imaging during suppression shows a transit bus pack at 220°C (428°F) sustained for 20 minutes despite continuous water application. Assessment?',
+   ans:[
+    {text:'Temperature plateau under sustained flow suggests active thermal runaway in multiple cells is exceeding your cooling capacity. Reassess flow rate, aerial application, and exposure geometry.',correct:true},
+    {text:'Increase water flow — temperature will eventually drop with enough volume.',correct:false,trap:'If sustained flow has not reduced temperature in 20 minutes, the thermal output from active runaway cells may be exceeding current cooling capacity. A tactical reassessment is required, not just more volume.'},
+    {text:'Temperature plateau means the reaction has stabilized — maintain current approach.',correct:false,trap:'Plateau under active suppression is not stabilization. It means the reaction is matching your cooling output. Ceasing or reducing application will allow temperature to rise.'},
+    {text:'Thermal imaging is inaccurate at these temperatures — readings are unreliable.',correct:false,trap:'Thermal imaging limitations exist but are not the appropriate response to a sustained high-temperature reading. Treat the reading as reliable until proven otherwise.'}
+   ],sources:[SRC.erg147,SRC.ntsbEV]},
+  {cat:'Suppression Runoff Containment',skill:'Environmental Hazard Management',refs:[R.erg_water,R.osha_gas],
+   q:'During suppression of an EV sedan fire you apply 500 gpm for 20 minutes — approximately 10,000 gallons total. Runoff containment protocol?',
+   ans:[
+    {text:'Dike runoff to prevent storm drain entry. Collect contaminated water for proper disposal as hazardous waste.',correct:true},
+    {text:'No action — storm drain release is acceptable for vehicle fire suppression water.',correct:false,trap:'EV fire runoff is not equivalent to standard vehicle fire water. It contains electrolyte decomposition products, metal compounds, and toxic byproducts. Storm drain release is not acceptable.'},
+    {text:'Dilute runoff with additional water before release to reduce concentration.',correct:false,trap:'Dilution is not an appropriate disposal method for hazardous runoff. Containment and proper disposal are required.'},
+    {text:'Containment is only required for BESS fires, not vehicle fires.',correct:false,trap:'Any EV fire producing contaminated runoff requires containment. Volume scale differs but the hazard category is the same.'}
+   ],sources:[SRC.erg147,SRC.oshaLiIon]},
+  {cat:'Nitrogen-Flooded Space Entry',skill:'Oxygen-Deficient Hazard Recognition',refs:[R.niosh_idlh,R.nfpa855_auth],
+   q:'A BESS facility nitrogen flooding system suppressed a fire in a sealed module room. Fire department arrives post-flooding. Entry?',
+   ans:[
+    {text:'The module room is an IDLH oxygen-deficient atmosphere. SCBA is mandatory. Ventilate before entry if possible. Enter with SCBA and backup team in place.',correct:true},
+    {text:'Nitrogen atmosphere is safe for entry with structural PPE — nitrogen is inert.',correct:false,trap:'Nitrogen flooding displaces oxygen below safe breathing levels. Entry without supplied air is an asphyxiation hazard. Nitrogen is inert but IDLH due to oxygen displacement.'},
+    {text:'Wait 30 minutes for nitrogen to dissipate naturally before entry.',correct:false,trap:'Nitrogen dissipation rate in a sealed room cannot be predicted without ventilation and atmospheric monitoring. 30 minutes is not a recognized clearance time.'},
+    {text:'SCBA required only if battery fire products are confirmed present alongside the nitrogen.',correct:false,trap:'Nitrogen displaces oxygen regardless of co-presence of fire products. The oxygen-deficient atmosphere alone is IDLH. SCBA is mandatory.'}
+   ],sources:[SRC.niosh,SRC.nfpa855]},
+  {cat:'Piercing Nozzle Purpose',skill:'Technical Tool Application',refs:[R.erg_water_goal],
+   q:'What is the primary purpose of piercing nozzle technology in EV battery pack suppression?',
+   ans:[
+    {text:'To penetrate battery pack housings and deliver water directly to cell modules — providing internal cooling that external application cannot achieve.',correct:true},
+    {text:'To apply foam directly to individual battery cells.',correct:false,trap:'Piercing nozzles are not primarily foam delivery tools. Their function is direct water access to sealed internal compartments.'},
+    {text:'To increase water pressure for penetrating the vehicle body through existing openings.',correct:false,trap:'Piercing nozzle function is physical penetration of the sealed housing to reach internal spaces — not increasing pressure through existing openings.'},
+    {text:'Piercing nozzles are experimental and not approved for EV battery suppression.',correct:false,trap:'Piercing nozzles are an approved tactic referenced in NFPA guidance and manufacturer recommendations for EV battery fires.'}
+   ],sources:[SRC.erg147]},
+  {cat:'Vehicle Release Authority',skill:'Post-Incident Decision Authority',refs:[R.nfpa855_auth,R.ntsb_reinit],
+   q:'After transit bus fire suppression, IC asks: "Can we release the vehicle to the tow company for transport?" Your answer?',
+   ans:[
+    {text:'No. The AHJ and Fire Marshal hold post-incident disposition authority. The manufacturer emergency line must be consulted for pack condition assessment. The crew coordinates and documents but does not authorize release.',correct:true},
+    {text:'Yes — the fire is out and transport is a tow company determination.',correct:false,trap:'Vehicle disposition after a thermal event is not a tow company determination. Re-ignition risk and pack instability make formal disposition authority essential.'},
+    {text:'The crew senior officer can authorize release once the scene appears stable.',correct:false,trap:'The responding crew coordinates and documents. Disposition authority rests with the AHJ and Fire Marshal, not the crew.'},
+    {text:'Release is automatic once fire is extinguished — no additional authorization is required.',correct:false,trap:'Fire extinguishment does not authorize vehicle release. Re-ignition risk from incompletely cooled cells requires formal disposition authority.'}
+   ],sources:[SRC.nfpa855,SRC.ntsbEV]},
+  {cat:'Sustained Suppression Planning',skill:'Long-Duration Resource Planning',refs:[R.erg_water,R.erg_water_goal],
+   q:'What does field experience and current research indicate about the most effective water application technique for EV pack fires?',
+   ans:[
+    {text:'Piercing nozzle direct injection where accessible combined with sustained external application for exposure protection provides the best combination of internal cooling and external management.',correct:true},
+    {text:'Maximum flow rate at all times provides the best cooling effect.',correct:false,trap:'Maximum flow without penetration strategy results in water flowing over sealed cell housings without reaching the thermal event. Technique matters as much as volume.'},
+    {text:'Foam application to the pack surface is more effective than water and reduces total volume required.',correct:false,trap:'Foam does not penetrate sealed cells. External cooling requires sustained water volume regardless of foam addition.'},
+    {text:'Intermittent application is more effective than continuous flow — it allows heat to concentrate, making cooling more efficient.',correct:false,trap:'Continuous sustained flow is the standard for EV pack cooling. Intermittent application allows temperature recovery between applications.'}
+   ],sources:[SRC.erg147]},
+  {cat:'BESS Water Supply on Isolated Site',skill:'Water Logistics — Remote Incident',refs:[R.erg_water,R.nfpa855_auth],
+   q:'A BESS solar farm fire — no hydrant within 2 miles and the facility suppression system is overwhelmed. Strategy?',
+   ans:[
+    {text:'Apply available water to protect uninvolved BESS modules. Establish tanker operations with all available resources. Consult the facility emergency action plan for on-site water storage.',correct:true},
+    {text:'Withdraw — no hydrant means no meaningful suppression capability.',correct:false,trap:'Rural fire departments operate without hydrants routinely. On-site water storage (often required by code for BESS installations), mutual aid tankers, and rural water sources are all resources.'},
+    {text:'Commit all available water to aggressive attack on the involved module.',correct:false,trap:'Committing limited water to aggressive attack without supply secured risks running dry. Exposure protection of uninvolved modules is the priority when supply is limited.'},
+    {text:'The facility owner is responsible for suppression — fire department can only provide scene safety.',correct:false,trap:'Fire department mandate is not limited by facility responsibility. Life safety and fire spread prevention are the fire department obligation regardless of ownership.'}
+   ],sources:[SRC.erg147,SRC.nfpa855]}
+]},
+auth:{ops:[
+  {cat:'Vehicle Release Authority',skill:'Authority Chain Recognition',refs:[R.nfpa855_auth,R.ntsb_reinit],
+   q:'The vehicle owner wants their EV returned after apparent suppression. Who holds vehicle release authority?',
+   ans:[
+    {text:'The AHJ and Fire Marshal hold post-incident vehicle disposition authority. Manufacturer emergency guidance should also be obtained before release.',correct:true},
+    {text:'The incident commander on scene.',correct:false,trap:'The IC manages the incident but does not hold post-incident disposition authority for thermally compromised vehicles.'},
+    {text:'Release is automatic 24 hours after suppression — no authorization required.',correct:false,trap:'There is no automatic release timeline for thermally compromised EVs. Pack condition and confirmed thermal stabilization determine disposition.'},
+    {text:'The insurance adjuster authorizes release on behalf of the owner.',correct:false,trap:'Insurance adjusters manage financial disposition, not public safety aspects of vehicle release.'}
+   ],sources:[SRC.nfpa855,SRC.ntsbEV]},
+  {cat:'Transport Authorization',skill:'Pre-Transport Protocol',refs:[R.nfpa855_auth,R.ntsb_reinit],
+   q:'A tow company arrives to transport a post-fire EV. What is required before transport begins?',
+   ans:[
+    {text:'AHJ and Fire Marshal authorization of transport conditions, manufacturer guidance on pack state, and documentation of the transport plan.',correct:true},
+    {text:'Tow company determines transport safety — it is their liability.',correct:false,trap:'Transport of a post-fire EV is a public safety matter. Tow company liability is separate from the authorization requirement.'},
+    {text:'IC verbal authorization on scene is sufficient to release for transport.',correct:false,trap:'IC verbal authorization does not represent AHJ and Fire Marshal disposition authority.'},
+    {text:'Transport can proceed once suppression is complete — no additional authorization needed.',correct:false,trap:'Suppression completion is not transport authorization. Re-ignition risk and pack instability make formal authorization essential.'}
+   ],sources:[SRC.nfpa855,SRC.ntsbEV]},
+  {cat:'Manufacturer Guidance Role',skill:'Technical Advisory vs. Authority',refs:[R.nfpa855_auth],
+   q:'The manufacturer technical representative says the pack is stable and the vehicle can be released. Is their statement sufficient authorization?',
+   ans:[
+    {text:'No. Manufacturer guidance is technical input, not disposition authority. The AHJ and Fire Marshal make the final release decision.',correct:true},
+    {text:'Yes — the manufacturer has the most technical knowledge about the pack condition.',correct:false,trap:'Manufacturer technical guidance is valuable and should be documented, but it does not supersede AHJ and Fire Marshal authority.'},
+    {text:'Yes if the senior firefighter on scene agrees with the manufacturer assessment.',correct:false,trap:'The responding crew does not hold disposition authority regardless of agreement with the manufacturer.'},
+    {text:'Manufacturer assessment of pack stability is not relevant to release decisions.',correct:false,trap:'Manufacturer assessment is highly relevant and should be obtained. The distinction is that it informs — not authorizes — the disposition decision.'}
+   ],sources:[SRC.nfpa855]},
+  {cat:'Scene Documentation',skill:'Post-Incident Protocol',refs:[R.nfpa855_auth,R.osha_gas],
+   q:'What documentation should be completed before the crew leaves an EV fire scene?',
+   ans:[
+    {text:'Incident report, AHJ and Fire Marshal notification, manufacturer contact record, exposure documentation for all hot zone personnel, and hazmat release documentation if runoff occurred.',correct:true},
+    {text:'Standard incident report only.',correct:false,trap:'Standard incident report is required but insufficient for EV fires. Authority notifications and personnel exposure documentation are additional requirements.'},
+    {text:'No documentation beyond state fire reporting is required.',correct:false,trap:'State fire reporting captures basic incident data. EV fires require additional documentation for authority notifications and exposure records.'},
+    {text:'Documentation is the hazmat team responsibility if they responded.',correct:false,trap:'Primary incident documentation is the first-in crew responsibility regardless of hazmat team involvement.'}
+   ],sources:[SRC.nfpa855,SRC.oshaLiIon]},
+  {cat:'Storage Facility Guidance',skill:'Re-Ignition Risk Communication',refs:[R.ntsb_reinit],
+   q:'The receiving storage facility for a post-fire EV asks if the vehicle is safe to store indoors. Your answer?',
+   ans:[
+    {text:'Provide the last documented pack temperature and air monitoring data. Recommend outdoor isolated storage until pack cooling is confirmed. Re-ignition risk persists without confirmed thermal stabilization.',correct:true},
+    {text:'Yes — the fire is out.',correct:false,trap:'Fire extinguishment does not guarantee pack thermal stability. Re-ignition risk from incompletely cooled cells is real.'},
+    {text:'Indoor storage is acceptable if the building has sprinkler coverage.',correct:false,trap:'Indoor storage of a thermally active EV under sprinklers does not eliminate risk to the facility. Isolated outdoor storage with clearance distance is the standard recommendation.'},
+    {text:'Storage questions are for the insurance adjuster to resolve.',correct:false,trap:'Public safety guidance on re-ignition risk is a fire department responsibility, not an insurance function.'}
+   ],sources:[SRC.ntsbEV]},
+  {cat:'Disposition Authority Chain',skill:'Multi-Party Coordination',refs:[R.nfpa855_auth],
+   q:'Who has authority to approve transport conditions and storage requirements for a thermally compromised EV after a fire?',
+   ans:[
+    {text:'The AHJ, in coordination with the Fire Marshal and informed by manufacturer technical guidance.',correct:true},
+    {text:'The tow company, as the transport specialist.',correct:false,trap:'The tow company executes transport under authorized conditions. They do not set those conditions.'},
+    {text:'The responding crew captain makes all post-incident disposition decisions.',correct:false,trap:'The responding crew coordinates and documents. Disposition authority rests with the AHJ and Fire Marshal.'},
+    {text:'No formal authorization is required once the fire is extinguished.',correct:false,trap:'Fire extinguishment does not remove the requirement for formal disposition authorization.'}
+   ],sources:[SRC.nfpa855]},
+  {cat:'Fire Investigator Access',skill:'Concurrent Process Management',refs:[R.nfpa855_auth],
+   q:'A fire investigator wants access to the post-fire EV before AHJ disposition is complete. Protocol?',
+   ans:[
+    {text:'Fire investigator access is coordinated through the AHJ. Thermal monitoring must continue during investigation. Access does not constitute vehicle release or disposition authorization.',correct:true},
+    {text:'Fire investigator access supersedes AHJ disposition proceedings.',correct:false,trap:'Fire investigation and AHJ disposition are concurrent processes. Investigation access does not bypass disposition authority.'},
+    {text:'Access can be granted by the senior firefighter on scene.',correct:false,trap:'The responding crew does not grant investigator access to a vehicle under AHJ disposition authority.'},
+    {text:'Fire investigation cannot begin until disposition is complete.',correct:false,trap:'Investigation typically begins during the disposition process. The processes are concurrent and coordinated, not sequential.'}
+   ],sources:[SRC.nfpa855]},
+  {cat:'Extended Monitoring Endpoint',skill:'Monitoring Duration Decision',refs:[R.ntsb_reinit,R.niosh_idlh],
+   q:'Extended re-ignition risk monitoring at a storage facility — when does the fire department monitoring obligation end?',
+   ans:[
+    {text:'When pack temperature has reached ambient, air monitoring confirms no active off-gassing, and the manufacturer has confirmed pack thermal stability.',correct:true},
+    {text:'After 24 hours of storage without incident.',correct:false,trap:'Time-based endpoints are not the standard for EV fire monitoring. Objective data — temperature and air monitoring — determines when monitoring is no longer required.'},
+    {text:'When the storage facility accepts custody of the vehicle.',correct:false,trap:'Transfer of custody does not automatically transfer monitoring responsibility for a thermally active pack. Formal hand-off with documented stability confirmation is required.'},
+    {text:'Once the vehicle is transported from the incident scene, fire department obligation ends.',correct:false,trap:'If pack thermal stabilization has not been confirmed, fire department responsibility does not automatically end at vehicle transport.'}
+   ],sources:[SRC.ntsbEV,SRC.niosh]}
+],tech:[
+  {cat:'BESS Post-Incident Coordination',skill:'Multi-Agency Authority Framework',refs:[R.nfpa855_auth],
+   q:'A BESS facility fire post-incident involves fire department, facility owner, AHJ, Fire Marshal, and manufacturer. What is the fire department specific role?',
+   ans:[
+    {text:'Document incident details, provide hazard findings to the AHJ, make manufacturer consultation records available, coordinate pack stabilization monitoring. AHJ and Fire Marshal authorize final disposition.',correct:true},
+    {text:'The fire department holds all authority once on scene — including post-incident disposition.',correct:false,trap:'Fire department on-scene authority is clear. Post-incident disposition authority specifically rests with the AHJ and Fire Marshal.'},
+    {text:'Fire department releases the scene to the facility owner once suppression is complete.',correct:false,trap:'Scene release does not equal disposition authorization. AHJ and Fire Marshal authorize disposition of a thermally compromised BESS installation.'},
+    {text:'Manufacturer technical authority supersedes fire department on all post-incident findings.',correct:false,trap:'Manufacturer findings are advisory. Fire department authority and AHJ and Fire Marshal disposition authority are separate from technical guidance.'}
+   ],sources:[SRC.nfpa855]},
+  {cat:'Transit Vehicle Return to Service',skill:'Return-to-Service Authority',refs:[R.nfpa855_auth,R.ntsb_reinit],
+   q:'Post-incident, a transit agency wants to return a fire-damaged electric bus to service after the manufacturer certifies it as safe. Fire department position?',
+   ans:[
+    {text:'AHJ, in coordination with the Fire Marshal and informed by manufacturer findings, holds authority over return-to-service disposition. Fire department provides hazard documentation to support that determination.',correct:true},
+    {text:'If the manufacturer certifies it, fire department has no further role.',correct:false,trap:'Manufacturer certification is technical guidance. Return to service for a fire-damaged transit vehicle is an AHJ function, not solely a manufacturer determination.'},
+    {text:'Document objection if the vehicle appears unsafe.',correct:false,trap:'Documenting objection alone is insufficient. Formal coordination with the AHJ and Fire Marshal is required for disposition of a fire-damaged transit vehicle.'},
+    {text:'Transit agency authority supersedes fire department on fleet operational decisions.',correct:false,trap:'Transit agency authority governs normal fleet operations. Post-fire disposition involves AHJ and Fire Marshal authority that supersedes routine fleet decisions.'}
+   ],sources:[SRC.nfpa855,SRC.ntsbEV]},
+  {cat:'Scene Closure Criteria',skill:'Documentation Completion Standard',refs:[R.nfpa855_auth,R.osha_gas],
+   q:'At what point can a post-fire EV scene be formally closed and documentation considered complete?',
+   ans:[
+    {text:'When the vehicle has been formally released by AHJ and Fire Marshal, all exposure documentation is complete, environmental release documentation is filed if applicable, and manufacturer contact is recorded.',correct:true},
+    {text:'When the fire is extinguished and the crew leaves the scene.',correct:false,trap:'Scene departure does not close post-EV-fire documentation obligations. Authority notifications and pack disposition must be formally documented.'},
+    {text:'When the incident report is submitted to the state reporting system.',correct:false,trap:'State reporting is one component of post-incident documentation, not the totality of it.'},
+    {text:'30 days after the incident, all obligations are automatically satisfied.',correct:false,trap:'No time-based automatic closure exists for EV fire documentation obligations. Completion is event-driven, not time-driven.'}
+   ],sources:[SRC.nfpa855,SRC.oshaLiIon]},
+  {cat:'Mandatory Hold Authority',skill:'Legal Authority Framework',refs:[R.nfpa855_auth],
+   q:'The vehicle owner demands their EV immediately. Can the fire department legally prevent this?',
+   ans:[
+    {text:'Yes. AHJ authority, exercised through the Fire Marshal, provides legal basis for mandatory hold when a thermally compromised vehicle poses an ongoing public safety risk.',correct:true},
+    {text:'No — the fire department has no legal authority to hold private property post-incident.',correct:false,trap:'AHJ authority, typically exercised through the Fire Marshal, provides legal basis under state fire codes for holding a thermally compromised vehicle that poses a public safety risk.'},
+    {text:'Only with a court order — which takes too long to be practical.',correct:false,trap:'AHJ authority under state fire codes does not require a court order for an immediate public safety determination.'},
+    {text:'The vehicle owner always has the right to take their property immediately.',correct:false,trap:'Property rights do not supersede public safety authority. AHJ and Fire Marshal jurisdiction over thermally compromised vehicles is established in state fire codes.'}
+   ],sources:[SRC.nfpa855]},
+  {cat:'Defect Causation and Authority',skill:'Cause vs. Authority Distinction',refs:[R.nfpa855_auth,R.ntsb_reinit],
+   q:'Fire investigation reveals the EV fire was caused by a manufacturing defect. Does this change who holds post-incident disposition authority?',
+   ans:[
+    {text:'No. AHJ and Fire Marshal retain post-incident disposition authority regardless of cause determination. Cause affects liability and potential recall action — not immediate disposition authority.',correct:true},
+    {text:'Yes — manufacturer is now fully responsible for all disposition decisions.',correct:false,trap:'Cause determination does not transfer disposition authority. AHJ and Fire Marshal retain post-incident authority regardless of origin.'},
+    {text:'Yes — NHTSA federal jurisdiction takes over once a manufacturing defect is confirmed.',correct:false,trap:'NHTSA jurisdiction applies to recall and safety standard processes. Immediate post-incident public safety disposition remains at the AHJ and Fire Marshal level.'},
+    {text:'Yes — the vehicle must be immediately surrendered to the manufacturer.',correct:false,trap:'Return to manufacturer is not an automatic consequence of defect finding. Disposition follows the standard AHJ and Fire Marshal authority chain.'}
+   ],sources:[SRC.nfpa855]},
+  {cat:'Investigator Scene Access',skill:'Concurrent Process Coordination',refs:[R.nfpa855_auth],
+   q:'A fire investigator wants access to a post-fire BESS module before AHJ disposition is complete. What is the protocol?',
+   ans:[
+    {text:'Investigator access is coordinated through the AHJ. Thermal monitoring continues during investigation. Access does not constitute disposition. The module remains monitored throughout.',correct:true},
+    {text:'Investigator access supersedes AHJ disposition proceedings.',correct:false,trap:'Investigation and AHJ disposition are concurrent processes. Investigator access does not bypass disposition authority.'},
+    {text:'Investigation cannot proceed until disposition is formally complete.',correct:false,trap:'Investigation typically begins during the disposition process. The processes are concurrent and coordinated, not sequential.'},
+    {text:'The responding crew leader can grant investigator access.',correct:false,trap:'The responding crew does not grant access to a module under AHJ disposition authority.'}
+   ],sources:[SRC.nfpa855]},
+  {cat:'After-Action Documentation Value',skill:'Documentation Purpose',refs:[R.nfpa855_auth,R.osha_gas],
+   q:'What documentation from an EV fire specifically supports future response improvement?',
+   ans:[
+    {text:'Air monitoring data, suppression flow rates and volumes, thermal imaging readings over time, pack temperature trends, isolation geometry, personnel exposure records, and manufacturer consultation records.',correct:true},
+    {text:'Only the final incident report matters for after-action review.',correct:false,trap:'Scene-level data including air monitoring, suppression flow rates, and temperature trends provides the information needed for meaningful tactical improvement.'},
+    {text:'Post-incident review documentation is the hazmat team responsibility.',correct:false,trap:'Post-incident review involves all responding units. First-in crew documentation is foundational to any meaningful after-action review.'},
+    {text:'Outcome documentation is sufficient — process documentation is not required.',correct:false,trap:'Process documentation — what was done, when, and at what measurements — is what enables improvement. Outcome-only documentation cannot support tactical refinement.'}
+   ],sources:[SRC.nfpa855,SRC.oshaLiIon]},
+  {cat:'Tech-Level Scope Boundary',skill:'Role Boundary Recognition',refs:[R.nfpa855_auth],
+   q:'The IC asks a tech-level crew leader to confirm the vehicle is safe for the owner to drive. Which part of this request falls outside fire department scope?',
+   ans:[
+    {text:'Certifying a fire-damaged vehicle as roadworthy or safe for operation is outside fire department scope. This requires AHJ disposition, manufacturer assessment, and potentially DMV or state motor vehicle authority.',correct:true},
+    {text:'Maintaining pack temperature monitoring until disposition is authorized.',correct:false,trap:'Pack temperature monitoring is a fire department function until formal disposition is authorized. This is within scope.'},
+    {text:'Documenting personnel exposure for occupational health records.',correct:false,trap:'Personnel exposure documentation is a fire department responsibility. This is within scope.'},
+    {text:'Coordinating with the facility emergency contact for BESS post-incident notifications.',correct:false,trap:'Coordination with facility emergency contacts is a fire department function during and after an incident. This is within scope.'}
+   ],sources:[SRC.nfpa855]}
+]}
+};
+// ================================================================
+// STATE AND LOGIC
+// ================================================================
+var currentLevel='ops',answeredCount=0,totalQuestions=0,selectedAnswers={},usedSources=new Set();
+var qIndices={hr:{ops:[],tech:[]},iso:{ops:[],tech:[]},ppe:{ops:[],tech:[]},supp:{ops:[],tech:[]},auth:{ops:[],tech:[]}};
+var usedScenarios=new Set();
+
+function setLevel(l){
+  currentLevel=l;
+  document.querySelectorAll('.toggle-btn').forEach(function(b){b.classList.toggle('active',b.dataset.level===l)});
+}
+
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+function shuffle(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t}return b}
+
+function nextQ(bank){
+  var idx=qIndices[bank][currentLevel];
+  if(!idx||idx.length===0){
+    var data=BANKS[bank][currentLevel];
+    idx=shuffle(Array.from({length:data.length},function(_,i){return i}));
+    qIndices[bank][currentLevel]=idx;
+  }
+  return BANKS[bank][currentLevel][idx.shift()];
+}
+
+function genScenario(){
+  for(var t=0;t<60;t++){
+    var v=rand(VEHICLES),inc=rand(INCIDENTS),loc=rand(LOCATIONS),cond=rand(CONDITIONS);
+    var key=v.type+'|'+inc.type+'|'+loc.name;
+    if(!usedScenarios.has(key)||usedScenarios.size>150){
+      usedScenarios.add(key);
+      return{v:v,inc:inc,loc:loc,cond:cond};
+    }
+  }
+  return{v:rand(VEHICLES),inc:rand(INCIDENTS),loc:rand(LOCATIONS),cond:rand(CONDITIONS)};
+}
+
+function generateDrill(){
+  answeredCount=0;selectedAnswers={};usedSources=new Set();
+  var sc=genScenario();
+  var qs=[nextQ('hr'),nextQ('iso'),nextQ('ppe'),nextQ('supp'),nextQ('auth')];
+  totalQuestions=qs.length;
+  qs.forEach(function(q){if(q.sources)q.sources.forEach(function(s){usedSources.add(s)})});
+  renderDrill(sc,qs);
+}
+
+function renderDrill(sc,qs){
+  var area=document.getElementById('drillArea');
+  var vNote=sc.v.note?'<br><span style="font-size:.8rem;color:var(--text-muted)">'+sc.v.note+'</span>':'';
+  var h='<div class="scenario-card"><div class="sc-header"><div class="sc-label">⚡ Incident Scenario</div></div><div class="sc-body"><div class="sc-grid">';
+  h+='<div><strong>Vehicle / Source:</strong> '+sc.v.type+'</div>';
+  h+='<div><strong>Incident Type:</strong> '+sc.inc.type+'</div>';
+  h+='<div><strong>Location:</strong> '+sc.loc.name+'</div>';
+  h+='<div><strong>Confinement:</strong> '+sc.loc.conf+'</div>';
+  h+='<div><strong>Time / Weather:</strong> '+sc.cond.time+' — '+sc.cond.wx+'</div>';
+  h+='<div><strong>Ventilation:</strong> '+sc.loc.vent+'</div>';
+  h+='</div>';
+  h+='<div style="margin-top:10px"><strong>Exposures:</strong> '+sc.loc.exp+'</div>';
+  h+='<div style="margin-top:6px"><strong>Scene Note:</strong> '+sc.cond.note+'</div>';
+  h+='<div style="margin-top:6px"><strong>Battery Location:</strong> '+sc.v.batteryLoc+'</div>';
+  h+='<div style="margin-top:6px"><strong>System Voltage:</strong> <span class="sc-volt">'+sc.v.volt+'</span>'+vNote+' &nbsp;|&nbsp; <strong>Pack Energy:</strong> '+sc.v.energy+'</div>';
+  h+='</div></div>';
+
+  qs.forEach(function(q,qi){
+    var shuf=shuffle(q.ans.map(function(a){return{text:a.text,correct:a.correct,trap:a.trap||''}}));
+    h+='<div class="q-card'+(qi>0?' locked':'')+'" id="qc-'+qi+'">';
+    h+='<div class="q-head"><span class="q-num">Question '+(qi+1)+' — '+q.cat+'</span><span class="q-skill">'+q.skill+'</span></div>';
+    q.refs.forEach(function(r){
+      h+='<div class="ref-panel"><div class="ref-title">'+r.t+'</div><div class="ref-body">'+r.c+'</div>';
+      if(r.src)h+='<div class="ref-src">— '+r.src.p+'</div>';
+      h+='</div>';
+    });
+    h+='<div class="q-text">'+q.q+'</div>';
+    h+='<div class="q-options" id="qo-'+qi+'">';
+    shuf.forEach(function(a,ai){
+      h+='<button class="opt-btn" id="ob-'+qi+'-'+ai+'" onclick="selAns('+qi+','+ai+')" data-c="'+a.correct+'" data-t="'+a.trap.replace(/"/g,'&quot;').replace(/'/g,"&#39;")+'">'+a.text+'</button>';
+    });
+    h+='<button class="commit-btn" id="cb-'+qi+'" onclick="commitAns('+qi+')" disabled>Commit to Decision</button>';
+    h+='</div><div class="fb-panel" id="fb-'+qi+'"></div></div>';
+  });
+
+  h+='<div class="drill-refs" id="drillRefs"><div class="dr-inner"><div class="dr-title">Drill References</div><div class="dr-sub">Sources used in this drill — review, verify, or explore further.</div><div id="refsList"></div></div></div>';
+  area.innerHTML=h;
+  area.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function selAns(qi,ai){
+  if(document.getElementById('cb-'+qi).style.display==='none')return;
+  document.querySelectorAll('#qo-'+qi+' .opt-btn').forEach(function(o){o.classList.remove('selected')});
+  document.getElementById('ob-'+qi+'-'+ai).classList.add('selected');
+  selectedAnswers[qi]=ai;
+  document.getElementById('cb-'+qi).disabled=false;
+}
+
+function commitAns(qi){
+  var ai=selectedAnswers[qi];
+  if(ai===undefined)return;
+  var opts=document.querySelectorAll('#qo-'+qi+' .opt-btn');
+  var sel=document.getElementById('ob-'+qi+'-'+ai);
+  var ok=sel.dataset.c==='true';
+  opts.forEach(function(o){
+    o.classList.add('locked-opt');
+    o.setAttribute('onclick','');
+    if(o.dataset.c==='true')o.classList.add('correct');
+  });
+  if(!ok)sel.classList.add('incorrect');
+  document.getElementById('cb-'+qi).style.display='none';
+  var fb=document.getElementById('fb-'+qi);
+  fb.classList.add('show');
+  if(ok){
+    fb.classList.add('correct-fb');
+    fb.innerHTML='<div class="fb-label correct">✓ CORRECT DECISION</div><div class="fb-text">You correctly interpreted the reference material and applied it to this scenario. This is the decision the source data supports given the conditions presented.</div>';
+  } else {
+    fb.classList.add('incorrect-fb');
+    fb.innerHTML='<div class="fb-label incorrect">✗ INCORRECT DECISION</div><div class="fb-text"><strong>Why this is wrong:</strong> '+sel.dataset.t+'</div>';
+  }
+  answeredCount++;
+  if(answeredCount===totalQuestions)showRefs();
+  if(qi+1<totalQuestions){
+    setTimeout(function(){
+      var nc=document.getElementById('qc-'+(qi+1));
+      if(nc){nc.classList.remove('locked');nc.scrollIntoView({behavior:'smooth',block:'start'})}
+    },700);
+  }
+}
+
+function showRefs(){
+  var d=document.getElementById('drillRefs');
+  var r=document.getElementById('refsList');
+  var h='';
+  usedSources.forEach(function(s){
+    h+='<div class="ref-item"><div class="ri-name">'+s.n+'</div><div class="ri-pub">Publisher: '+s.p+'</div><a class="ri-link" href="'+s.u+'" target="_blank" rel="noopener">View Source ↗</a></div>';
+  });
+  var allSrc=[SRC.erg147,SRC.oshaLiIon,SRC.teexEmissions,SRC.nfpaAFV,SRC.nfpa855];
+  allSrc.forEach(function(s){
+    if(!usedSources.has(s)){
+      h+='<div class="ref-item"><div class="ri-name">'+s.n+'</div><div class="ri-pub">Publisher: '+s.p+' — Additional reference</div><a class="ri-link" href="'+s.u+'" target="_blank" rel="noopener">View Source ↗</a></div>';
+    }
+  });
+  r.innerHTML=h;
+
+  var score=0;
+  for(var qi=0;qi<totalQuestions;qi++){
+    var ai=selectedAnswers[qi];
+    if(ai!==undefined){var btn=document.getElementById('ob-'+qi+'-'+ai);if(btn&&btn.dataset.c==='true')score++;}
+  }
+  var pct=Math.round((score/totalQuestions)*100);
+  var msg=pct===100?'Clean sweep. All five correct.':pct>=80?'Strong performance. Review any missed questions.':pct>=60?'Passing range. Revisit missed explanations.':'Below passing. Review explanations and run another drill.';
+  r.innerHTML+='<div class="score-bar"><div><div class="score-val">'+score+' / '+totalQuestions+'</div><div class="score-lbl">Score This Drill</div></div><div style="font-family:var(--body);font-size:.95rem;color:var(--text-dim)">'+msg+'</div></div>';
+
+  d.classList.add('show');
+  var btn=document.createElement('div');
+  btn.style.cssText='text-align:center;margin-top:20px';
+  btn.innerHTML='<button class="gen-btn" onclick="generateDrill()">Generate New Drill</button>';
+  d.querySelector('.dr-inner').appendChild(btn);
+  setTimeout(function(){d.scrollIntoView({behavior:'smooth',block:'start'})},500);
+}
+</script>
+</body>
+</html>

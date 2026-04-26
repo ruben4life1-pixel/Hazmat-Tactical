@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EV Tactical Reference | Hazmat Tactical</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Rajdhani:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0a0e1a;
+  --navy-mid: #111827;
+  --navy-card: #141c2e;
+  --navy-elevated: #1a2340;
+  --amber: #f0a500;
+  --amber-dim: rgba(240,165,0,0.15);
+  --amber-glow: rgba(240,165,0,0.08);
+  --red: #e03a3a;
+  --red-dim: rgba(224,58,58,0.12);
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,0.12);
+  --border: rgba(255,255,255,0.07);
+  --border-amber: rgba(240,165,0,0.3);
+  --text: #e8eaf0;
+  --text-muted: #6b7280;
+  --text-dim: #9ca3af;
+  --display: 'Bebas Neue', sans-serif;
+  --ui: 'Barlow Condensed', sans-serif;
+  --body: 'Rajdhani', sans-serif;
+  --mono: 'IBM Plex Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--navy);
+  color: var(--text);
+  font-family: var(--body);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none; z-index: 0;
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(240,165,0,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 80% 90%, rgba(224,58,58,0.03) 0%, transparent 50%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0;
+}
+.site-header {
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  display: flex; align-items: center; gap: 16px;
+  height: 64px;
+  background: rgba(10,14,26,0.92);
+  backdrop-filter: blur(20px);
+  position: sticky; top: 0; z-index: 50;
+  box-shadow: 0 1px 0 var(--border), 0 8px 32px rgba(0,0,0,.5);
+}
+.site-title { font-family: var(--body); font-size: 1.2rem; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; }
+.site-title span { color: var(--amber); }
+.header-badge {
+  font-family: var(--mono); font-size: .58rem; color: var(--text-muted);
+  letter-spacing: .2em; text-transform: uppercase;
+  margin-left: auto; border: 1px solid var(--border);
+  padding: 4px 10px; border-radius: 2px;
+}
+.wrap { max-width: 860px; margin: 0 auto; padding: 0 20px 80px; position: relative; z-index: 1; }
+.hero { text-align: center; padding: 48px 0 36px; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: .62rem;
+  letter-spacing: .22em; text-transform: uppercase;
+  color: var(--amber); border: 1px solid var(--border-amber);
+  padding: 6px 16px; border-radius: 2px; margin-bottom: 20px;
+  background: var(--amber-dim); box-shadow: 0 0 16px rgba(240,165,0,.12);
+}
+.hero h1 {
+  font-family: var(--display);
+  font-size: clamp(2.4rem, 6vw, 3.8rem);
+  letter-spacing: 4px; text-transform: uppercase;
+  line-height: 1.0; margin-bottom: 8px;
+}
+.hero-sub { font-family: var(--body); font-size: 1.1rem; font-weight: 500; color: var(--text-dim); max-width: 520px; margin: 0 auto 24px; }
+.hero-rule { width: 120px; height: 3px; margin: 0 auto; background: linear-gradient(90deg, transparent, var(--amber), transparent); border: none; border-radius: 2px; }
+.disclaimer {
+  text-align: center; font-family: var(--mono); font-size: .7rem;
+  color: var(--amber); letter-spacing: .15em; text-transform: uppercase;
+  padding: 10px 16px; border: 1px solid var(--border-amber); border-radius: 4px;
+  background: var(--amber-dim); margin-bottom: 28px;
+}
+
+/* TAB NAV */
+.tab-nav {
+  display: flex; flex-wrap: wrap; gap: 4px;
+  margin-bottom: 28px;
+  background: var(--navy-card);
+  border: 1px solid var(--border);
+  border-radius: 6px; padding: 6px;
+}
+.tab-btn {
+  font-family: var(--ui); font-size: .78rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  padding: 10px 16px; border: none; border-radius: 4px;
+  background: transparent; color: var(--text-dim);
+  cursor: pointer; transition: all .2s; flex: 1; text-align: center;
+  white-space: nowrap;
+}
+.tab-btn:hover:not(.active) { background: var(--navy-elevated); color: var(--text); }
+.tab-btn.active { background: var(--amber); color: var(--navy); }
+
+/* SECTION PANELS */
+.section-panel { display: none; }
+.section-panel.active { display: block; }
+
+/* SHARED CARD STYLES */
+.ref-card {
+  background: var(--navy-card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--amber);
+  border-radius: 6px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+.ref-card-header {
+  background: var(--navy-elevated);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+}
+.ref-card-title {
+  font-family: var(--ui); font-size: .9rem; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--amber);
+}
+.ref-card-sub {
+  font-family: var(--mono); font-size: .62rem;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--text-muted);
+}
+.ref-card-body { padding: 20px; }
+.section-intro {
+  font-family: var(--body); font-size: 1rem; line-height: 1.8;
+  color: var(--text-dim); margin-bottom: 20px;
+  padding: 16px 20px;
+  background: var(--navy-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.section-intro strong { color: var(--amber); }
+
+/* TABLE STYLES */
+.ref-table { width: 100%; border-collapse: collapse; font-family: var(--body); font-size: .95rem; }
+.ref-table th {
+  background: var(--navy-elevated);
+  font-family: var(--ui); font-size: .78rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--amber); padding: 11px 14px; text-align: left;
+  border-bottom: 1px solid var(--border-amber);
+}
+.ref-table td {
+  padding: 11px 14px; border-bottom: 1px solid var(--border);
+  color: var(--text-dim); line-height: 1.65; vertical-align: top;
+}
+.ref-table tr:last-child td { border-bottom: none; }
+.ref-table tr:hover td { background: rgba(255,255,255,0.02); }
+.ref-table td strong { color: var(--text); font-weight: 600; }
+.ref-table td .warn { color: var(--red); font-weight: 600; }
+.ref-table td .hl { color: var(--amber); font-weight: 600; }
+.ref-table td .ok { color: var(--green); font-weight: 600; }
+
+/* STAGE PROGRESSION CARDS */
+.stage-strip {
+  display: flex; gap: 0;
+  margin-bottom: 20px;
+  border-radius: 6px; overflow: hidden;
+  border: 1px solid var(--border);
+}
+.stage-pip {
+  flex: 1; padding: 10px 8px; text-align: center;
+  font-family: var(--mono); font-size: .6rem;
+  letter-spacing: .1em; text-transform: uppercase;
+  cursor: pointer; transition: all .2s;
+  border-right: 1px solid var(--border);
+  background: var(--navy-card); color: var(--text-muted);
+}
+.stage-pip:last-child { border-right: none; }
+.stage-pip.active { background: var(--amber); color: var(--navy); font-weight: 700; }
+.stage-pip:hover:not(.active) { background: var(--navy-elevated); color: var(--text); }
+.stage-detail { display: none; }
+.stage-detail.active { display: block; }
+.stage-block {
+  background: var(--navy-card);
+  border: 1px solid var(--border);
+  border-radius: 6px; overflow: hidden;
+}
+.stage-block-header {
+  padding: 16px 20px;
+  background: var(--navy-elevated);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 16px;
+}
+.stage-num-badge {
+  font-family: var(--display); font-size: 1.6rem;
+  letter-spacing: 2px; color: var(--amber); flex-shrink: 0;
+}
+.stage-block-meta { flex: 1; }
+.stage-block-name {
+  font-family: var(--ui); font-size: 1.05rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--text);
+  margin-bottom: 2px;
+}
+.stage-block-temp {
+  font-family: var(--mono); font-size: .68rem;
+  color: var(--text-muted); letter-spacing: .1em;
+}
+.stage-block-body { padding: 20px; }
+.stage-row { display: grid; grid-template-columns: 160px 1fr; gap: 0; margin-bottom: 1px; }
+.stage-row-label {
+  font-family: var(--ui); font-size: .78rem; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--text-muted); padding: 10px 14px;
+  background: var(--navy-elevated);
+  border: 1px solid var(--border);
+  border-right: none;
+  display: flex; align-items: flex-start;
+}
+.stage-row-val {
+  font-family: var(--body); font-size: .97rem; line-height: 1.7;
+  color: var(--text-dim); padding: 10px 16px;
+  border: 1px solid var(--border);
+}
+.stage-row-val .warn { color: var(--red); font-weight: 600; }
+.stage-row-val .hl { color: var(--amber); font-weight: 600; }
+.stage-row-val .ok { color: var(--green); font-weight: 600; }
+.stage-tactical {
+  margin-top: 16px; padding: 14px 16px;
+  background: var(--amber-dim);
+  border: 1px solid var(--border-amber);
+  border-radius: 4px;
+}
+.stage-tactical-label {
+  font-family: var(--mono); font-size: .62rem;
+  letter-spacing: .18em; text-transform: uppercase;
+  color: var(--amber); margin-bottom: 8px;
+}
+.stage-tactical-text {
+  font-family: var(--body); font-size: .97rem; line-height: 1.75;
+  color: var(--text);
+}
+.stage-warn {
+  margin-top: 12px; padding: 12px 16px;
+  background: var(--red-dim);
+  border: 1px solid rgba(224,58,58,0.3);
+  border-radius: 4px;
+}
+.stage-warn-label {
+  font-family: var(--mono); font-size: .62rem;
+  letter-spacing: .18em; text-transform: uppercase;
+  color: var(--red); margin-bottom: 6px;
+}
+.stage-warn-text {
+  font-family: var(--body); font-size: .95rem; line-height: 1.7;
+  color: var(--text-dim);
+}
+
+/* WATER SECTION */
+.water-phase {
+  background: var(--navy-card);
+  border: 1px solid var(--border);
+  border-radius: 6px; margin-bottom: 16px; overflow: hidden;
+}
+.water-phase-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 14px;
+}
+.water-phase-icon {
+  font-family: var(--display); font-size: 1.4rem;
+  letter-spacing: 2px; flex-shrink: 0;
+}
+.water-phase-title {
+  font-family: var(--ui); font-size: .95rem; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+}
+.water-phase-body { padding: 20px; }
+.water-row { display: flex; gap: 12px; margin-bottom: 12px; align-items: flex-start; }
+.water-row:last-child { margin-bottom: 0; }
+.water-row-label {
+  font-family: var(--ui); font-size: .78rem; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--amber); flex: 0 0 120px; padding-top: 2px;
+}
+.water-row-val {
+  font-family: var(--body); font-size: .97rem; line-height: 1.7;
+  color: var(--text-dim); flex: 1;
+}
+.water-row-val .warn { color: var(--red); font-weight: 600; }
+.water-row-val .hl { color: var(--amber); font-weight: 600; }
+
+/* ERG DISTANCE BLOCKS */
+.erg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.erg-block {
+  background: var(--navy-card);
+  border: 1px solid var(--border);
+  border-radius: 6px; overflow: hidden;
+}
+.erg-block-header {
+  background: var(--navy-elevated);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+}
+.erg-block-type {
+  font-family: var(--ui); font-size: .82rem; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--amber);
+}
+.erg-block-body { padding: 16px; }
+.erg-dist-row { margin-bottom: 12px; }
+.erg-dist-row:last-child { margin-bottom: 0; }
+.erg-dist-label {
+  font-family: var(--mono); font-size: .62rem;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--text-muted); margin-bottom: 4px;
+}
+.erg-dist-val {
+  font-family: var(--display); font-size: 1.5rem;
+  letter-spacing: 2px; line-height: 1;
+}
+.erg-dist-val.iso { color: var(--amber); }
+.erg-dist-val.evac { color: var(--red); }
+.erg-dist-sub {
+  font-family: var(--mono); font-size: .65rem;
+  color: var(--text-muted); margin-top: 2px;
+}
+.erg-note {
+  background: var(--navy-card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--red);
+  border-radius: 6px; padding: 16px 20px; margin-top: 4px;
+}
+.erg-note-title {
+  font-family: var(--mono); font-size: .62rem;
+  letter-spacing: .18em; text-transform: uppercase;
+  color: var(--red); margin-bottom: 8px;
+}
+.erg-note-text {
+  font-family: var(--body); font-size: .97rem; line-height: 1.75;
+  color: var(--text-dim);
+}
+.erg-note-text strong { color: var(--text); }
+
+/* VEHICLE TABLE */
+.veh-disclaimer {
+  font-family: var(--mono); font-size: .65rem;
+  letter-spacing: .1em; color: var(--text-muted);
+  padding: 12px 16px;
+  background: var(--navy-elevated);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin-bottom: 16px;
+  line-height: 1.7;
+}
+
+/* SOURCE FOOTER */
+.source-footer {
+  background: var(--navy-card);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--amber);
+  border-radius: 6px; padding: 24px;
+  margin-top: 32px;
+}
+.sf-title { font-family: var(--display); font-size: 1.4rem; letter-spacing: 3px; color: var(--amber); margin-bottom: 4px; }
+.sf-sub { font-family: var(--body); font-size: .9rem; color: var(--text-muted); margin-bottom: 20px; }
+.sf-item { padding: 12px 0; border-bottom: 1px solid var(--border); }
+.sf-item:last-child { border-bottom: none; }
+.sf-name { font-family: var(--ui); font-size: .88rem; color: var(--text); font-weight: 600; }
+.sf-pub { font-family: var(--mono); font-size: .7rem; color: var(--text-muted); margin-top: 2px; }
+.sf-link { font-family: var(--mono); font-size: .7rem; color: var(--amber); text-decoration: none; display: inline-block; margin-top: 4px; }
+.sf-link:hover { text-decoration: underline; }
+
+@media (max-width: 640px) {
+  .hero h1 { font-size: 2rem; }
+  .tab-btn { font-size: .7rem; padding: 8px 10px; }
+  .erg-grid { grid-template-columns: 1fr; }
+  .stage-row { grid-template-columns: 1fr; }
+  .stage-row-label { border-right: 1px solid var(--border); border-bottom: none; }
+  .header-badge { display: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-title"><span>HAZMAT</span> TACTICAL</div>
+  <div class="header-badge">Training Use Only</div>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="hero-badge">&#9889; EV &amp; Energy Storage Emergencies</div>
+    <h1>EV Tactical<br>Reference</h1>
+    <p class="hero-sub">Hardcoded reference data for training — thermal runaway, chemistry, off-gases, water, ERG distances, and vehicle data.</p>
+    <hr class="hero-rule">
+  </div>
+  <div class="disclaimer">&#9888; For Training Use Only — Not for Use During Live Incidents</div>
+
+  <nav class="tab-nav" role="tablist">
+    <button class="tab-btn active" onclick="showTab('thermal')" role="tab">Thermal Runaway</button>
+    <button class="tab-btn" onclick="showTab('chemistry')" role="tab">Battery Chemistry</button>
+    <button class="tab-btn" onclick="showTab('offgas')" role="tab">Off-Gas Toxicity</button>
+    <button class="tab-btn" onclick="showTab('water')" role="tab">Water Application</button>
+    <button class="tab-btn" onclick="showTab('erg')" role="tab">ERG 147</button>
+    <button class="tab-btn" onclick="showTab('vehicles')" role="tab">Vehicle Data</button>
+  </nav>
+
+  <!-- ═══════════════════════════════════════ THERMAL RUNAWAY ═══════════════════════════════════════ -->
+  <div class="section-panel active" id="tab-thermal">
+    <div class="section-intro">
+      Thermal runaway in lithium-ion batteries is a self-reinforcing exothermic chain reaction that propagates cell-to-cell once it begins. It does not progress linearly — conditions can accelerate rapidly. Recognition of the stage determines the tactical window available. <strong>Use these stages to calibrate expectations, not to predict timing.</strong>
+    </div>
+
+    <div class="stage-strip" id="stagePips">
+      <div class="stage-pip active" onclick="showStage(0)" id="pip-0">Stage 1<br>Early Warning</div>
+      <div class="stage-pip" onclick="showStage(1)" id="pip-1">Stage 2<br>Venting</div>
+      <div class="stage-pip" onclick="showStage(2)" id="pip-2">Stage 3<br>Active Runaway</div>
+      <div class="stage-pip" onclick="showStage(3)" id="pip-3">Stage 4<br>Fire Involvement</div>
+      <div class="stage-pip" onclick="showStage(4)" id="pip-4">Stage 5<br>Post-Fire</div>
+    </div>
+
+    <div class="stage-detail active" id="stage-0">
+      <div class="stage-block">
+        <div class="stage-block-header">
+          <div class="stage-num-badge">01</div>
+          <div class="stage-block-meta">
+            <div class="stage-block-name">Early Warning / Pre-Venting</div>
+            <div class="stage-block-temp">TIC (Thermal Imaging Camera) Surface Reading: 80–120°F &mdash; slightly above ambient</div>
+          </div>
+        </div>
+        <div class="stage-block-body">
+          <div class="stage-row"><div class="stage-row-label">Visual Signs</div><div class="stage-row-val">BMS (Battery Management System) warning light illuminated. Subtle deformation or swelling above battery area. No visible smoke. Possible minor fluid weeping from battery enclosure seams.</div></div>
+          <div class="stage-row"><div class="stage-row-label">Sounds</div><div class="stage-row-val">Minor clicking or isolated popping sounds from battery area. May be intermittent. Early electrolyte expansion within cells.</div></div>
+          <div class="stage-row"><div class="stage-row-label">Odor</div><div class="stage-row-val">None, or very faint chemical/sweet odor. Occupants may report unusual smell from HVAC.</div></div>
+          <div class="stage-row"><div class="stage-row-label">Gases Present</div><div class="stage-row-val">Minimal — trace electrolyte vapor only if venting has begun. Below detectable thresholds in open-air conditions.</div></div>
+          <div class="stage-tactical">
+            <div class="stage-tactical-label">Tactical Action</div>
+            <div class="stage-tactical-text">Do not dismiss BMS alerts. Establish monitoring position upwind. Remove occupants from vehicle — do not allow re-entry. Begin atmospheric monitoring. Request hazmat if available. Consider isolation perimeter even with no visible signs.</div>
+          </div>
+          <div class="stage-warn">
+            <div class="stage-warn-label">Critical Point</div>
+            <div class="stage-warn-text">Internal cell temperatures may be 2–3× higher than surface TIC readings at every stage. Surface temp is a lagging indicator, not a leading one.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage-detail" id="stage-1">
+      <div class="stage-block">
+        <div class="stage-block-header">
+          <div class="stage-num-badge">02</div>
+          <div class="stage-block-meta">
+            <div class="stage-block-name">Active Venting / Pre-Ignition</div>
+            <div class="stage-block-temp">TIC Surface Reading: 120–300°F &mdash; rapidly rising</div>
+          </div>
+        </div>
+        <div class="stage-block-body">
+          <div class="stage-row"><div class="stage-row-label">Visual Signs</div><div class="stage-row-val"><span class="warn">White or gray vapor from battery area</span> — this is venting electrolyte and decomposition gas, NOT combustion smoke. Possible swelling of vehicle body panels over pack. Condensation on nearby surfaces.</div></div>
+          <div class="stage-row"><div class="stage-row-label">Sounds</div><div class="stage-row-val">Continuous hissing or gurgling. Repeated popping as individual cells vent. Pressure relief events audible. Volume and frequency increasing.</div></div>
+          <div class="stage-row"><div class="stage-row-label">Odor</div><div class="stage-row-val">Sharp chemical odor. Sweet-chemical smell from electrolyte. Possible acrid burning smell.</div></div>
+          <div class="stage-row"><div class="stage-row-label">Gases Present</div><div class="stage-row-val"><span class="warn">CO, HF, HCN (early concentrations), flammable electrolyte vapors, CO₂.</span> LEL (Lower Explosive Limit) alarm may activate before toxic gas alarms — atmosphere is simultaneously flammable AND toxic.</div></div>
+          <div class="stage-tactical">
+            <div class="stage-tactical-label">Tactical Action</div>
+            <div class="stage-tactical-text">SCBA (Self-Contained Breathing Apparatus) required immediately — flammable and toxic atmosphere forming. Expand isolation perimeter. Eliminate all ignition sources. Do NOT open vehicle doors or windows (restricting oxygen access to the pack area is preferable). Begin continuous atmospheric monitoring. Notify hazmat if not already responding.</div>
+          </div>
+          <div class="stage-warn">
+            <div class="stage-warn-label">Critical Point</div>
+            <div class="stage-warn-text">The LEL alarm threshold can be reached while CO, HF, and HCN are simultaneously at dangerous concentrations. A 4-gas meter alarming on LEL does not tell you what toxic species are present. Specific detection for HF and HCN is required.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage-detail" id="stage-2">
+      <div class="stage-block">
+        <div class="stage-block-header">
+          <div class="stage-num-badge">03</div>
+          <div class="stage-block-meta">
+            <div class="stage-block-name">Active Thermal Runaway</div>
+            <div class="stage-block-temp">TIC Surface Reading: 300–600°F+ &mdash; rapidly escalating; surface readings underestimate internal temperatures</div>
+          </div>
+        </div>
+        <div class="stage-block-body">
+          <div class="stage-row"><div class="stage-row-label">Visual Signs</div><div class="stage-row-val">Rapidly escalating heat visible on TIC. Possible flames from battery vent openings. Visible propagation — heat spreading laterally across battery pack footprint on TIC display.</div></div>
+          <div class="stage-row"><div class="stage-row-label">Sounds</div><div class="stage-row-val">Loud, continuous venting. Rapid sequential popping or cracking as cells rupture. Possible jet-like sounds from vent gas ignition.</div></div>
+          <div class="stage-row"><div class="stage-row-label">Odor</div><div class="stage-row-val">Intense chemical odor. Strong acrid smell. <span class="warn">SCBA already required — do not rely on odor for hazard assessment at this stage.</span></div></div>
+          <div class="stage-row"><div class="stage-row-label">Gases Present</div><div class="stage-row-val"><span class="warn">HF, HCN, CO at potentially IDLH concentrations.</span> High VOC load. CO₂. Particulate from cell material. In NMC chemistry: cathode oxygen release sustains the reaction without external air supply.</div></div>
+          <div class="stage-tactical">
+            <div class="stage-tactical-label">Tactical Action</div>
+            <div class="stage-tactical-text">Large-volume water application externally to the battery pack — goal is COOLING to interrupt cell-to-cell thermal propagation, not conventional flame knockdown. Do NOT breach the battery enclosure. Defensive posture unless immediate life safety requires otherwise. Plan for 10,000–30,000+ gallons. Begin runoff containment — keep contaminated water out of storm drains.</div>
+          </div>
+          <div class="stage-warn">
+            <div class="stage-warn-label">Critical Point — NMC Chemistry</div>
+            <div class="stage-warn-text">NMC cathode releases oxygen during thermal runaway, making the fire self-sustaining without external air. Conventional suppression logic does not apply. Water volume for cooling is the only available intervention.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage-detail" id="stage-3">
+      <div class="stage-block">
+        <div class="stage-block-header">
+          <div class="stage-num-badge">04</div>
+          <div class="stage-block-meta">
+            <div class="stage-block-name">Full Fire Involvement</div>
+            <div class="stage-block-temp">TIC Surface Reading: May saturate — unreliable. Internal pack temperatures can exceed 1,000°F</div>
+          </div>
+        </div>
+        <div class="stage-block-body">
+          <div class="stage-row"><div class="stage-row-label">Visual Signs</div><div class="stage-row-val">Active flames. High heat release rate. Toxic smoke column — <span class="warn">do not enter the plume.</span> Possible secondary explosions from cell rupture. Structural damage to vehicle.</div></div>
+          <div class="stage-row"><div class="stage-row-label">Sounds</div><div class="stage-row-val">Intense burning sounds. Possible secondary explosions as cells rupture under pressure.</div></div>
+          <div class="stage-row"><div class="stage-row-label">Gases Present</div><div class="stage-row-val"><span class="warn">All off-gas species at high concentrations. Heavy particulate in smoke column. HF and HCN travel in plume — wind direction determines safe zones.</span></div></div>
+          <div class="stage-tactical">
+            <div class="stage-tactical-label">Tactical Action</div>
+            <div class="stage-tactical-text">Defensive posture. Water for exposure protection of surrounding structures and vehicles. If suppression attempted, massive sustained water volume required. Identify wind direction — establish all operations and personnel upwind. Runoff is contaminated — actively contain from storm drain entry. SCBA mandatory. No personnel in plume.</div>
+          </div>
+          <div class="stage-warn">
+            <div class="stage-warn-label">Critical Point</div>
+            <div class="stage-warn-text">The smoke column from an EV battery fire contains HF and HCN. It is not equivalent to a structural fire smoke column. Wind direction determines which area is the kill zone. Establish positioning before the plume shifts.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage-detail" id="stage-4">
+      <div class="stage-block">
+        <div class="stage-block-header">
+          <div class="stage-num-badge">05</div>
+          <div class="stage-block-meta">
+            <div class="stage-block-name">Post-Fire / Re-Ignition Watch</div>
+            <div class="stage-block-temp">TIC Surface Reading: Decreasing — NOT a reliable indicator of internal cell state</div>
+          </div>
+        </div>
+        <div class="stage-block-body">
+          <div class="stage-row"><div class="stage-row-label">Visual Signs</div><div class="stage-row-val">Apparent knockdown. Surface temperatures decreasing on TIC. Residual steam or vapor from water application. No visible flames.</div></div>
+          <div class="stage-row"><div class="stage-row-label">Gases Present</div><div class="stage-row-val">Residual off-gases. Continued low-level venting possible from cells still reacting internally. Atmospheric monitoring must continue.</div></div>
+          <div class="stage-row"><div class="stage-row-label">HV Status</div><div class="stage-row-val"><span class="warn">Full high-voltage charge retained internally.</span> 12V disconnect does not de-energize the traction pack. Vehicle is energized regardless of visible fire status. Orange HV cables remain live.</div></div>
+          <div class="stage-tactical">
+            <div class="stage-tactical-label">Tactical Action</div>
+            <div class="stage-tactical-text">Cease water application. TIC monitoring every 15–30 minutes minimum. 24–48 hour re-ignition watch minimum. Outdoor storage only — minimum 50 feet from structures and other vehicles. Do NOT release to civilian custody. Do NOT store indoors. Continue atmospheric monitoring. Document runoff pathway and notify environmental authorities.</div>
+          </div>
+          <div class="stage-warn">
+            <div class="stage-warn-label">Critical Point — Re-Ignition</div>
+            <div class="stage-warn-text">Re-ignition has been documented up to 24+ hours after apparent knockdown. Surface temperature decrease on TIC does NOT indicate internal cell stabilization. Cells deep within the pack may still be in early thermal runaway with no external signature. One hour is not enough. Minimum 24–48 hours.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ BATTERY CHEMISTRY ═══════════════════════════════════════ -->
+  <div class="section-panel" id="tab-chemistry">
+    <div class="section-intro">
+      Battery chemistry directly affects thermal runaway onset temperature, propagation speed, off-gas violence, and the tactical window available for intervention. <strong>Knowing the chemistry changes the timeline expectation, not the required PPE.</strong> All lithium-ion chemistries produce HF, CO, and HCN during thermal runaway — SCBA is required regardless of chemistry type.
+    </div>
+    <div class="ref-card">
+      <div class="ref-card-header">
+        <div class="ref-card-title">Chemistry Comparison</div>
+        <div class="ref-card-sub">Source: FAA DOT/FAA/TC-15/59 &mdash; TEEX / UL FSRI</div>
+      </div>
+      <div class="ref-card-body" style="padding:0; overflow-x:auto;">
+        <table class="ref-table">
+          <thead>
+            <tr>
+              <th>Chemistry</th>
+              <th>Thermal Onset</th>
+              <th>O₂ Release</th>
+              <th>Propagation</th>
+              <th>Common Applications</th>
+              <th>Tactical Implication</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>NMC</strong><br><span style="font-family:var(--mono);font-size:.72rem;color:var(--text-muted);">Nickel Manganese Cobalt</span></td>
+              <td><span class="warn">~150°C<br>(302°F)</span></td>
+              <td><span class="warn">YES — cathode releases oxygen; fire is self-sustaining</span></td>
+              <td><span class="warn">Fast — cell-to-cell</span></td>
+              <td>Passenger EVs, SUVs, delivery vans — most common in current fleet</td>
+              <td><span class="warn">Lowest margin for intervention. Conventional suppression logic does not apply.</span></td>
+            </tr>
+            <tr>
+              <td><strong>LFP</strong><br><span style="font-family:var(--mono);font-size:.72rem;color:var(--text-muted);">Lithium Iron Phosphate</span></td>
+              <td><span class="hl">~270°C<br>(518°F)</span></td>
+              <td><span class="ok">NO — does not release cathode oxygen</span></td>
+              <td><span class="ok">Slower — more time to intervene</span></td>
+              <td>Commercial EVs, transit buses, some passenger EVs, ESS facilities</td>
+              <td>Higher onset provides more window. <span class="warn">Still produces HF, CO, HCN. Not safe — safer onset only.</span></td>
+            </tr>
+            <tr>
+              <td><strong>NCA</strong><br><span style="font-family:var(--mono);font-size:.72rem;color:var(--text-muted);">Nickel Cobalt Aluminum</span></td>
+              <td><span class="warn">~150–170°C<br>(302–338°F)</span></td>
+              <td><span class="warn">YES</span></td>
+              <td><span class="warn">Fast</span></td>
+              <td>High-performance EVs, some older models</td>
+              <td>Profile similar to NMC. High energy density means more stored energy per unit volume.</td>
+            </tr>
+            <tr>
+              <td><strong>LMO</strong><br><span style="font-family:var(--mono);font-size:.72rem;color:var(--text-muted);">Lithium Manganese Oxide</span></td>
+              <td><span class="hl">~200°C<br>(392°F)</span></td>
+              <td>Partial</td>
+              <td>Moderate</td>
+              <td>Older EVs, some hybrids, power tools — less common in current fleet</td>
+              <td>Intermediate hazard profile. Less common but still present in the response environment.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="ref-card" style="border-left-color: var(--red);">
+      <div class="ref-card-header">
+        <div class="ref-card-title" style="color:var(--red);">Universal Rule Across All Chemistries</div>
+      </div>
+      <div class="ref-card-body">
+        <div style="font-family:var(--body);font-size:1rem;line-height:1.85;color:var(--text-dim);">
+          The fluorine-containing electrolyte salt <strong style="color:var(--text);">LiPF₆ (lithium hexafluorophosphate)</strong> is present in all four chemistries. HF production during thermal runaway is <span class="warn">chemistry-independent</span>. SCBA is required for all lithium-ion battery incidents regardless of chemistry identification. Identification of chemistry affects timeline and propagation expectations — it does not change the required level of respiratory protection.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ OFF-GAS TOXICITY ═══════════════════════════════════════ -->
+  <div class="section-panel" id="tab-offgas">
+    <div class="section-intro">
+      The off-gas profile of lithium-ion thermal runaway is a multi-species toxic atmosphere. A standard 4-gas meter (CO, LEL, O₂, H₂S) <strong>does not detect HF or HCN</strong> — the two most immediately tissue-damaging components. Values below are from NIOSH and OSHA. Research concentrations are from TEEX/UL FSRI and FAA testing.
+    </div>
+    <div class="ref-card">
+      <div class="ref-card-header">
+        <div class="ref-card-title">Primary Off-Gas Species</div>
+        <div class="ref-card-sub">Source: NIOSH Pocket Guide / OSHA / TEEX&ndash;UL FSRI / FAA DOT/FAA/TC-15/59</div>
+      </div>
+      <div class="ref-card-body" style="padding:0; overflow-x:auto;">
+        <table class="ref-table">
+          <thead>
+            <tr>
+              <th>Gas</th>
+              <th>IDLH (Immediately Dangerous to Life or Health)</th>
+              <th>OSHA PEL (Permissible Exposure Limit)</th>
+              <th>Appearance / Odor</th>
+              <th>Key Health Effects</th>
+              <th>Detection Note</th>
+              <th>Research Concentrations</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>HF</strong><br>Hydrogen Fluoride</td>
+              <td><span class="warn">30 ppm</span></td>
+              <td>3 ppm (ceiling)</td>
+              <td>Colorless gas. Pungent at high concentrations — <span class="warn">may be undetectable by odor at dangerous concentrations</span></td>
+              <td>Deep tissue burns (skin, lung, bone). Systemic fluoride toxicity. Cardiac arrhythmia. <span class="warn">Symptoms may be delayed — exposure may not be immediately apparent.</span></td>
+              <td><span class="warn">Specific electrochemical sensor required. PID has NO response to HF. 4-gas meter does NOT detect HF.</span></td>
+              <td>Measured at IDLH levels in both cell-stack and module-scale tests (TEEX/UL FSRI)</td>
+            </tr>
+            <tr>
+              <td><strong>HCN</strong><br>Hydrogen Cyanide</td>
+              <td><span class="warn">50 ppm</span></td>
+              <td>10 ppm (ceiling)</td>
+              <td>Colorless gas. Faint bitter almond odor — <span class="warn">not detectable by all individuals; do not rely on odor</span></td>
+              <td>Cellular asphyxiation. Rapid incapacitation at high concentrations.</td>
+              <td>Specific electrochemical sensor required. PID responds poorly. 4-gas meter does NOT detect HCN.</td>
+              <td>34–200 ppm measured in testing (IDLH: 50 ppm). (TEEX/UL FSRI)</td>
+            </tr>
+            <tr>
+              <td><strong>CO</strong><br>Carbon Monoxide</td>
+              <td><span class="warn">1,200 ppm</span></td>
+              <td>50 ppm TWA (Time-Weighted Average)</td>
+              <td>Colorless, odorless</td>
+              <td>Tissue hypoxia. CNS (Central Nervous System) depression. Cardiac effects at high concentrations.</td>
+              <td>Standard 4-gas meter detects CO. Most common instrument coverage.</td>
+              <td><span class="warn">Up to 25,000 ppm measured in confined environments — 500× OSHA PEL.</span> (TEEX/UL FSRI)</td>
+            </tr>
+            <tr>
+              <td><strong>Formaldehyde</strong><br>CH₂O</td>
+              <td>20 ppm</td>
+              <td>0.75 ppm TWA<br>STEL (Short-Term Exposure Limit): 2 ppm</td>
+              <td>Colorless gas. Sharp, pungent odor.</td>
+              <td>Respiratory irritant. Mucous membrane damage. Carcinogen (IARC — International Agency for Research on Cancer — Group 1).</td>
+              <td>Specific sensor or colorimetric tube. Not detected by standard 4-gas meter.</td>
+              <td>Up to 150× OSHA 8-hour limit measured in testing. (TEEX/UL FSRI)</td>
+            </tr>
+            <tr>
+              <td><strong>POF₃</strong><br>Phosphoryl Fluoride</td>
+              <td>Not established</td>
+              <td>Not established</td>
+              <td>Colorless gas. Extremely toxic at low concentrations.</td>
+              <td>Severe pulmonary damage. Systemic fluoride toxicity. <span class="warn">Hydrolysis in moist air produces HF.</span></td>
+              <td><span class="warn">Difficult to detect — requires specialized equipment. Absence of alarm does NOT indicate absence of POF₃.</span></td>
+              <td>Produced from LiPF₆ decomposition at high temperatures. Present in thermal runaway events.</td>
+            </tr>
+            <tr>
+              <td><strong>CO₂</strong><br>Carbon Dioxide</td>
+              <td>40,000 ppm</td>
+              <td>5,000 ppm TWA<br>STEL: 30,000 ppm</td>
+              <td>Colorless, odorless</td>
+              <td>Asphyxiation at high concentrations. Displaces oxygen in confined spaces.</td>
+              <td>Standard 4-gas meter detects O₂ depletion as CO₂ rises.</td>
+              <td>Significant volumes produced — contributes to O₂ deficiency in confined spaces.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="ref-card" style="border-left-color: var(--red);">
+      <div class="ref-card-header">
+        <div class="ref-card-title" style="color:var(--red);">Minimum Monitoring Strategy</div>
+        <div class="ref-card-sub">Instrument selection must account for the full off-gas profile</div>
+      </div>
+      <div class="ref-card-body" style="overflow-x:auto; padding:0;">
+        <table class="ref-table">
+          <thead><tr><th>Priority</th><th>Instrument</th><th>What It Covers</th><th>What It Misses</th></tr></thead>
+          <tbody>
+            <tr><td><span class="hl">1st</span></td><td>Multi-gas meter (CO / LEL / O₂ / H₂S)</td><td>CO, flammable atmosphere (LEL), oxygen deficiency</td><td><span class="warn">HF, HCN, formaldehyde, POF₃</span></td></tr>
+            <tr><td><span class="hl">2nd</span></td><td>Single-gas HCN monitor</td><td>Hydrogen cyanide</td><td>HF, formaldehyde, POF₃</td></tr>
+            <tr><td><span class="hl">3rd</span></td><td>HF-specific electrochemical sensor</td><td>Hydrogen fluoride</td><td>POF₃ (converts to HF in moisture — partial coverage)</td></tr>
+            <tr><td>4th</td><td>PID (photoionization detector)</td><td>Total VOC (Volatile Organic Compound) picture — benzene, acetylene, 1,3-butadiene</td><td><span class="warn">Zero response to CO, HF, or HCN. PID zero ≠ safe atmosphere.</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ WATER APPLICATION ═══════════════════════════════════════ -->
+  <div class="section-panel" id="tab-water">
+    <div class="section-intro">
+      Water use at EV battery incidents operates in two distinct phases with opposite tactical logic. The decision to apply or stop water application is driven by <strong>what the water is doing to the battery</strong>, not conventional fire suppression logic. Understanding the mechanism behind each phase is the training objective.
+    </div>
+
+    <div class="water-phase" style="border-left: 3px solid var(--amber);">
+      <div class="water-phase-header" style="background: var(--navy-elevated); border-bottom: 1px solid var(--border);">
+        <div class="water-phase-icon" style="color: var(--amber);">01</div>
+        <div>
+          <div class="water-phase-title" style="color: var(--amber);">Active Thermal Runaway — Apply Water</div>
+          <div style="font-family:var(--mono);font-size:.62rem;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-top:3px;">Mechanism: Thermal interruption</div>
+        </div>
+      </div>
+      <div class="water-phase-body">
+        <div class="water-row">
+          <div class="water-row-label">Purpose</div>
+          <div class="water-row-val">Cooling — remove heat from the battery pack to interrupt cell-to-cell thermal propagation. This is <span class="hl">not conventional fire suppression.</span> The goal is to pull temperatures below the propagation threshold, not to knock down visible flames.</div>
+        </div>
+        <div class="water-row">
+          <div class="water-row-label">Application</div>
+          <div class="water-row-val">External surfaces of the battery pack only. <span class="warn">Never breach the battery enclosure.</span> The pack is sealed and internally energized. Directing water into the pack creates electrocution hazard and does not improve cooling.</div>
+        </div>
+        <div class="water-row">
+          <div class="water-row-label">Volume</div>
+          <div class="water-row-val">Research indicates <span class="hl">10,000–30,000+ gallons</span> for passenger EV battery packs. Transit buses and ESS facilities may require significantly more. Standard vehicle fire flow rates are insufficient. Plan for sustained large-volume supply — tanker relay or hydrant.</div>
+        </div>
+        <div class="water-row">
+          <div class="water-row-label">What Water Does NOT Do</div>
+          <div class="water-row-val">Water does not neutralize HF, HCN, or CO. Water does not deactivate cells. Water does not eliminate re-ignition risk. It removes heat only — the energy source remains intact.</div>
+        </div>
+        <div class="water-row">
+          <div class="water-row-label">Runoff</div>
+          <div class="water-row-val"><span class="warn">Water that contacts the battery pack and fire debris is contaminated.</span> Even at this phase, begin identifying runoff pathways and prevent entry into storm drains and waterways. The contamination problem begins when water application begins — not after.</div>
+        </div>
+        <div class="water-row">
+          <div class="water-row-label">Source</div>
+          <div class="water-row-val" style="font-family:var(--mono);font-size:.75rem;color:var(--text-muted);">ERG 2024 Guide 147 — UL FSRI / TEEX Research</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="water-phase" style="border-left: 3px solid var(--green);">
+      <div class="water-phase-header" style="background: var(--navy-elevated); border-bottom: 1px solid var(--border);">
+        <div class="water-phase-icon" style="color: var(--green);">02</div>
+        <div>
+          <div class="water-phase-title" style="color: var(--green);">Post-Knockdown — Stop Water Application</div>
+          <div style="font-family:var(--mono);font-size:.62rem;color:var(--text-muted);letter-spacing:.1em;text-transform:uppercase;margin-top:3px;">Mechanism: Additional water only expands contamination</div>
+        </div>
+      </div>
+      <div class="water-phase-body">
+        <div class="water-row">
+          <div class="water-row-label">Rationale</div>
+          <div class="water-row-val">Once active thermal runaway is suppressed, continued water application does not neutralize HF, HCN, or CO already present in the environment. Additional water only increases the volume of contaminated runoff and expands the environmental impact zone without adding tactical value.</div>
+        </div>
+        <div class="water-row">
+          <div class="water-row-label">Tactical Shift</div>
+          <div class="water-row-val">Cease water application. Shift to <span class="hl">TIC monitoring every 15–30 minutes</span>. TIC is now your primary tool. Temperature rising on TIC = potential re-ignition developing internally. Temperature decreasing on TIC does not mean stabilized — internal cells may still be reacting.</div>
+        </div>
+        <div class="water-row">
+          <div class="water-row-label">Runoff Priority</div>
+          <div class="water-row-val"><span class="warn">All runoff from the incident area is contaminated and must be treated as hazardous.</span> Prevent entry into storm drains, gutters, waterways, and soil. Document the runoff pathway. Notify environmental authorities (state EPA (Environmental Protection Agency) or equivalent) — this is a required reporting action in most jurisdictions, not optional.</div>
+        </div>
+        <div class="water-row">
+          <div class="water-row-label">The Key Distinction</div>
+          <div class="water-row-val">Water during active runaway = necessary and tactically correct. Water after knockdown = increases contamination without benefit. These are two different decisions requiring two different rationales. The error in training is treating water as a single constant throughout the incident.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ ERG 147 ═══════════════════════════════════════ -->
+  <div class="section-panel" id="tab-erg">
+    <div class="section-intro">
+      ERG (Emergency Response Guidebook) 2024, Guide 147 covers lithium-ion and sodium-ion batteries. Distances below are the published starting points. <strong>These are minimums, not maximums.</strong> Confined spaces require vertical isolation in addition to horizontal distance — ERG distances assume open-air conditions.
+    </div>
+    <div class="ref-card">
+      <div class="ref-card-header">
+        <div class="ref-card-title">ERG 2024 &mdash; Guide 147 Isolation &amp; Evacuation Distances</div>
+        <div class="ref-card-sub">Source: DOT / PHMSA Emergency Response Guidebook 2024</div>
+      </div>
+      <div class="ref-card-body">
+        <div class="erg-grid">
+          <div class="erg-block">
+            <div class="erg-block-header"><div class="erg-block-type">&#128293; Fire &mdash; Small Battery</div></div>
+            <div class="erg-block-body">
+              <div class="erg-dist-row">
+                <div class="erg-dist-label">Initial Isolation</div>
+                <div class="erg-dist-val iso">50 m / 150 ft</div>
+                <div class="erg-dist-sub">All directions</div>
+              </div>
+            </div>
+          </div>
+          <div class="erg-block">
+            <div class="erg-block-header"><div class="erg-block-type">&#128293; Fire &mdash; Large Battery</div></div>
+            <div class="erg-block-body">
+              <div class="erg-dist-row">
+                <div class="erg-dist-label">Initial Isolation</div>
+                <div class="erg-dist-val iso">100 m / 330 ft</div>
+                <div class="erg-dist-sub">All directions</div>
+              </div>
+              <div class="erg-dist-row" style="margin-top:14px;">
+                <div class="erg-dist-label">Consider Evacuation</div>
+                <div class="erg-dist-val evac">500 m / ⅓ mile</div>
+                <div class="erg-dist-sub">All directions</div>
+              </div>
+            </div>
+          </div>
+          <div class="erg-block">
+            <div class="erg-block-header"><div class="erg-block-type">&#128167; Spill &mdash; Small</div></div>
+            <div class="erg-block-body">
+              <div class="erg-dist-row">
+                <div class="erg-dist-label">Initial Isolation</div>
+                <div class="erg-dist-val iso">25 m / 75 ft</div>
+                <div class="erg-dist-sub">All directions</div>
+              </div>
+              <div class="erg-dist-row" style="margin-top:14px;">
+                <div class="erg-dist-label">Protective Action Distance</div>
+                <div class="erg-dist-val evac">100 m / 330 ft</div>
+                <div class="erg-dist-sub">Downwind</div>
+              </div>
+            </div>
+          </div>
+          <div class="erg-block">
+            <div class="erg-block-header"><div class="erg-block-type">&#128167; Spill &mdash; Large</div></div>
+            <div class="erg-block-body">
+              <div class="erg-dist-row">
+                <div class="erg-dist-label">Initial Isolation</div>
+                <div class="erg-dist-val iso">100 m / 330 ft</div>
+                <div class="erg-dist-sub">All directions</div>
+              </div>
+              <div class="erg-dist-row" style="margin-top:14px;">
+                <div class="erg-dist-label">Protective Action Distance</div>
+                <div class="erg-dist-val evac">500 m / ⅓ mile</div>
+                <div class="erg-dist-sub">Downwind</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="erg-note">
+          <div class="erg-note-title">&#9888; Critical Interpretation Notes — Do Not Apply These Distances Without Context</div>
+          <div class="erg-note-text">
+            <strong>Confined spaces:</strong> ERG distances assume open-air conditions. In parking structures, residential garages, or industrial buildings, off-gases concentrate and travel through HVAC (Heating, Ventilation, and Air Conditioning), stairwells, and elevator shafts. Apply the horizontal distance AND add vertical isolation — deny access to floors above and below the event.<br><br>
+            <strong>Structure walls do not contain hazard:</strong> Walls trap off-gases rather than containing them. Confinement makes the hazard worse, not better. The 500m perimeter in a parking structure is physically impossible — the equivalent is floor-by-floor evacuation and access denial.<br><br>
+            <strong>Re-ignition language (ERG 147):</strong> "A lithium ion battery fire may reignite at any point after the initial fire is extinguished, <strong>up to weeks later.</strong>" This is verbatim ERG language — not an approximation.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ VEHICLE DATA ═══════════════════════════════════════ -->
+  <div class="section-panel" id="tab-vehicles">
+    <div class="veh-disclaimer">
+      &#9432; TRAINING DATA ONLY — Specifications vary significantly by model year, trim level, and regional market. Voltage ranges, chemistry, and battery locations are approximate and subject to change. Always consult manufacturer Emergency Response Guides (ERGs) for vehicle-specific disconnect procedures, battery boundary lines, and current specifications. Manufacturer ERGs are available via NFPA AFV (Alternative Fuel Vehicle) Resources and EV FireSafe.
+    </div>
+
+    <div class="ref-card">
+      <div class="ref-card-header">
+        <div class="ref-card-title">Passenger &amp; Light Duty EVs</div>
+        <div class="ref-card-sub">Approximate training reference — verify against current manufacturer ERG</div>
+      </div>
+      <div class="ref-card-body" style="padding:0; overflow-x:auto;">
+        <table class="ref-table">
+          <thead>
+            <tr><th>Vehicle</th><th>Approximate Chemistry</th><th>Approx. Pack Size</th><th>Approx. Voltage</th><th>Battery Location</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Tesla Model 3 / Y</strong><br><span style="font-family:var(--mono);font-size:.7rem;color:var(--text-muted);">Standard Range variants</span></td><td><span class="ok">LFP</span></td><td>~60 kWh</td><td>~400V</td><td>Underfloor — full vehicle width between axles</td></tr>
+            <tr><td><strong>Tesla Model 3 / Y</strong><br><span style="font-family:var(--mono);font-size:.7rem;color:var(--text-muted);">Long Range / Performance variants</span></td><td><span class="warn">NMC</span></td><td>~75–82 kWh</td><td>~400V</td><td>Underfloor — full vehicle width between axles</td></tr>
+            <tr><td><strong>Tesla Model S / X</strong></td><td><span class="warn">NCA</span></td><td>~100 kWh</td><td>~400V</td><td>Underfloor — extended footprint</td></tr>
+            <tr><td><strong>Chevrolet Bolt EV / EUV</strong></td><td><span class="warn">NMC blend</span></td><td>~65 kWh</td><td>~350V</td><td>Underfloor — T-shaped pack</td></tr>
+            <tr><td><strong>Ford F-150 Lightning</strong></td><td><span class="warn">NMC</span></td><td>~98–131 kWh</td><td>~400V</td><td>Midship underfloor — integrated into frame</td></tr>
+            <tr><td><strong>Ford Mustang Mach-E</strong></td><td><span class="warn">NMC</span></td><td>~75–91 kWh</td><td>~400V</td><td>Underfloor</td></tr>
+            <tr><td><strong>Rivian R1T / R1S</strong></td><td><span class="warn">NMC</span></td><td>~135 kWh</td><td>~400–800V</td><td>Underfloor — large footprint, skateboard platform</td></tr>
+            <tr><td><strong>Hyundai Ioniq 5 / Kia EV6</strong></td><td><span class="warn">NMC</span></td><td>~77 kWh</td><td><span class="warn">~800V</span></td><td>Underfloor</td></tr>
+            <tr><td><strong>Nissan LEAF</strong><br><span style="font-family:var(--mono);font-size:.7rem;color:var(--text-muted);">Older fleet — still in service</span></td><td>LMO/NMC blend</td><td>~40–62 kWh</td><td>~350V</td><td>Underfloor — center tunnel and rear</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="ref-card">
+      <div class="ref-card-header">
+        <div class="ref-card-title">Commercial, Transit &amp; Energy Storage</div>
+        <div class="ref-card-sub">Higher voltages — approach with additional caution</div>
+      </div>
+      <div class="ref-card-body" style="padding:0; overflow-x:auto;">
+        <table class="ref-table">
+          <thead>
+            <tr><th>Platform Type</th><th>Approximate Chemistry</th><th>Approximate Pack Size</th><th>Approximate Voltage</th><th>Battery Location</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Electric Transit Bus</strong></td><td><span class="warn">NMC</span> or <span class="ok">LFP</span></td><td>~300–660 kWh</td><td><span class="warn">600–750V</span></td><td>Roof-mounted pods OR underfloor — varies by manufacturer</td></tr>
+            <tr><td><strong>Electric Delivery Van</strong><br><span style="font-family:var(--mono);font-size:.7rem;color:var(--text-muted);">Various manufacturers</span></td><td><span class="warn">NMC</span></td><td>~100–200 kWh</td><td>~400–800V</td><td>Underfloor — extended wheelbase</td></tr>
+            <tr><td><strong>ESS / BESS Facility</strong><br><span style="font-family:var(--mono);font-size:.7rem;color:var(--text-muted);">Battery Energy Storage System</span></td><td><span class="ok">LFP</span> predominantly</td><td>Hundreds of kWh (kilowatt-hours) to MWh (megawatt-hours) scale</td><td><span class="warn">800–1,500V DC (Direct Current)</span></td><td>Containerized ground units — may be stacked. Floor-level access only.</td></tr>
+            <tr><td><strong>EV Battery Recycling Facility</strong></td><td>Mixed — damaged packs, all chemistries</td><td>Variable — degraded packs may retain partial charge</td><td><span class="warn">Variable — assume energized until verified otherwise</span></td><td>Rack storage and processing lines — PFAS (Per- and Polyfluoroalkyl Substances) already mobilized from damaged cell material</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="ref-card" style="border-left-color: var(--red);">
+      <div class="ref-card-header">
+        <div class="ref-card-title" style="color:var(--red);">High-Voltage Safety — Universal Rules</div>
+      </div>
+      <div class="ref-card-body" style="overflow-x:auto; padding:0;">
+        <table class="ref-table">
+          <thead><tr><th>Rule</th><th>Explanation</th></tr></thead>
+          <tbody>
+            <tr><td><span class="warn">12V disconnect does NOT de-energize the traction pack</span></td><td>Disconnecting the 12V accessory battery opens HV (high-voltage) contactors but cells remain at full charge internally. Stranded energy is retained at full pack voltage regardless of 12V status.</td></tr>
+            <tr><td><span class="warn">Never cut orange HV cables</span></td><td>Orange color coding indicates HV conductors. Cutting creates arc flash and electrocution hazard. Manufacturer ERGs specify battery boundary lines — cuts must stay outside these boundaries.</td></tr>
+            <tr><td><span class="warn">Never breach the battery enclosure</span></td><td>The pack is sealed, internally charged, and structurally integral to the vehicle. Opening the enclosure creates arc flash hazard and removes the only barrier between responders and cell-level energy.</td></tr>
+            <tr><td><span class="warn">ESS voltages exceed passenger EV voltages</span></td><td>Utility-scale ESS systems operate at 800–1,500V DC. Conventional EV high-voltage awareness training does not fully account for ESS voltage levels. Manufacturer guidance required.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOURCE FOOTER — always visible -->
+  <div class="source-footer">
+    <div class="sf-title">Reference Sources</div>
+    <div class="sf-sub">All data in this reference tool is drawn from the following verified sources. Verify currency before training delivery.</div>
+    <div class="sf-item"><div class="sf-name">ERG 2024 — Guide 147: Lithium Ion and Sodium Ion Batteries</div><div class="sf-pub">DOT / PHMSA</div><a class="sf-link" href="https://cameochemicals.noaa.gov/erg_guides/en/Guide_147.pdf" target="_blank" rel="noopener">View Source &#8599;</a></div>
+    <div class="sf-item"><div class="sf-name">NIOSH Pocket Guide to Chemical Hazards</div><div class="sf-pub">National Institute for Occupational Safety and Health</div><a class="sf-link" href="https://www.cdc.gov/niosh/npg/" target="_blank" rel="noopener">View Source &#8599;</a></div>
+    <div class="sf-item"><div class="sf-name">OSHA — Lithium-Ion Battery Safety (OSHA 4480)</div><div class="sf-pub">Occupational Safety and Health Administration</div><a class="sf-link" href="https://www.osha.gov/sites/default/files/publications/OSHA4480.pdf" target="_blank" rel="noopener">View Source &#8599;</a></div>
+    <div class="sf-item"><div class="sf-name">FAA — Lithium Battery Thermal Runaway Vent Gas Analysis (DOT/FAA/TC-15/59)</div><div class="sf-pub">FAA / DOT</div><a class="sf-link" href="https://www.fire.tc.faa.gov/pdf/TC-15-59.pdf" target="_blank" rel="noopener">View Source &#8599;</a></div>
+    <div class="sf-item"><div class="sf-name">TEEX / UL FSRI — Lithium-Ion Battery Fires and Emissions Characterization</div><div class="sf-pub">TEEX / UL Fire Safety Research Institute</div><a class="sf-link" href="https://teex.org/wp-content/uploads/LITHIUM-ION-BATTERY-FIRES-AND-EMISSIONS-CHARACTERIZATION.pdf" target="_blank" rel="noopener">View Source &#8599;</a></div>
+    <div class="sf-item"><div class="sf-name">NTSB — Safety Risks to Emergency Responders from Li-Ion Battery Fires in EVs</div><div class="sf-pub">National Transportation Safety Board</div><a class="sf-link" href="https://www.ntsb.gov/safety/safety-studies/Documents/SR2001.pdf" target="_blank" rel="noopener">View Source &#8599;</a></div>
+    <div class="sf-item"><div class="sf-name">NFPA Alternative Fuel Vehicle Emergency Response Guides</div><div class="sf-pub">National Fire Protection Association</div><a class="sf-link" href="https://www.nfpa.org/Education-and-Research/Emergency-Response/Emergency-Response-Guides" target="_blank" rel="noopener">View Source &#8599;</a></div>
+    <div class="sf-item"><div class="sf-name">EV FireSafe — EV Emergency Response Resources</div><div class="sf-pub">EV FireSafe</div><a class="sf-link" href="https://www.evfiresafe.com/ev-fire-emergency-response-guides" target="_blank" rel="noopener">View Source &#8599;</a></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+function showTab(id) {
+  document.querySelectorAll('.section-panel').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.getElementById('tab-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showStage(idx) {
+  for (var i = 0; i < 5; i++) {
+    var pip = document.getElementById('pip-' + i);
+    var det = document.getElementById('stage-' + i);
+    if (pip) pip.classList.toggle('active', i === idx);
+    if (det) det.classList.toggle('active', i === idx);
+  }
+}
+</script>
+</body>
+</html>

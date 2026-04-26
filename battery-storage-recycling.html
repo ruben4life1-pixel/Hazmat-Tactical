@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Battery Storage &amp; Recycling Facilities | Hazmat Tactical</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Rajdhani:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:#0a0e1a; --navy-card:#141c2e; --navy-elevated:#1a2340;
+  --amber:#f0a500; --amber-dim:rgba(240,165,0,0.15); --amber-glow:rgba(240,165,0,0.08);
+  --red:#e03a3a; --red-dim:rgba(224,58,58,0.12);
+  --green:#22c55e; --green-dim:rgba(34,197,94,0.12);
+  --border:rgba(255,255,255,0.07); --border-amber:rgba(240,165,0,0.3);
+  --text:#e8eaf0; --text-muted:#6b7280; --text-dim:#9ca3af;
+  --display:'Bebas Neue',sans-serif; --ui:'Barlow Condensed',sans-serif;
+  --body:'Rajdhani',sans-serif; --mono:'IBM Plex Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--navy);color:var(--text);font-family:var(--body);min-height:100vh;overflow-x:hidden;line-height:1.6}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(240,165,0,0.04) 0%,transparent 60%),radial-gradient(ellipse 40% 40% at 80% 90%,rgba(224,58,58,0.03) 0%,transparent 50%),url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+.site-header{border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:16px;height:64px;background:rgba(10,14,26,0.92);backdrop-filter:blur(20px);position:sticky;top:0;z-index:50;box-shadow:0 1px 0 var(--border),0 8px 32px rgba(0,0,0,.5)}
+.site-title{font-family:var(--body);font-size:1.2rem;font-weight:700;letter-spacing:4px;text-transform:uppercase}
+.site-title span{color:var(--amber)}
+.header-badge{font-family:var(--mono);font-size:.58rem;color:var(--text-muted);letter-spacing:.2em;text-transform:uppercase;margin-left:auto;border:1px solid var(--border);padding:4px 10px;border-radius:2px}
+.wrap{max-width:820px;margin:0 auto;padding:0 20px 80px;position:relative;z-index:1}
+.hero{text-align:center;padding:48px 0 36px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--amber);border:1px solid var(--border-amber);padding:6px 16px;border-radius:2px;margin-bottom:20px;background:var(--amber-dim);box-shadow:0 0 16px rgba(240,165,0,.12)}
+.hero h1{font-family:var(--display);font-size:clamp(2.2rem,6vw,3.6rem);letter-spacing:4px;text-transform:uppercase;line-height:1.0;margin-bottom:8px}
+.hero-sub{font-family:var(--body);font-size:1.1rem;font-weight:500;color:var(--text-dim);max-width:520px;margin:0 auto 24px}
+.hero-rule{width:120px;height:3px;margin:0 auto;background:linear-gradient(90deg,transparent,var(--amber),transparent);border:none;border-radius:2px}
+.disclaimer{text-align:center;font-family:var(--mono);font-size:.7rem;color:var(--amber);letter-spacing:.15em;text-transform:uppercase;padding:10px 16px;border:1px solid var(--border-amber);border-radius:4px;background:var(--amber-dim);margin-bottom:28px}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:center;margin-bottom:32px}
+.section-toggle{display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden}
+.sec-btn{font-family:var(--ui);font-size:.9rem;font-weight:700;padding:11px 28px;background:var(--navy-card);color:var(--text-dim);border:none;cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:all .2s}
+.sec-btn.active{background:var(--amber);color:var(--navy)}
+.sec-btn:hover:not(.active){background:var(--navy-elevated);color:var(--text)}
+.gen-btn{font-family:var(--ui);font-weight:700;font-size:.95rem;padding:11px 32px;background:var(--amber);color:var(--navy);border:none;border-radius:4px;cursor:pointer;letter-spacing:1.5px;text-transform:uppercase;transition:all .2s;box-shadow:0 0 20px rgba(240,165,0,.2);position:relative;overflow:hidden}
+.gen-btn::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);transition:left .5s}
+.gen-btn:hover::after{left:100%}
+.gen-btn:hover{transform:translateY(-1px);box-shadow:0 0 32px rgba(240,165,0,.35)}
+.sc-card{background:var(--navy-card);border:1px solid var(--border);border-left:3px solid var(--amber);border-radius:6px;padding:20px;margin-bottom:20px}
+.sc-label{font-family:var(--ui);font-size:.75rem;color:var(--amber);text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:10px}
+.sc-body{font-family:var(--body);font-size:1rem;color:var(--text);line-height:1.8}
+.sc-body strong{color:var(--amber);font-weight:600}
+.sc-note{font-family:var(--mono);font-size:.75rem;color:var(--text-muted);margin-top:10px;padding-top:10px;border-top:1px solid var(--border);line-height:1.7}
+.q-card{background:var(--navy-card);border:1px solid var(--border);border-radius:6px;margin-bottom:20px;overflow:hidden}
+.q-head{padding:14px 20px;background:var(--navy-elevated);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.q-num{font-family:var(--ui);font-size:.8rem;color:var(--amber);font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
+.q-skill{font-family:var(--mono);font-size:.68rem;color:var(--text-muted);letter-spacing:.5px}
+.ref-panel{background:var(--navy-elevated);border:1px solid var(--border);border-left:3px solid var(--amber);border-radius:6px;padding:16px 18px;margin:14px 20px}
+.ref-title{font-family:var(--ui);font-size:.75rem;color:var(--amber);text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:8px}
+.ref-body{font-family:var(--mono);font-size:.8rem;color:var(--text-dim);line-height:1.9}
+.ref-body .hl{color:var(--amber);font-weight:500}
+.ref-body .warn{color:var(--red);font-weight:500}
+.ref-src{font-family:var(--mono);font-size:.68rem;color:var(--text-muted);margin-top:8px;font-style:italic}
+.q-text{padding:16px 20px;font-family:var(--body);font-size:1.05rem;font-weight:500;color:var(--text);line-height:1.7;border-bottom:1px solid var(--border)}
+.q-options{padding:14px 20px}
+.opt-btn{display:block;width:100%;text-align:left;font-family:var(--body);font-size:.95rem;padding:14px 16px;margin:7px 0;background:var(--navy-elevated);border:1px solid var(--border);border-radius:5px;color:var(--text);cursor:pointer;transition:all .2s;line-height:1.6}
+.opt-btn:hover:not(.selected):not(.locked){border-color:rgba(240,165,0,.4);background:rgba(240,165,0,.04)}
+.opt-btn.selected{border-color:var(--amber);background:var(--amber-dim)}
+.opt-btn.correct{border-color:var(--green) !important;background:var(--green-dim) !important;color:var(--green) !important}
+.opt-btn.incorrect{border-color:var(--red) !important;background:var(--red-dim) !important;color:#f87171 !important}
+.opt-btn.locked{cursor:default;opacity:.65}
+.opt-btn.locked.correct{opacity:1}
+.commit-btn{display:block;width:100%;font-family:var(--ui);font-weight:700;font-size:.9rem;padding:12px;margin:10px 0 4px;background:var(--amber);color:var(--navy);border:none;border-radius:5px;cursor:pointer;letter-spacing:1.5px;text-transform:uppercase;transition:all .2s}
+.commit-btn:hover{box-shadow:0 0 20px rgba(240,165,0,.3)}
+.commit-btn:disabled{background:var(--navy-elevated);color:var(--text-muted);cursor:default;box-shadow:none}
+.fb-panel{padding:16px 20px;border-top:1px solid var(--border);display:none}
+.fb-panel.show{display:block}
+.fb-panel.correct-fb{border-left:3px solid var(--green)}
+.fb-panel.incorrect-fb{border-left:3px solid var(--red)}
+.fb-label{font-family:var(--ui);font-size:.85rem;font-weight:700;letter-spacing:1px;margin-bottom:8px}
+.fb-label.correct{color:var(--green)}
+.fb-label.incorrect{color:var(--red)}
+.fb-text{font-family:var(--body);font-size:.92rem;color:var(--text-dim);line-height:1.75}
+.fb-text strong{color:var(--text)}
+.drill-refs{background:var(--navy-card);border:1px solid var(--border);border-top:3px solid var(--amber);border-radius:6px;padding:28px 24px;margin-top:36px;display:none}
+.drill-refs.show{display:block}
+.dr-title{font-family:var(--display);font-size:1.5rem;color:var(--amber);letter-spacing:3px;margin-bottom:4px}
+.dr-sub{font-family:var(--body);color:var(--text-muted);font-size:.9rem;margin-bottom:20px}
+.ref-item{padding:14px 0;border-bottom:1px solid var(--border)}
+.ref-item:last-child{border-bottom:none}
+.ri-name{font-family:var(--ui);font-size:.88rem;color:var(--text);font-weight:600}
+.ri-pub{font-family:var(--mono);font-size:.72rem;color:var(--text-muted);margin-top:2px}
+.ri-link{font-family:var(--mono);font-size:.72rem;color:var(--amber);text-decoration:none;display:inline-block;margin-top:4px}
+.ri-link:hover{text-decoration:underline}
+@media(max-width:640px){
+  .hero h1{font-size:2rem}
+  .controls{flex-direction:column;align-items:stretch}
+  .section-toggle{width:100%}
+  .sec-btn{flex:1;text-align:center;padding:11px 12px}
+  .gen-btn{width:100%}
+  .header-badge{display:none}
+}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="site-title"><span>HAZMAT</span> TACTICAL</div>
+  <div class="header-badge">Training Use Only</div>
+</header>
+<div class="wrap">
+  <div class="hero">
+    <div class="hero-badge">&#9889; EV &amp; Energy Storage Emergencies</div>
+    <h1>Battery Storage &amp;<br>Recycling Facilities</h1>
+    <p class="hero-sub">You get the scenario. You get the reference. You make the call.</p>
+    <hr class="hero-rule">
+  </div>
+  <div class="disclaimer">&#9888; For Training Use Only — Not for Use During Live Incidents</div>
+  <div class="controls">
+    <div class="section-toggle">
+      <button class="sec-btn active" data-sec="ess" onclick="setSection('ess')">ESS Facility</button>
+      <button class="sec-btn" data-sec="recycling" onclick="setSection('recycling')">Battery Recycling</button>
+    </div>
+    <button class="gen-btn" onclick="generateDrill()">Generate Drill</button>
+  </div>
+  <div id="drillArea"></div>
+</div>
+<script>
+'use strict';
+var currentSection='ess';
+var selectedAnswers={};
+var answeredCount=0;
+var totalQuestions=5;
+var usedSources=new Set();
+
+var SRC={
+  erg147:{n:"ERG 2024 \u2014 Guide 147: Lithium Ion and Sodium Ion Batteries",u:"https://cameochemicals.noaa.gov/erg_guides/en/Guide_147.pdf",p:"DOT / PHMSA"},
+  nfpa855:{n:"NFPA 855 (2023) \u2014 Standard for the Installation of Stationary Energy Storage Systems",u:"https://www.nfpa.org/product/nfpa-855-standard/p0855code",p:"National Fire Protection Association"},
+  oshaLiIon:{n:"OSHA \u2014 Lithium-Ion Battery Safety (OSHA 4480)",u:"https://www.osha.gov/sites/default/files/publications/OSHA4480.pdf",p:"OSHA"},
+  faaVentGas:{n:"FAA \u2014 Lithium Battery Thermal Runaway Vent Gas Analysis (DOT/FAA/TC-15/59)",u:"https://www.fire.tc.faa.gov/pdf/TC-15-59.pdf",p:"FAA / DOT"},
+  teexEmissions:{n:"TEEX / UL FSRI \u2014 Lithium-Ion Battery Fires and Emissions Characterization",u:"https://teex.org/wp-content/uploads/LITHIUM-ION-BATTERY-FIRES-AND-EMISSIONS-CHARACTERIZATION.pdf",p:"TEEX / UL Fire Safety Research Institute"},
+  ntsbEV:{n:"NTSB \u2014 Safety Risks to Emergency Responders from Li-Ion Battery Fires in EVs",u:"https://www.ntsb.gov/safety/safety-studies/Documents/SR2001.pdf",p:"National Transportation Safety Board"},
+  evfiresafe:{n:"EV FireSafe \u2014 EV Emergency Response Resources",u:"https://www.evfiresafe.com/ev-fire-emergency-response-guides",p:"EV FireSafe"}
+};
+
+var ESS_FACILITIES=[
+  {name:"Utility-Scale Outdoor ESS (Energy Storage System) Installation",desc:"containerized battery units in a secured outdoor enclosure adjacent to a power substation",detail:"Multiple container units, each housing battery modules at 1,000\u20131,500V DC (Direct Current). Perimeter fencing. No overhead structure.",volt:"1,000\u20131,500V DC"},
+  {name:"Commercial Building Basement ESS Room",desc:"enclosed ESS room in the basement of a 6-story commercial office building",detail:"Mechanical exhaust ventilation required by NFPA 855. Floor drains connected to building sump. Occupied floors above.",volt:"480\u2013800V DC"},
+  {name:"Data Center UPS (Uninterruptible Power Supply) Battery Room",desc:"large battery installation supporting a secured data center",detail:"Dense rack configuration. Mechanical ventilation and fire suppression installed. Critical facility with 24-hour personnel on site.",volt:"480\u2013800V DC"},
+  {name:"Industrial Manufacturing Facility ESS",desc:"on-site energy storage installation supporting a manufacturing operation",detail:"ESS located in a dedicated structure adjacent to the main manufacturing building. Drainage to industrial floor drains.",volt:"800\u20131,200V DC"}
+];
+var ESS_INCIDENTS=[
+  {type:"BMS (Battery Management System) Alarm \u2014 Pre-Fire",desc:"BMS (Battery Management System) alarm activated. Smoke detector triggered but no visible flames. Mechanical exhaust ventilation running. Workers evacuated."},
+  {type:"Active Fire \u2014 Suppression System Operating",desc:"Visible fire from one battery container unit. Automated suppression system actively discharging. Workers evacuated."},
+  {type:"Active Fire \u2014 Suppression System Failed",desc:"Visible fire from one battery container unit. Automated suppression system activated but failed to control fire. System no longer discharging."},
+  {type:"Post-Suppression \u2014 Re-Ignition Reported",desc:"Initial fire controlled two hours ago. Suppression system operated. Unit now re-dispatched \u2014 visible smoke returning from the previously involved unit."},
+  {type:"Worker-Reported Overheating \u2014 No Fire",desc:"Facility worker reports strong chemical odor and a temperature warning on the BMS display panel. No visible fire or smoke. Building partially evacuated."}
+];
+var REC_FACILITIES=[
+  {name:"Battery Processing Warehouse",desc:"indoor warehouse where EV battery packs are disassembled and modules sorted for recycling",detail:"Storage racks throughout. Mix of intact packs, partially disassembled modules, and individual cells. HVAC (Heating, Ventilation, and Air Conditioning) present."},
+  {name:"Outdoor Battery Storage Yard",desc:"fenced outdoor area where collected EV batteries are staged prior to processing",detail:"Open-air storage on pallets and racks. Mixed condition levels. Drainage to adjacent soil and storm drains."},
+  {name:"Transport Staging Facility",desc:"facility where batteries collected from repair shops and dealerships are staged before transport to recycling processors",detail:"Shipping containers and pallet storage. Mixed sources, unknown incident history. Limited on-site fire protection."}
+];
+var REC_INCIDENTS=[
+  {type:"Single Rack Fire",desc:"Fire reported in one storage rack. Workers evacuated. Adjacent racks in close proximity. Smoke visible from building exterior."},
+  {type:"Multi-Rack Involvement",desc:"Fire has spread to multiple adjacent racks. Heavy smoke. Workers evacuated. Total number of modules involved unknown."},
+  {type:"Worker-Discovered Smoldering",desc:"Worker discovered smoldering modules during a processing shift. Facility evacuated. No open flame. Odor described as chemical burning."},
+  {type:"Post-Hours Alarm Activation",desc:"Fire alarm activated after facility closed. No workers on scene. Unknown interior conditions. Camera system confirms smoke visible inside."}
+];
+var CONDITIONS=[
+  {time:"Daytime \u2014 1400 hours",wx:"Clear, 84\u00b0F, wind 8 mph from southwest",note:"Wind from southwest affecting plume direction. Drainage dry."},
+  {time:"Night \u2014 0130 hours",wx:"Overcast, 58\u00b0F, wind 12 mph gusting to 20",note:"Reduced visibility. Drainage wet from earlier rain. Wind variable."},
+  {time:"Daytime \u2014 0900 hours",wx:"Rain, 44\u00b0F, wind calm",note:"Active rainfall \u2014 runoff management critical. TIC (Thermal Imaging Camera) contrast reduced in wet conditions."}
+];
+
+function setSection(s){
+  currentSection=s;
+  document.querySelectorAll('.sec-btn').forEach(function(b){b.classList.toggle('active',b.dataset.sec===s)});
+}
+
+function rnd(arr){return arr[Math.floor(Math.random()*arr.length)]}
+
+function shuffle(arr){
+  var a=arr.slice();
+  for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}
+  return a;
+}
+
+function generateDrill(){
+  selectedAnswers={};answeredCount=0;usedSources=new Set();
+  var area=document.getElementById('drillArea');
+  area.innerHTML='';
+  var cond=rnd(CONDITIONS);
+  var questions,scHtml;
+
+  if(currentSection==='ess'){
+    var fac=rnd(ESS_FACILITIES);
+    var inc=rnd(ESS_INCIDENTS);
+    scHtml='<div class="sc-card"><div class="sc-label">&#9889; ESS Facility Incident</div><div class="sc-body">'
+      +'<strong>Facility:</strong> '+fac.name+'<br>'
+      +'<strong>Description:</strong> '+fac.desc+'<br>'
+      +'<strong>System Detail:</strong> '+fac.detail+'<br>'
+      +'<strong>Operating Voltage:</strong> '+fac.volt+'<br>'
+      +'<strong>Incident:</strong> '+inc.type+'<br>'
+      +'<strong>Conditions:</strong> '+inc.desc
+      +'<div class="sc-note">Time: '+cond.time+' &nbsp;|&nbsp; Weather: '+cond.wx+'<br>Operational note: '+cond.note+'</div>'
+      +'</div></div>';
+    questions=buildESSQuestions(fac,inc,cond);
+  } else {
+    var rfac=rnd(REC_FACILITIES);
+    var rinc=rnd(REC_INCIDENTS);
+    scHtml='<div class="sc-card"><div class="sc-label">&#9850; Battery Recycling Facility Incident</div><div class="sc-body">'
+      +'<strong>Facility:</strong> '+rfac.name+'<br>'
+      +'<strong>Description:</strong> '+rfac.desc+'<br>'
+      +'<strong>Facility Detail:</strong> '+rfac.detail+'<br>'
+      +'<strong>Incident:</strong> '+rinc.type+'<br>'
+      +'<strong>Conditions:</strong> '+rinc.desc
+      +'<div class="sc-note">Time: '+cond.time+' &nbsp;|&nbsp; Weather: '+cond.wx+'<br>Operational note: '+cond.note+'</div>'
+      +'</div></div>';
+    questions=buildRecyclingQuestions(rfac,rinc,cond);
+  }
+
+  var h=scHtml;
+  questions.forEach(function(q,qi){
+    var shuf=shuffle(q.ans.map(function(a){return{text:a.text,correct:a.correct,trap:a.trap||''}}));
+    h+='<div class="q-card" id="qc-'+qi+'">';
+    h+='<div class="q-head"><span class="q-num">Question '+(qi+1)+' \u2014 '+q.cat+'</span><span class="q-skill">'+q.skill+'</span></div>';
+    q.refs.forEach(function(r){
+      if(r.src)usedSources.add(r.src);
+      h+='<div class="ref-panel"><div class="ref-title">'+r.t+'</div><div class="ref-body">'+r.c+'</div>'+(r.src?'<div class="ref-src">\u2014 '+r.src.p+'</div>':'')+'</div>';
+    });
+    h+='<div class="q-text">'+q.q+'</div>';
+    h+='<div class="q-options" id="qo-'+qi+'">';
+    shuf.forEach(function(a,ai){
+      h+='<button class="opt-btn" id="ob-'+qi+'-'+ai+'" onclick="selAns('+qi+','+ai+')" data-c="'+a.correct+'" data-t="'+escQ(a.trap)+'">'+a.text+'</button>';
+    });
+    h+='<button class="commit-btn" id="cb-'+qi+'" onclick="commitAns('+qi+')" disabled>Commit to Decision</button>';
+    h+='</div><div class="fb-panel" id="fb-'+qi+'"></div></div>';
+  });
+
+  h+='<div class="drill-refs" id="drillRefs"><div class="dr-title">Drill References</div><div class="dr-sub">Sources used in this drill \u2014 verify or explore further.</div><div id="refsList"></div></div>';
+  area.innerHTML=h;
+  area.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function escQ(s){return s.replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+
+function selAns(qi,ai){
+  if(document.getElementById('cb-'+qi).style.display==='none')return;
+  document.querySelectorAll('#qo-'+qi+' .opt-btn').forEach(function(o){o.classList.remove('selected')});
+  document.getElementById('ob-'+qi+'-'+ai).classList.add('selected');
+  selectedAnswers[qi]=ai;
+  document.getElementById('cb-'+qi).disabled=false;
+}
+
+function commitAns(qi){
+  var ai=selectedAnswers[qi];
+  if(ai===undefined)return;
+  var opts=document.querySelectorAll('#qo-'+qi+' .opt-btn');
+  var sel=document.getElementById('ob-'+qi+'-'+ai);
+  var ok=sel.dataset.c==='true';
+  opts.forEach(function(o){o.classList.add('locked');if(o.dataset.c==='true')o.classList.add('correct')});
+  if(!ok)sel.classList.add('incorrect');
+  document.getElementById('cb-'+qi).style.display='none';
+  var fb=document.getElementById('fb-'+qi);
+  fb.classList.add('show');
+  if(ok){
+    fb.classList.add('correct-fb');
+    fb.innerHTML='<div class="fb-label correct">\u2713 CORRECT DECISION</div><div class="fb-text">You correctly applied the reference material to this scenario. This is the decision the source data supports given the conditions presented.</div>';
+  } else {
+    fb.classList.add('incorrect-fb');
+    fb.innerHTML='<div class="fb-label incorrect">\u2717 INCORRECT DECISION</div><div class="fb-text"><strong>Why this is wrong:</strong> '+sel.dataset.t+'</div>';
+  }
+  answeredCount++;
+  if(answeredCount===totalQuestions)showRefs();
+  if(qi+1<totalQuestions){
+    setTimeout(function(){document.getElementById('qc-'+(qi+1)).scrollIntoView({behavior:'smooth',block:'start'})},800);
+  }
+}
+
+function showRefs(){
+  var d=document.getElementById('drillRefs');
+  var r=document.getElementById('refsList');
+  var h='';
+  usedSources.forEach(function(s){h+='<div class="ref-item"><div class="ri-name">'+s.n+'</div><div class="ri-pub">Publisher: '+s.p+'</div><a class="ri-link" href="'+s.u+'" target="_blank" rel="noopener">View Full Source \u2197</a></div>'});
+  [SRC.erg147,SRC.nfpa855,SRC.evfiresafe].forEach(function(s){
+    if(!usedSources.has(s))h+='<div class="ref-item"><div class="ri-name">'+s.n+'</div><div class="ri-pub">Publisher: '+s.p+' \u2014 Additional resource</div><a class="ri-link" href="'+s.u+'" target="_blank" rel="noopener">View Full Source \u2197</a></div>';
+  });
+  r.innerHTML=h;
+  d.classList.add('show');
+  var btn=document.createElement('div');
+  btn.style.textAlign='center';btn.style.marginTop='24px';
+  btn.innerHTML='<button class="gen-btn" onclick="generateDrill()">Generate New Drill</button>';
+  d.appendChild(btn);
+  setTimeout(function(){d.scrollIntoView({behavior:'smooth',block:'start'})},500);
+}
+
+/* ─────────────────────── ESS QUESTIONS ─────────────────────── */
+function buildESSQuestions(fac,inc,cond){
+  return[
+    /* Q1 — Suppression System Interaction */
+    {cat:"Suppression System Response",skill:"Engineered System Interaction",
+     refs:[
+       {t:"NFPA 855 \u2014 Automatic Suppression Requirement",c:'NFPA 855 requires automatic fire suppression systems for ESS (Energy Storage System) installations exceeding defined energy thresholds. On arrival, an <span class="hl">actively operating suppression system</span> means engineering controls are working as designed. Interrupting a functioning system removes the primary fire mitigation already in operation.',src:SRC.nfpa855},
+       {t:"Scene: "+fac.name,c:'Operating voltage: <span class="warn">'+fac.volt+'</span> | '+fac.detail,src:null}
+     ],
+     q:"You arrive at a "+fac.name+". "+inc.desc+" The automated suppression system is actively discharging into the involved unit. What is your first priority?",
+     ans:[
+       {text:"Establish command upwind, identify the suppression system type, support the system\u2019s operation, establish an isolation perimeter per ERG (Emergency Response Guidebook) 147, and monitor for system effectiveness. Do not interfere with active suppression.",correct:true,trap:""},
+       {text:"Force entry to the battery container to apply water directly to the battery modules \u2014 the suppression system alone may be insufficient.",correct:false,trap:"Forcing entry to an ESS container during active suppression removes the controlled environment the system is maintaining, exposes crews to an uncharacterized toxic and energized atmosphere, and risks electrocution from "+fac.volt+" systems. ESS containers are not entered during active fire conditions regardless of suppression status."},
+       {text:"Shut down the suppression system to prevent water damage to surrounding equipment and begin manual fire attack.",correct:false,trap:"Shutting down an active suppression system to protect equipment reverses the priority order. Life safety and fire control come before equipment preservation in every case. Stopping the system hands control of the fire back to the battery and removes the primary mitigation already working."},
+       {text:"Wait for the suppression system to exhaust its agent, then immediately enter the unit and apply water directly to the modules.",correct:false,trap:"Waiting for system exhaustion may be appropriate. Immediately entering after discharge is not. Post-discharge ESS containers remain energized at "+fac.volt+", may still be off-gassing HF (Hydrogen Fluoride) and HCN (Hydrogen Cyanide), and the suppression system may have been insufficient to stabilize the batteries. Entry requires atmospheric monitoring and utility coordination \u2014 not a countdown to system exhaustion."}
+     ]},
+
+    /* Q2 — HV Isolation at ESS Scale */
+    {cat:"High-Voltage Isolation",skill:"ESS-Scale HV (High-Voltage) Recognition",
+     refs:[
+       {t:"ESS Voltage Scale \u2014 Operational Context",c:'ESS facilities operate at <span class="warn">'+fac.volt+'</span> \u2014 2 to 4 times the voltage of passenger EV traction packs. Arc flash energy increases <span class="warn">exponentially</span> with voltage. Standard EV high-voltage isolation procedures, including 12V disconnect and battery boundary line protocols, do not fully account for ESS voltage levels. Utility company coordination is required before any personnel approach energized ESS equipment.',src:SRC.ntsbEV},
+       {t:"Reference: OSHA \u2014 Arc Flash at High DC Voltage",c:'DC (Direct Current) arc flash at voltages above 600V DC presents sustained arc conditions that are more difficult to interrupt than AC (Alternating Current) arc flash. Standard PPE (Personal Protective Equipment) for EV response is not rated for ESS-scale arc flash exposure.',src:SRC.oshaLiIon}
+     ],
+     q:"The suppression system has controlled visible fire at the "+fac.name+". Command wants to establish a working perimeter for overhaul. The facility manager confirms the ESS is still energized at "+fac.volt+". What is the correct action before any personnel approach the battery enclosure area?",
+     ans:[
+       {text:"Deny entry to the battery enclosure area, request utility company response for authorized de-energization, maintain the perimeter, and continue atmospheric monitoring. No personnel approach energized ESS equipment without utility coordination and appropriate arc flash PPE.",correct:true,trap:""},
+       {text:"Use the facility\u2019s manual emergency disconnect switch to de-energize the system before any entry.",correct:false,trap:"Facility emergency disconnect switches open contactors but do not eliminate stranded energy within the battery modules themselves. At "+fac.volt+", assuming a switch equals full de-energization is a fatal error. Verified de-energization requires calibrated metering by trained personnel \u2014 not a switch position check."},
+       {text:"The voltage is similar to passenger EV systems \u2014 apply standard EV high-voltage isolation protocol.",correct:false,trap:"ESS voltages are 2\u20134\u00d7 higher than passenger EV traction packs. Arc flash energy at "+fac.volt+" is not comparable to a 400V EV system. The failure modes, approach distances, and PPE requirements are categorically different. EV high-voltage training does not transfer to ESS isolation."},
+       {text:"Ground the system using standard grounding equipment from the hazmat unit before entry.",correct:false,trap:"Grounding a live ESS system without confirmed de-energization creates immediate arc flash hazard. Grounding is performed after verified de-energization \u2014 not as a means to achieve it. ESS systems require utility company procedures for safe grounding. Field improvisation at "+fac.volt+" is not an acceptable alternative."}
+     ]},
+
+    /* Q3 — NFPA 855 Ventilation */
+    {cat:"Ventilation System Decision",skill:"NFPA 855 Ventilation Interaction",
+     refs:[
+       {t:"NFPA 855 \u2014 Mechanical Exhaust Ventilation Requirement",c:'NFPA 855 requires mechanical exhaust ventilation for enclosed ESS installations. The system is designed to exhaust battery off-gases \u2014 including <span class="warn">HF (Hydrogen Fluoride), HCN (Hydrogen Cyanide), and CO (Carbon Monoxide)</span> \u2014 to the exterior of the building. When functioning, it is performing its designed role. The <span class="hl">exhaust discharge point becomes a secondary hazard zone</span> requiring isolation.',src:SRC.nfpa855},
+       {t:"Off-Gas Context \u2014 "+fac.name,c:'At an enclosed ESS installation, off-gases that accumulate without ventilation can reach <span class="warn">IDLH (Immediately Dangerous to Life or Health)</span> concentrations rapidly. A functioning NFPA 855 ventilation system reduces interior concentrations but does not eliminate them. SCBA (Self-Contained Breathing Apparatus) is required inside the ESS room regardless of ventilation status.',src:SRC.faaVentGas}
+     ],
+     q:"You are managing a BMS alarm at the "+fac.name+". The BMS has triggered the facility\u2019s NFPA 855 mechanical exhaust ventilation system, which is actively running. A plume with a chemical odor is discharging from roof vents on the north side of the building. What is your atmospheric monitoring and personnel positioning priority?",
+     ans:[
+       {text:"Position all personnel and monitoring equipment upwind and away from the roof exhaust discharge point. The ventilation system is functioning as designed \u2014 do not shut it down. Establish a hot zone around the exhaust discharge area and monitor downwind air quality for HF and HCN.",correct:true,trap:""},
+       {text:"Shut down the mechanical ventilation to contain off-gases inside the ESS room and prevent exposure to the public outside.",correct:false,trap:"Shutting down NFPA 855-required ventilation concentrates HF, HCN, and CO inside the occupied building structure. The system exists to remove these gases from the space. Stopping it traps the hazard where personnel and occupants may be present. The building exterior is better protected with the system operating."},
+       {text:"Position atmospheric monitoring equipment at the roof exhaust discharge point to obtain the most accurate readings.",correct:false,trap:"The exhaust discharge point is the highest-concentration exit location for all off-gas species. Placing personnel at this point for monitoring creates direct inhalation exposure. Monitoring is conducted downwind at a safe distance from the discharge source \u2014 not at the point of highest concentration."},
+       {text:"Enter the ESS room directly to assess conditions \u2014 the ventilation system is clearing the air so entry is safer than waiting outside.",correct:false,trap:"Mechanical exhaust ventilation reduces but does not eliminate hazardous concentrations inside an ESS room during an active event. The interior remains a toxic atmosphere requiring SCBA regardless of ventilation status. The ventilation system running is confirmation the hazard is present \u2014 not confirmation it is safe to enter without respiratory protection."}
+     ]},
+
+    /* Q4 — Runoff Control at ESS Scale */
+    {cat:"Runoff &amp; Environmental Control",skill:"ESS-Scale Contamination Management",
+     refs:[
+       {t:"Water Volume at ESS Scale",c:'Water from suppression system discharge and fire attack at an ESS installation can represent <span class="warn">thousands of gallons</span> \u2014 an order of magnitude greater than a single passenger EV incident. All water contacting battery material, fire debris, or contaminated surfaces at an ESS facility must be treated as <span class="hl">hazardous waste requiring proper disposal</span>.',src:SRC.teexEmissions},
+       {t:"Drainage Context \u2014 "+fac.name,c:fac.detail+' Floor drains at ESS facilities typically connect to building drainage systems or stormwater infrastructure. <span class="warn">Once contaminated water enters a drainage system, the discharge cannot be reversed.</span>',src:null}
+     ],
+     q:"The fire is controlled at the "+fac.name+". Significant accumulated water from the suppression system discharge and your fire attack is flowing toward floor drains. What is your immediate priority?",
+     ans:[
+       {text:"Immediately block floor drains to prevent contaminated runoff from entering the building drainage or stormwater system. Notify environmental authorities. Document runoff volume and drainage pathway. Treat all accumulated water as hazardous waste requiring proper disposal \u2014 this is a required regulatory action, not optional.",correct:true,trap:""},
+       {text:"Only water that has had direct contact with battery modules requires containment \u2014 suppression system discharge water is clean.",correct:false,trap:"Suppression system discharge water mixes with all contaminated surfaces, floor debris, and electrolyte residue before it reaches floor drains. There is no practical way to separate clean from contaminated water once it has traveled across an ESS incident floor. Treat all runoff as contaminated regardless of its source."},
+       {text:"Open floor drains to prevent flooding in the facility \u2014 the volume is too large to contain and can be reported to environmental authorities afterward.",correct:false,trap:"Once contaminated water enters the stormwater or sanitary drainage system the contamination event cannot be reversed. Reporting after the discharge does not remediate it. Containment must precede drainage \u2014 this is the fundamental sequence of environmental protection at hazmat incidents. Volume difficulty does not waive the requirement."},
+       {text:"Runoff only requires containment if visible discoloration or chemical odor is present \u2014 clear water can be discharged safely.",correct:false,trap:"HF, HCN, and electrolyte decomposition products are colorless and may be odorless at the concentrations present in runoff. Clear appearance does not indicate safe discharge. All runoff from an ESS incident area must be contained and managed as hazardous waste regardless of visual or odor characteristics."}
+     ]},
+
+    /* Q5 — Re-Ignition Assessment */
+    {cat:"Re-Ignition Assessment",skill:"Post-Fire Stabilization Judgment",
+     refs:[
+       {t:"ERG 2024, Guide 147 \u2014 Re-Ignition Language",c:'ERG 147 states: a lithium ion battery fire may reignite at any point after the initial fire is extinguished, <span class="warn">up to weeks later</span>. For containerized ESS units, the thermal mass of container walls delays heat transfer \u2014 exterior TIC (Thermal Imaging Camera) readings are a <span class="hl">lagging indicator</span>. Interior cell temperatures may be significantly higher than exterior surface readings suggest.',src:SRC.erg147},
+       {t:"ESS Re-Ignition Context",c:'At an ESS installation, a single container can hold hundreds of individual battery modules. Stabilization of a surface TIC reading does not indicate stabilization of the cells deep within the pack. <span class="warn">No re-entry should occur without manufacturer technical guidance and a minimum 24\u201348 hour monitoring period.</span>',src:SRC.nfpa855}
+     ],
+     q:"Two hours after apparent knockdown of fire at the "+fac.name+", TIC readings on the container exterior show temperatures returning to near-ambient. The facility manager requests permission to re-enter the container to assess equipment condition and consider restart. What is your recommendation?",
+     ans:[
+       {text:"Deny re-entry. Exterior TIC readings returning to ambient do not confirm internal cell stabilization in a containerized ESS unit. A minimum 24\u201348 hour monitoring period is required. Continue atmospheric monitoring. Request the ESS manufacturer\u2019s emergency technical resources for guidance before any re-entry is considered.",correct:true,trap:""},
+       {text:"TIC readings near ambient indicate the fire is out \u2014 re-entry with SCBA is appropriate at this point.",correct:false,trap:"Exterior TIC readings at an ESS installation reflect the container wall temperature, not internal cell temperatures. Container thermal mass creates a significant buffer. Surface-cool does not mean internally stable \u2014 this is the most common post-ESS-fire error and has resulted in re-ignition injuries to responders and facility personnel."},
+       {text:"Two hours is sufficient stabilization time if the chemistry is LFP (Lithium Iron Phosphate), which has a higher thermal onset temperature.",correct:false,trap:"Higher thermal onset in LFP does not produce faster post-fire stabilization. Once thermal runaway has propagated through a pack, the re-ignition timeline is not shortened by the chemistry that initiated it. ERG 147 re-ignition language applies to all lithium-ion chemistries without exception."},
+       {text:"Permit re-entry for the facility manager only \u2014 they are trained on the equipment and can safely assess internal conditions.",correct:false,trap:"Facility training on normal equipment operation does not prepare personnel for post-fire re-entry into an ESS installation. Residual off-gassing, arc flash from a compromised system, and re-ignition risk require hazmat-level training and PPE. No civilian re-entry before the incident is formally terminated and the manufacturer has provided re-entry guidance."}
+     ]}
+  ];
+}
+
+/* ─────────────────────── RECYCLING QUESTIONS ─────────────────────── */
+function buildRecyclingQuestions(fac,inc,cond){
+  return[
+    /* Q1 — Initial Approach */
+    {cat:"Initial Size-Up",skill:"Hazard Recognition \u2014 Non-Standard Environment",
+     refs:[
+       {t:"Battery Recycling Facility \u2014 Baseline Hazard Profile",c:'Battery recycling facilities store damaged and end-of-life battery modules from multiple vehicle sources. Unlike a single-vehicle incident: <span class="warn">chemistry is mixed, state of charge is unknown, and physical damage has already begun the off-gassing process before you arrive.</span> A single rack can contain the stored energy equivalent of 10\u201320 EV battery packs.',src:SRC.ntsbEV},
+       {t:"Scene: "+fac.name,c:fac.detail,src:null}
+     ],
+     q:"You arrive at a "+fac.name+". "+inc.desc+" The rack holds battery modules from multiple vehicle sources in varying states of condition. Smoke is visible. What does your initial size-up prioritize differently from a single-vehicle EV incident?",
+     ans:[
+       {text:"Assume mixed chemistries with unknown state of charge across all modules. Treat every module \u2014 damaged or intact-appearing \u2014 as energized. PFAS (Per- and Polyfluoroalkyl Substances) contamination from prior processing damage may already be present. Establish a larger initial perimeter than a single-vehicle incident. Request hazmat resources immediately. SCBA (Self-Contained Breathing Apparatus) from the perimeter.",correct:true,trap:""},
+       {text:"Focus size-up on the actively burning modules \u2014 that is the immediate hazard. Intact-appearing modules adjacent to the fire are stable until they show thermal involvement.",correct:false,trap:"Intact-appearing modules at a recycling facility may be internally damaged from prior processing, retain significant charge, and already be in early thermal runaway with no visible external signs. The same error made at delayed re-ignition incidents \u2014 assuming no visible sign means stable \u2014 applies here. The rack is treated as fully involved until proven otherwise."},
+       {text:"Worker reports indicate one rack is involved \u2014 treat size-up the same as a single-vehicle EV incident.",correct:false,trap:"A single rack at a battery recycling facility can contain the stored energy equivalent of 10\u201320 full EV battery packs across mixed chemistries. \u2018One rack\u2019 is not equivalent to \u2018one vehicle.\u2019 Scale the response based on the actual energy inventory present, not the number of storage units."},
+       {text:"Intact modules on the rack present no hazard until they show visual signs of thermal involvement such as swelling or smoke.",correct:false,trap:"Visual thermal indicators are lagging signs in lithium-ion cells. Internal thermal runaway can progress for minutes before external signs appear. In a rack fire environment with adjacent heat exposure, intact modules may already be in Stage 1 or 2 thermal runaway with no visible external sign. Waiting for visual confirmation before treating them as a hazard removes the intervention window."}
+     ]},
+
+    /* Q2 — Unknown Chemistry */
+    {cat:"Chemistry Assessment",skill:"Worst-Case Chemistry Planning",
+     refs:[
+       {t:"Mixed Chemistry at Recycling Facilities",c:'Damaged battery modules in recycling facilities may retain significant charge even with compromised enclosures. Mixed chemistries \u2014 <span class="hl">NMC (Nickel Manganese Cobalt), LFP (Lithium Iron Phosphate), NCA (Nickel Cobalt Aluminum), and LMO (Lithium Manganese Oxide)</span> \u2014 may be stored adjacent with limited labeling once processing begins. Planning for the wrong chemistry leaves crews exposed to faster propagation than expected.',src:SRC.faaVentGas},
+       {t:"NMC Worst-Case Profile",c:'NMC: thermal onset <span class="warn">~150\u00b0C (302\u00b0F)</span>, cathode releases oxygen making fire self-sustaining, fast cell-to-cell propagation. This is the lowest-margin chemistry in the common EV fleet. When chemistry is unknown, <span class="hl">plan for NMC</span>.',src:SRC.teexEmissions}
+     ],
+     q:"Your monitoring instruments confirm lithium-containing battery material but cannot distinguish chemistry type from the rack at the "+fac.name+". The facility supervisor states the rack contains modules from \u2018various makes and models processed this week.\u2019 What is your working assumption for tactical planning?",
+     ans:[
+       {text:"Assume NMC (Nickel Manganese Cobalt) chemistry across the entire rack \u2014 plan for the lowest thermal onset (~150\u00b0C), cathode oxygen release making the fire self-sustaining, and fast cell-to-cell propagation. Safer to over-plan for NMC and encounter LFP than to plan for LFP and encounter NMC.",correct:true,trap:""},
+       {text:"Average the four chemistry profiles and plan for intermediate onset temperature and moderate propagation speed.",correct:false,trap:"Chemistry profiles do not average. Each module in the rack behaves according to its own chemistry independently. If one NMC module is present, you have NMC fire behavior risk from that module regardless of what surrounds it. Average planning means you have under-planned for the worst module in the rack."},
+       {text:"Ask facility workers to identify which modules came from which vehicle makes so the chemistry can be sorted before proceeding.",correct:false,trap:"Sending workers back into proximity of an active rack fire to identify modules creates a civilian casualty risk. Additionally, once battery processing begins, module-to-vehicle traceability is frequently lost. This approach is not safe and not workable under incident conditions."},
+       {text:"Chemistry type does not change the fire attack \u2014 water is the correct suppression agent for all lithium-ion incidents regardless of chemistry.",correct:false,trap:"Chemistry directly affects critical tactical decisions beyond suppression agent selection. NMC fires are self-sustaining due to cathode oxygen release and have the narrowest intervention window. LFP fires have a slower onset and wider window. Treating all chemistry as equivalent means you cannot calibrate propagation speed expectations, re-ignition timeline, or the urgency of cooling intervention."}
+     ]},
+
+    /* Q3 — PFAS Pre-Mobilization */
+    {cat:"Contamination Baseline Assessment",skill:"Pre-Existing PFAS Recognition",
+     refs:[
+       {t:"PFAS at Recycling Facilities \u2014 Pre-Incident Contamination",c:'At battery recycling facilities, PFAS (Per- and Polyfluoroalkyl Substances) contamination may predate the incident. Battery modules with compromised enclosures <span class="warn">leak electrolyte containing fluorinated compounds during normal processing operations.</span> Unlike a vehicle incident where contamination begins with the fire, a recycling facility may have an established contamination baseline before your response begins.',src:SRC.teexEmissions},
+       {t:"AFFF (Aqueous Film-Forming Foam) History",c:'Any prior AFFF use at the facility adds PFAS to floor drains, surface contamination, and soil. Even dry chemical extinguisher use does not rule out electrolyte-source PFAS from ongoing processing. <span class="hl">Environmental notification must account for contamination that already exists, not only what the current incident adds.</span>',src:null}
+     ],
+     q:"During initial assessment of the "+fac.name+", you notice staining around floor drains and a faint chemical odor throughout the facility \u2014 prior to the fire reaching any storage racks. Workers confirm a small battery fire was extinguished with a dry chemical extinguisher two weeks ago. What does this tell you about your contamination baseline?",
+     ans:[
+       {text:"The facility has a pre-existing contamination baseline from prior incidents and ongoing electrolyte leakage during processing. Runoff control must account for contamination already present \u2014 not only what this incident adds. Notify environmental authorities about pre-existing contamination as a separate matter from the current incident.",correct:true,trap:""},
+       {text:"The most recent extinguisher use was dry chemical \u2014 no AFFF was used, so there is no PFAS from prior incidents.",correct:false,trap:"Dry chemical extinguishers do not contribute PFAS, but that is not the only contamination source at a recycling facility. Electrolyte leakage from damaged modules during normal processing is an ongoing source of fluorinated compound exposure to floor drains and surfaces regardless of what suppression agents have been used. Dry chemical use does not rule out electrolyte-source contamination."},
+       {text:"Pre-existing floor drain staining is a facility housekeeping issue \u2014 not relevant to the current incident management.",correct:false,trap:"Floor drain staining at a battery recycling facility indicates prior electrolyte and chemical discharge into the drainage system. This is directly relevant to your runoff control decisions \u2014 the drains are already carrying contamination before you add a single gallon of water. Treating a contamination indicator as a housekeeping observation is a missed hazard assessment."},
+       {text:"PFAS contamination only occurs during active thermal runaway \u2014 prior processing incidents cannot create a contamination baseline.",correct:false,trap:"PFAS enters the environment through multiple pathways, not only thermal runaway. Electrolyte leakage from physically damaged cells during routine disassembly, incidental spills, and any prior suppression agent use all contribute. A recycling facility\u2019s operating environment involves ongoing contact with damaged cells. Contamination is a process condition at this type of facility \u2014 not only an event condition."}
+     ]},
+
+    /* Q4 — Water on Damaged Cells */
+    {cat:"Water Application Decision",skill:"Suppression with Pre-Damaged Battery Stock",
+     refs:[
+       {t:"Water Application \u2014 Damaged vs. Intact Enclosures",c:'Damaged battery modules with compromised enclosures allow water to contact cell internals more directly than water applied to an intact sealed pack. This increases cooling effect per gallon but also <span class="warn">increases contaminated runoff volume per gallon.</span> The two-phase water logic still applies \u2014 water during active thermal runaway for cooling, stop after knockdown \u2014 but the contamination footprint per gallon is proportionally larger at a recycling facility.',src:SRC.teexEmissions},
+       {t:"Runoff Contamination at Recycling Scale",c:'At a recycling facility, the combination of pre-existing surface PFAS and water contacting open-enclosure cell material means runoff contamination accumulates faster than at a single intact-pack incident. <span class="hl">Apply only the water necessary for thermal interruption.</span> Excess water increases the contaminated runoff problem without improving suppression outcomes.',src:null}
+     ],
+     q:"At the "+fac.name+", fire has spread to three modules on a rack. You are applying water for cooling. Compared to managing a single intact passenger EV fire, what additional factor applies specifically to your water application decision here?",
+     ans:[
+       {text:"Each gallon contacting damaged open-enclosure cell material picks up more electrolyte contamination than water applied to a sealed pack. Runoff contamination per gallon is higher here. Apply only the volume necessary for thermal interruption. Runoff containment is more urgent than at a single intact-pack incident.",correct:true,trap:""},
+       {text:"Damaged cells store less energy than intact cells \u2014 the fire will extinguish faster and less total water is needed. No additional consideration applies.",correct:false,trap:"Physical damage does not reliably reduce stored charge. Modules in a recycling facility may be mechanically damaged but electrically intact, retaining most or all of their original charge. Assuming reduced energy from physical damage can lead to under-resourcing water supply and inadequate commitment to sustained cooling."},
+       {text:"Open cell enclosures mean water reaches the cells more directly \u2014 this improves cooling efficiency, so more water should be applied for faster results.",correct:false,trap:"More direct cell contact does increase cooling efficiency per gallon, but it simultaneously increases contaminated runoff volume per gallon. The tactical goal is the minimum water necessary for thermal interruption, not maximum water for fastest knockdown. At a recycling facility, water volume and runoff contamination are directly and proportionally linked."},
+       {text:"Water application considerations at a recycling facility are the same as any EV battery incident \u2014 no additional factors apply here.",correct:false,trap:"Intact sealed pack versus open-enclosure damaged modules are physically different conditions. The rate at which water picks up electrolyte and fluorinated compounds per gallon differs materially. Treating them as equivalent misses the contamination magnitude difference and results in inadequate runoff containment planning for the actual volume of contamination being generated."}
+     ]},
+
+    /* Q5 — Overhaul & Mixed Debris */
+    {cat:"Overhaul Approach",skill:"Post-Fire Debris Handling \u2014 Unknown Charge State",
+     refs:[
+       {t:"Post-Fire Debris at Battery Recycling Facilities",c:'Post-fire debris at a recycling facility includes partially burned modules that may retain significant charge, cell material in various states of damage, and surface-bound PFAS released by the fire and mechanical disturbance. <span class="warn">Standard overhaul procedures \u2014 raking, turning over debris, walking through \u2014 release surface-bound PFAS and risk arc flash from energized cell material.</span>',src:SRC.oshaLiIon},
+       {t:"Conventional Overhaul Experience Does Not Transfer",c:'Structural fire overhaul experience creates an expectation that debris can be physically disturbed to confirm extinguishment. At a battery recycling facility, <span class="warn">mechanical disturbance of debris is itself a hazard-generating action</span> \u2014 not a safe assessment method. TIC (Thermal Imaging Camera) monitoring from a safe distance is the correct post-knockdown tool.',src:SRC.teexEmissions}
+     ],
+     q:"The fire at the "+fac.name+" is visually out. Command requests overhaul to confirm complete extinguishment. A storage rack has collapsed and battery modules are intermixed with debris on the floor. What is the correct overhaul approach?",
+     ans:[
+       {text:"Do not conduct conventional overhaul. Do not rake, move, or physically disturb battery modules or associated debris \u2014 all material must be assumed energized and PFAS-contaminated. Use TIC monitoring of the debris field from a safe distance. Contact the facility\u2019s technical team for debris handling guidance. Treat the entire debris field as hazardous waste.",correct:true,trap:""},
+       {text:"Use non-conductive tools \u2014 rubber gloves and plastic rakes eliminate arc flash hazard and allow safe conventional overhaul.",correct:false,trap:"Non-conductive hand tools provide limited protection against arc flash from 400\u2013800V module-level charges. Arc flash from a partially charged cell is not contact-dependent \u2014 it occurs across a gap. Non-conductive tools do not address the arc flash hazard and do not address PFAS release from disturbing contaminated debris. Tool selection does not resolve the underlying hazard."},
+       {text:"Modules that are visibly burned through are confirmed discharged and can be moved safely during overhaul.",correct:false,trap:"Visual burn-through of a cell casing does not confirm full electrical discharge. Internal electrode material may retain energy even when the external structure is destroyed. This assumption has caused arc flash injuries and secondary fires during recovery operations at battery incidents. Visible destruction does not equal electrical safety."},
+       {text:"Conventional overhaul is appropriate once atmospheric monitoring confirms off-gas levels are below IDLH (Immediately Dangerous to Life or Health) thresholds.",correct:false,trap:"Off-gas concentrations below IDLH thresholds address the inhalation hazard only. They do not address the arc flash hazard from energized cell material or the PFAS dermal exposure risk from mechanically disturbing contaminated debris. Atmospheric clearance is one component of post-fire assessment \u2014 not a blanket authorization for conventional overhaul in this environment."}
+     ]}
+  ];
+}
+</script>
+</body>
+</html>
