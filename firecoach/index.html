@@ -298,12 +298,11 @@
         <h2>Today's Session</h2>
         <p class="note" style="border:none;padding:0;margin:0 0 10px 0;" id="sessionTypeNote">Your coach will generate a session based on your shift cycle and lift history.</p>
         <div class="grid2" style="margin-bottom:8px;">
-          <button id="dayFireUpper">🏋️ Firehouse — Upper</button>
-          <button id="dayFireLower">🏋️ Firehouse — Lower</button>
+          <button id="dayFireA">🏋️ Firehouse — Upper</button>
+          <button id="dayHomeA">🏠 Home — Full Body KB</button>
         </div>
-        <button id="dayHomeA" style="width:100%;margin-bottom:8px;">🏠 Home — Full Body KB</button>
         <button id="generateSession" class="primary" style="width:100%;">Generate My Session</button>
-        <div class="note" style="margin-top:8px;">Pick whichever session fits today — this always overrides the shift-cycle suggestion, so a missed session or swapped day is never a problem. Your coach reads your last lifts, your Big 3 goals, and the day type you picked — then builds the session around you, not a template.</div>
+        <div class="note" style="margin-top:8px;">Your coach reads your last lifts, your Big 3 goals, and what kind of day it is — then builds the session around you, not a template.</div>
       </div>
     </div>
 
@@ -573,7 +572,12 @@ async function save(key, value, attempt=1){
   }
 }
 
-const todayStr = () => new Date().toISOString().slice(0,10);
+const todayStr = () => {
+  const d = new Date();
+  return d.getFullYear() + '-' +
+    String(d.getMonth()+1).padStart(2,'0') + '-' +
+    String(d.getDate()).padStart(2,'0');
+};
 
 /* ============================================================
    EXERCISE PROGRAM DEFINITIONS
@@ -625,7 +629,7 @@ function renderBig3Bars(){
 /* ============================================================
    AI SESSION GENERATOR
 ============================================================ */
-let currentDayType = 'firehouse-upper'; // 'firehouse-upper' | 'firehouse-lower' | 'home'
+let currentDayType = 'firehouse'; // 'firehouse' or 'home'
 let generatedSession = null;
 
 function buildLiftHistorySummary(){
@@ -666,10 +670,8 @@ async function generateAISession(dayType){
   const recent = state.checkins.slice(-2);
   const readiness = recent.length ? `Last check-in: energy ${recent[recent.length-1].energy}/5, inflammation ${recent[recent.length-1].inflame}/5` : 'No recent check-ins';
 
-  const sessionPrompt = dayType === 'firehouse-upper'
-    ? `Design an UPPER BODY ONLY firehouse session. Equipment: bench press, barbell, dumbbells, cable machine. STRICT RULE: No squats, no deadlifts, no lower body work of any kind today — this is the upper-body half of the firehouse split. Main lift: Bench Press (5 working sets, this is the primary strength goal). Supporting lifts: bent-over rows and lat pulldowns for back balance. Accessories: bicep curls and tricep work. That is the complete exercise list — do not add anything else. This is a 24hr shift day so the athlete may be fatigued, but the session still runs as programmed.`
-    : dayType === 'firehouse-lower'
-    ? `Design a LOWER BODY ONLY firehouse session. Equipment: squat rack, barbell, plates, dumbbells. STRICT RULE: No bench press, no upper-body pressing/pulling work today — this is the lower-body half of the firehouse split. Main lifts: Back Squat and Deadlift (5 working sets each, these are primary strength goals — alternate which one gets slightly more focus based on which has the lower estimated 1RM relative to goal). Supporting/accessory work: posterior chain and core (e.g. Romanian deadlift or hip thrust, plus one core exercise) at 3 sets of 8-12. That is the complete exercise list — do not add anything else. This is a 24hr shift day so the athlete may be fatigued, but the session still runs as programmed.`
+  const sessionPrompt = dayType === 'firehouse'
+    ? `Design an UPPER BODY ONLY firehouse session. Equipment: bench press, barbell, dumbbells, cable machine. STRICT RULE: No squats, no deadlifts, no lower body work of any kind today — lower body is reserved for home days. Main lift: Bench Press (5 working sets, this is the primary strength goal). Supporting lifts: bent-over rows and lat pulldowns for back balance. Accessories: bicep curls and tricep work. That is the complete exercise list — do not add anything else. This is a 24hr shift day so the athlete may be fatigued, but the session still runs as programmed.`
     : `Design a full body kettlebell home session. Equipment: kettlebells only. Structure the session in this exact order: (1) 30 min hard cardio — stair session or run, athlete chooses based on feel; (2) Full body kettlebell flow 20-25 min — include a mix of swings, goblet squats, single-arm clean and press, bent-over rows, Turkish get-ups, and farmer carries. Rotate the focus each session based on what the athlete needs. 3 sets of 8-12 reps per exercise. This is conditioning and movement quality, not max effort — keep RPE around 7; (3) Yoga/pilates via YouTube 15-20 min — hip mobility, shoulder stability, core; (4) Cooldown walk 30 min easy pace. This is the second day off a 24hr shift so the athlete is recovered but home days are about work capacity and staying loose, not grinding. The barbell Big 3 lifts are reserved for firehouse days with proper equipment.`;
 
   const systemPrompt = `You are a strength and conditioning coach for a firefighter/EMT. The athlete wants to reach 225lbs on bench press, back squat, and deadlift. They follow a 1-on/2-off shift rotation. They are 215lbs, ~20% body fat, and follow a Blood Type A anti-inflammatory diet.
@@ -867,40 +869,28 @@ function renderGeneratedSession(session){
 }
 
 /* Day type selector wiring */
-function setActiveDayBtn(activeId){
-  ['dayFireUpper','dayFireLower','dayHomeA'].forEach(id=>{
-    const btn = document.getElementById(id);
-    if(id===activeId){
-      btn.style.background='var(--amber)';
-      btn.style.color='#14171A';
-      btn.style.borderColor='var(--amber)';
-    } else {
-      btn.style.cssText='';
-    }
-  });
-}
-document.getElementById('dayFireUpper').onclick = ()=>{
-  currentDayType = 'firehouse-upper';
-  setActiveDayBtn('dayFireUpper');
-  document.getElementById('sessionTypeNote').textContent='Firehouse — upper body: bench, rows, pulldowns, arms.';
-};
-document.getElementById('dayFireLower').onclick = ()=>{
-  currentDayType = 'firehouse-lower';
-  setActiveDayBtn('dayFireLower');
-  document.getElementById('sessionTypeNote').textContent='Firehouse — lower body: squat, deadlift, posterior chain.';
+document.getElementById('dayFireA').onclick = ()=>{
+  currentDayType = 'firehouse';
+  document.getElementById('dayFireA').style.background='var(--amber)';
+  document.getElementById('dayFireA').style.color='#14171A';
+  document.getElementById('dayFireA').style.borderColor='var(--amber)';
+  document.getElementById('dayHomeA').style.cssText='';
+  document.getElementById('sessionTypeNote').textContent='Firehouse session — upper body only: bench, rows, pulldowns, arms.';
 };
 document.getElementById('dayHomeA').onclick = ()=>{
   currentDayType = 'home';
-  setActiveDayBtn('dayHomeA');
+  document.getElementById('dayHomeA').style.background='var(--amber)';
+  document.getElementById('dayHomeA').style.color='#14171A';
+  document.getElementById('dayHomeA').style.borderColor='var(--amber)';
+  document.getElementById('dayFireA').style.cssText='';
   document.getElementById('sessionTypeNote').textContent='Home session — cardio, full body kettlebell, yoga/pilates, cooldown walk.';
 };
 document.getElementById('generateSession').onclick = ()=>generateAISession(currentDayType);
 
 function selectDay(sessionKey){
   // legacy compatibility called from dashboard "Start This Session" button
-  if(sessionKey === 'fireB'){ currentDayType='firehouse-lower'; setActiveDayBtn('dayFireLower'); }
-  else if(sessionKey && sessionKey.startsWith('fire')){ currentDayType='firehouse-upper'; setActiveDayBtn('dayFireUpper'); }
-  else if(sessionKey && sessionKey.startsWith('home')){ currentDayType='home'; setActiveDayBtn('dayHomeA'); }
+  if(sessionKey && (sessionKey.startsWith('fire'))){ currentDayType='firehouse'; }
+  else if(sessionKey && sessionKey.startsWith('home')){ currentDayType='home'; }
   document.querySelector('nav.tabs button[data-tab="train"]').click();
   generateAISession(currentDayType);
 }
@@ -948,7 +938,7 @@ function planForCycleInfo(info){
   if(!info) return {sessionKey:null, label:'Set your last shift date above to get a plan', detail:''};
   const alt = (((info.cycleIndex % 2) + 2) % 2) === 0; // even/odd alternation
   if(info.type === 'shift'){
-    return {sessionKey: alt?'fireA':'fireB', label: alt?'Firehouse A — Upper Body':'Firehouse B — Lower Body (Squat/Deadlift)', detail:'Shift day — lift at the firehouse.'};
+    return {sessionKey: alt?'fireA':'fireB', label: alt?'Firehouse A — Push/Pull Upper':'Firehouse B — Lower/Posterior', detail:'Shift day — lift at the firehouse.'};
   }
   if(info.type === 'off1'){
     return {sessionKey:null, label:'Rest & Recover', detail:'First day off a 24hr shift — recovery day. Walk if you feel like it, but no hard training.'};
@@ -1225,21 +1215,23 @@ document.getElementById('foodSend').onclick = getFoodDirection;
    RENDER: CHECK-IN
 ============================================================ */
 function renderMacros(){
-  const today = state.macroLog[todayStr()] || {calories:0, protein:0, carbs:0, fat:0};
+  const today = todayStr();
+  // If the logged macros are from a prior day, show zeroes — new day, fresh start
+  const todayData = state.macroLog[today] || {calories:0, protein:0, carbs:0, fat:0};
   const t = state.profile;
   const pct = (val, target) => target > 0 ? Math.min(100, Math.round((val/target)*100)) : 0;
   const pill = document.getElementById('macroPill');
   if(pill){
-    pill.textContent = `${today.calories} / ${t.calorieTarget} kcal`;
-    pill.className = 'pill ' + (today.calories > t.calorieTarget*1.1 ? 'warn' : 'on');
+    pill.textContent = `${todayData.calories} / ${t.calorieTarget} kcal`;
+    pill.className = 'pill ' + (todayData.calories > t.calorieTarget*1.1 ? 'warn' : 'on');
   }
   const el = document.getElementById('macroBars');
   if(!el) return;
   const rows = [
-    {label:'Calories', val:today.calories, target:t.calorieTarget, unit:'kcal', color:'#F2A93B'},
-    {label:'Protein', val:today.protein, target:t.proteinTarget, unit:'g', color:'#C8362A'},
-    {label:'Carbs', val:today.carbs, target:t.carbTarget, unit:'g', color:'#4C9A6A'},
-    {label:'Fat', val:today.fat, target:t.fatTarget, unit:'g', color:'#5B6670'}
+    {label:'Calories', val:todayData.calories, target:t.calorieTarget, unit:'kcal', color:'#F2A93B'},
+    {label:'Protein', val:todayData.protein, target:t.proteinTarget, unit:'g', color:'#C8362A'},
+    {label:'Carbs', val:todayData.carbs, target:t.carbTarget, unit:'g', color:'#4C9A6A'},
+    {label:'Fat', val:todayData.fat, target:t.fatTarget, unit:'g', color:'#5B6670'}
   ];
   el.innerHTML = rows.map(r=>`
     <div class="macro-row">
@@ -1344,7 +1336,7 @@ ATHLETE PROFILE:
 - Follows a strict Blood Type A diet — this is non-negotiable. It manages a real gut-inflammation condition that has previously triggered irregular heartbeat (arrhythmia). Never suggest abandoning or "testing" this diet.
 - Practices intermittent fasting, 12-16hr daily window
 - Drinks 4L water/day with mineral salt
-- Works a 1-on/2-off rotating shift: alternates Upper Body and Lower Body (squat/deadlift) sessions at the firehouse on shift days (squat rack available there), full rest the day immediately after a 24hr shift, home training (cardio + kettlebell + yoga/pilates) on the second day off when recovered. The athlete can manually override which session type they run on any given day (e.g. missed session, swapped shift) — treat whatever session type they generated as intentional, not a mistake.
+- Works a 1-on/2-off rotating shift: lifts at the firehouse on shift days, full rest the day immediately after a 24hr shift, home training (cardio + kettlebell + yoga/pilates) on the second day off when recovered
 - Goal: strength, hypertrophy, muscular endurance, fireground-functional. Not prioritizing speed/power work right now.
 - Tracks macros via meal descriptions you estimate for them — they don't want to manually count, so be the accountability layer
 - Daily targets: ${state.profile.calorieTarget} kcal, ${state.profile.proteinTarget}g protein, ${state.profile.carbTarget}g carbs, ${state.profile.fatTarget}g fat
@@ -1457,4 +1449,3 @@ init();
 </script>
 </body>
 </html>
- 
