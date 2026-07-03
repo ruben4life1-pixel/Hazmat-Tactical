@@ -1,0 +1,116 @@
+**PROJECT: FireCoach — Personal AI Coaching App**
+
+---
+
+**What It Is**
+A single-file HTML app (`firecoach.html`) acting as a personal trainer and nutritionist. Calls the Anthropic Claude API (claude-sonnet-4-6) for all AI features. Designed to be hosted on GitHub Pages and saved to phone home screen as a standalone app.
+
+---
+
+**Athlete Profile**
+- 215 lbs, ~20% body fat, target 15-17% BF sustainably
+- Blood Type A diet — non-negotiable, manages a real gut-inflammation condition that has previously triggered arrhythmia. Never suggest abandoning it.
+- Intermittent fasting 12-16 hrs daily
+- Drinks 4L water/day with mineral salt (tracked as 4x1L cups)
+- Firefighter/EMT on a 1-on/2-off rotating shift (24hr on, 2 days off, repeating year-round)
+- Primary goal: bench press, back squat, and deadlift each to 225 lbs
+- Secondary goal: body recomposition to 15-17% body fat sustainably
+- Practices yoga/pilates for mobility (YouTube-based, no in-app content needed)
+
+---
+
+**Training Split — Final Decisions**
+- **Shift day (firehouse):** Upper body only. Bench press is the primary lift (5 working sets, 3-5 reps, 85-90% estimated 1RM, 2-3 min rest between sets). Bent-over rows and lat pulldowns for back. One bicep exercise, one tricep exercise. No lower body on firehouse days whatsoever.
+- **Day 1 off (post-shift):** Full rest. Body recovering from 24hr shift, no training.
+- **Day 2 off (home):** Full body kettlebell session. Sequence: 30 min hard cardio (stairs or run, athlete chooses) → full body KB flow 20-25 min (swings, goblet squats, single-arm clean and press, bent-over rows, Turkish get-ups, farmer carries) → yoga/pilates via YouTube 15-20 min → 30 min cooldown walk.
+- **Arm volume:** One bicep and one tricep exercise per firehouse session for now. Will add a second movement per muscle group (barbell curl + hammer curl / pushdown + overhead extension) after Big 3 goal of 225 is reached and program shifts to hypertrophy phase.
+- **Strength programming philosophy:** High sets, low reps for Big 3 (5 working sets of 3-5 reps). Accessories at 3 sets of 8-12 reps. Home kettlebell at 3 sets of 8-12, RPE ~7 — conditioning and movement quality, not max effort.
+- **Reason for upper/lower split:** Upper and lower body alternate cleanly so each muscle group gets trained then fully recovered. Kettlebells don't load the spine and joints the way a barbell does, so full body KB on home days doesn't compete with barbell recovery.
+
+---
+
+**App Structure — Five Tabs**
+
+**1. Today (Dashboard)**
+- Readiness flag — green/amber/red based on most recent check-in inflammation and energy scores
+- Eating window — simple time input ("when did you last eat?"), calculates elapsed fast time as a reference, no start/stop timer
+- Water tracker — 4 cups of 1L each, tap to fill, resets daily
+- Shift schedule — enter last shift date once, app auto-computes 1-on/2-off rotation forward 5 days, shows what type of day each day is
+- Today's session card — shows today's session type based on shift cycle with a "Start This Session" button routing to Train tab
+
+**2. Train**
+- Two session type buttons: "Firehouse — Upper" and "Home — Full Body KB"
+- Generate My Session button calls Claude API, builds a completely fresh session from scratch based on lift history, Big 3 estimated 1RMs, readiness, and day type — not a fixed template
+- Session displays warmup sets (clearly labeled "WARM-UP — do not log these," shown dimmed) separated by a gold dividing line from working sets (labeled "WORKING SETS — log each one")
+- Each working set gets its own numbered row with three inputs: lbs, reps, RPE
+- Weight input represents total weight including bar
+- Warmup sets show specific weight and reps calculated by coach (roughly 40-50%, 60-70%, 80% of working weight for compounds; one light set for accessories)
+- Save Session stores all sets individually, picks best set for 1RM calculation, sends full set-by-set detail to coach on next session
+- Big 3 progress bars at top show estimated 1RM vs 225 lb goal using Epley formula (weight × (1 + reps/30))
+- RPE scale explained: 1-10, where RPE 10 = total failure, RPE 8 = 2 reps left in tank, RPE 6-7 = moderate effort
+
+**3. Fuel**
+- Log meals in plain language, Claude estimates calories/protein/carbs/fat and checks against Blood Type A framework and recent inflammation history, gives direct coaching feedback
+- Running daily macro totals displayed as progress bars
+- Default macro targets: 2600 kcal / 190g protein / 290g carbs / 75g fat — editable under Targets
+- Meal history saved with macro estimates shown per entry
+- Static Type-A food reference guide collapsed by default under "Reference Guide"
+- Macro estimates are coach-generated from meal descriptions — no manual counting required
+
+**4. Check-In**
+- Weekly log: weight (lbs), waist (in), hips (in), energy 1-5, gut/inflammation severity 1-5, free-text notes
+- Feeds the readiness flag on dashboard
+- Feeds the coach's context on every API call
+- History shown below the form
+
+**5. Coach**
+- Setup card at top for Anthropic API key — required for all AI features, saved to device storage
+- API key status shows "Saved" (green) or "Not set" (amber)
+- Open chat below — Claude receives full context on every message: athlete profile, today's shift-cycle plan, today's macros so far, recent lift history with per-set detail, Big 3 estimated 1RMs vs goal, recent check-ins
+- Coach responds conversationally, references actual logged data, flags inflammation/arrhythmia patterns and suggests looping in cardiologist/GI doc if concerning
+- Error messages now show exact failure reason (bad key, no credit, network issue) rather than going silent
+
+---
+
+**Storage**
+Portable adapter uses `window.storage` inside Claude.ai artifact preview and falls back to `localStorage` with `firecoach:` prefix on hosted/home screen version. Keys: `profile`, `lift-history`, `checkins`, `water-log`, `fast-state`, `chat-history`, `food-log`, `macro-log`, `api-key`.
+
+---
+
+**Design**
+- Dark utilitarian theme — background `#14171A`, surface `#1C2024`, accent red `#C8362A`, amber `#F2A93B`, green `#4C9A6A`
+- Fonts: Oswald (headers), Inter (body), JetBrains Mono (data/labels)
+- Fixed bottom nav bar, 5 tabs
+- Body padding accounts for mobile browser chrome and home indicator using `env(safe-area-inset-bottom)` and `min-height: 100dvh`
+- Diagonal amber hazard stripe on readiness card
+
+---
+
+**PWA / Home Screen**
+- Meta tags: `apple-mobile-web-app-capable`, `apple-mobile-web-app-title` (FireCoach), `theme-color` (`#14171A`), `viewport-fit=cover`
+- SVG icon embedded as data URI
+- To install: host on GitHub Pages, open URL on phone, Share → Add to Home Screen (iOS) or menu → Install App (Android)
+- API key must be re-entered after first install on hosted version
+
+---
+
+**Hosting Plan**
+Add as subfolder to existing `ruben4life1-pixel/Hazmat-Tactical` GitHub Pages repo at `/firecoach/index.html`, available at `ruben4life1-pixel.github.io/Hazmat-Tactical/firecoach/`
+
+---
+
+**Non-Negotiable Coach Rules**
+- Blood Type A diet is never questioned or tested — it controls gut inflammation linked to arrhythmia
+- Firehouse = upper body only. Home = full body kettlebell + cardio + mobility. Never mixed.
+- Big 3 always 5 working sets, 3-5 reps, 85-90% 1RM, 2-3 min rest
+- Accessories always 3 sets, 8-12 reps
+- Arm volume stays at one exercise each until 225 lb Big 3 goal is achieved
+- Flag inflammation/arrhythmia patterns gently and suggest cardiologist/GI doc involvement when relevant
+
+---
+
+**Next Steps**
+- Deploy to GitHub Pages, add to phone home screen, re-enter API key
+- Log first real firehouse session to establish baseline weights for Big 3
+- After Big 3 reach 225: add second bicep and tricep exercise, shift to hypertrophy/maintenance phase
+- Macro targets will tighten as weekly check-in trend data accumulates
