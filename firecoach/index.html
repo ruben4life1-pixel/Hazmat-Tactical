@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>FireCoach</title>
+
+<!-- Home screen / standalone app behavior -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FireCoach">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#14171A">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%2314171A'/%3E%3Crect x='30' y='30' width='40' height='40' fill='%23C8362A' transform='rotate(45 50 50)'/%3E%3Crect x='30' y='30' width='40' height='40' fill='none' stroke='%23F2A93B' stroke-width='4' transform='rotate(45 50 50)'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%2314171A'/%3E%3Crect x='30' y='30' width='40' height='40' fill='%23C8362A' transform='rotate(45 50 50)'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#14171A;
+    --surface:#1C2024;
+    --surface-2:#22272C;
+    --line:#2C3238;
+    --text:#E9E7E1;
+    --text-dim:#9AA0A6;
+    --red:#C8362A;
+    --red-dim:#7A2119;
+    --amber:#F2A93B;
+    --steel:#5B6670;
+    --green:#4C9A6A;
+    --font-display:'Oswald',sans-serif;
+    --font-body:'Inter',sans-serif;
+    --font-mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--font-body);
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:calc(96px + env(safe-area-inset-bottom));
+    min-height:100vh;
+    min-height:100dvh;
+    background-image:
+      linear-gradient(180deg, rgba(200,54,42,0.04) 0%, transparent 240px);
+  }
+  /* signature stripe */
+  .stripe{
+    height:6px;
+    width:100%;
+    background:repeating-linear-gradient(45deg,
+      var(--stripe-color,var(--amber)) 0px, var(--stripe-color,var(--amber)) 10px,
+      #14171A 10px, #14171A 20px);
+    border-radius:3px 3px 0 0;
+  }
+  header.top{
+    padding:22px 18px 14px;
+    border-bottom:1px solid var(--line);
+    position:sticky;top:0;background:rgba(20,23,26,0.92);backdrop-filter:blur(8px);z-index:50;
+  }
+  .brand{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:22px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    display:flex;align-items:center;gap:10px;
+  }
+  .brand .mark{
+    width:10px;height:10px;background:var(--red);transform:rotate(45deg);
+    box-shadow:0 0 0 2px var(--amber);
+  }
+  .brand small{
+    font-family:var(--font-mono);
+    font-size:11px;color:var(--text-dim);letter-spacing:0.5px;
+    text-transform:none;font-weight:400;
+  }
+  main{max-width:560px;margin:0 auto;padding:18px 18px calc(40px + env(safe-area-inset-bottom)) 18px;}
+  .card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:10px;
+    overflow:hidden;
+    margin-bottom:16px;
+  }
+  .card-body{padding:18px;}
+  .card h2{
+    font-family:var(--font-display);
+    font-size:15px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:var(--text-dim);
+    margin-bottom:12px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:11px;
+    color:var(--amber);
+    text-transform:uppercase;
+    letter-spacing:1.5px;
+    margin-bottom:4px;
+  }
+  .big-stat{font-family:var(--font-display);font-size:38px;font-weight:600;line-height:1;}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .pill{
+    font-family:var(--font-mono);font-size:11px;padding:4px 10px;border-radius:20px;
+    border:1px solid var(--line);color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;
+  }
+  .pill.on{border-color:var(--green);color:var(--green);}
+  .pill.warn{border-color:var(--amber);color:var(--amber);}
+  .pill.off{border-color:var(--red);color:var(--red);}
+  button{
+    font-family:var(--font-body);
+    border:none;cursor:pointer;
+    background:var(--surface-2);
+    color:var(--text);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:10px 14px;
+    font-size:14px;
+    font-weight:600;
+    transition:all .15s;
+  }
+  button:hover{border-color:var(--steel);}
+  button.primary{background:var(--red);border-color:var(--red);color:#fff;}
+  button.primary:hover{background:#A92D23;}
+  button.ghost{background:transparent;}
+  button:disabled{opacity:0.4;cursor:default;}
+  input,textarea,select{
+    width:100%;
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:8px;
+    color:var(--text);
+    padding:10px 12px;
+    font-family:var(--font-mono);
+    font-size:14px;
+  }
+  input:focus,textarea:focus,select:focus{outline:2px solid var(--amber);outline-offset:1px;}
+  label{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;font-family:var(--font-mono);display:block;margin-bottom:5px;}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .field{margin-bottom:10px;}
+  .water-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px;}
+  .water-cup{
+    aspect-ratio:1.3;border-radius:8px;border:1px solid var(--line);background:var(--bg);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;
+  }
+  .water-cup.filled{background:linear-gradient(180deg,#2D6E8E,#1E4C63);border-color:#3A8AB0;}
+  .exercise{
+    border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:10px;background:var(--bg);
+  }
+  .exercise h3{font-family:var(--font-display);font-size:16px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;}
+  .suggest{
+    font-family:var(--font-mono);font-size:12px;color:var(--amber);margin-bottom:10px;
+  }
+  .set-row{display:grid;grid-template-columns:28px 1fr 1fr 1fr;gap:6px;align-items:center;margin-bottom:6px;}
+  .set-row span{font-family:var(--font-mono);font-size:12px;color:var(--text-dim);text-align:center;}
+  nav.tabs{
+    position:fixed;bottom:0;left:0;right:0;
+    background:rgba(28,32,36,0.97);backdrop-filter:blur(10px);
+    border-top:1px solid var(--line);
+    display:flex;z-index:50;
+    padding-bottom:max(12px, env(safe-area-inset-bottom));
+  }
+  nav.tabs button{
+    flex:1;background:none;border:none;border-radius:0;
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    padding:12px 4px 10px;font-size:10px;font-family:var(--font-mono);
+    text-transform:uppercase;letter-spacing:0.5px;color:var(--text-dim);
+  }
+  nav.tabs button.active{color:var(--amber);}
+  nav.tabs .ic{font-size:18px;}
+  .tabview{display:none;}
+  .tabview.active{display:block;}
+  .food-cat{margin-bottom:16px;}
+  .food-cat h4{font-family:var(--font-display);font-size:14px;text-transform:uppercase;letter-spacing:0.5px;color:var(--amber);margin-bottom:8px;}
+  .food-list{display:flex;flex-wrap:wrap;gap:6px;}
+  .food-tag{font-size:12px;padding:5px 10px;border-radius:6px;background:var(--surface-2);border:1px solid var(--line);}
+  .food-tag.avoid{color:var(--red);border-color:var(--red-dim);text-decoration:line-through;opacity:0.7;}
+  .chat-log{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;max-height:50vh;overflow-y:auto;}
+  .msg{padding:11px 13px;border-radius:10px;font-size:14px;line-height:1.5;max-width:88%;}
+  .msg.user{background:var(--red-dim);align-self:flex-end;border:1px solid var(--red);}
+  .msg.coach{background:var(--surface-2);align-self:flex-start;border:1px solid var(--line);white-space:pre-wrap;}
+  .msg.system{font-family:var(--font-mono);font-size:11px;color:var(--text-dim);align-self:center;}
+  .chat-input-row{display:flex;gap:8px;}
+  .chat-input-row textarea{resize:none;height:48px;}
+  .empty{color:var(--text-dim);font-size:13px;text-align:center;padding:20px 0;}
+  .loading{display:inline-block;width:14px;height:14px;border:2px solid var(--text-dim);border-top-color:var(--amber);border-radius:50%;animation:spin 0.7s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .note{font-size:12px;color:var(--text-dim);line-height:1.5;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);}
+  a{color:var(--amber);}
+  .check-history{margin-top:14px;}
+  .check-history .entry{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-family:var(--font-mono);font-size:12px;}
+  .toggle-group{display:flex;gap:6px;}
+  .toggle-group button{flex:1;}
+  .toggle-group button.sel{background:var(--amber);border-color:var(--amber);color:#14171A;}
+  .macro-row{margin-bottom:12px;}
+  .macro-row .row{margin-bottom:4px;font-family:var(--font-mono);font-size:12px;}
+  .macro-track{height:8px;background:var(--bg);border-radius:4px;overflow:hidden;border:1px solid var(--line);}
+  .macro-fill{height:100%;border-radius:4px;transition:width .3s;}
+  .cycle-day{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);font-family:var(--font-mono);font-size:12px;}
+  .cycle-day:last-child{border-bottom:none;}
+  .set-section-label{font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);padding:8px 0 4px 0;border-top:1px dashed var(--line);margin-top:8px;}
+  .set-section-label.working-label{color:var(--amber);border-top:2px solid var(--amber);margin-top:10px;padding-top:10px;}
+  .warmup-row{display:flex;align-items:center;gap:8px;padding:5px 0;opacity:0.6;}
+  .working-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);}
+  .working-row:last-of-type{border-bottom:none;}
+  .set-badge{font-family:var(--font-mono);font-size:11px;font-weight:600;padding:3px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0;}
+  .set-badge.warm{background:var(--surface-2);color:var(--text-dim);}
+  .set-badge.work{background:var(--red-dim);color:var(--amber);border:1px solid var(--red);}
+  .set-detail{font-family:var(--font-mono);font-size:12px;color:var(--text-dim);}
+  .set-note{font-size:11px;color:var(--text-dim);font-style:italic;flex:1;}
+  .set-inputs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;flex:1;}
+  .set-field label{font-size:10px;color:var(--text-dim);font-family:var(--font-mono);text-transform:uppercase;display:block;margin-bottom:2px;}
+  .set-field input{width:100%;padding:6px 8px;font-size:14px;}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand"><span class="mark"></span>FIRECOACH<small id="todayLabel"></small></div>
+</header>
+
+<main>
+
+  <!-- ===================== DASHBOARD ===================== -->
+  <section id="tab-dashboard" class="tabview active">
+    <div class="card">
+      <div class="stripe" id="readinessStripe"></div>
+      <div class="card-body">
+        <h2>Today's Readiness <span class="pill" id="readinessPill">—</span></h2>
+        <div id="readinessNote" class="note" style="border:none;padding:0;margin:0;"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="eyebrow">Eating window</div>
+        <div class="row" style="align-items:flex-end;">
+          <div class="field" style="margin-bottom:0;flex:1;">
+            <label>When did you stop eating last?</label>
+            <input type="time" id="lastAteInput">
+          </div>
+          <button id="lastAteSave">Save</button>
+        </div>
+        <div class="note" id="fastNote" style="border:none;padding:0;margin-top:8px;"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <h2>Water + Minerals <span id="waterCount" class="pill">0 / 4.0L</span></h2>
+        <div class="water-grid" id="waterGrid"></div>
+        <div class="note">Tap a cup as you finish each 500mL. Add a pinch of mineral salt per liter.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <h2>Shift Schedule <span class="pill" id="shiftStatus">—</span></h2>
+        <div class="row" style="align-items:flex-end;">
+          <div class="field" style="margin-bottom:0;flex:1;">
+            <label>Last date you worked a 24hr shift</label>
+            <input type="date" id="lastShiftInput">
+          </div>
+          <button id="lastShiftSave">Save</button>
+        </div>
+        <div class="note">1-on/2-off rotation. Update this any time your cycle resets (vacation, swapped shift, etc).</div>
+        <div id="cyclePreview" style="margin-top:10px;"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <h2>Today's Session</h2>
+        <div id="todaySession"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TRAIN ===================== -->
+  <section id="tab-train" class="tabview">
+
+    <!-- Big 3 Progress -->
+    <div class="card">
+      <div class="card-body">
+        <h2>Big 3 Progress <span class="pill warn">Goal: 225 lbs each</span></h2>
+        <div id="big3bars"></div>
+      </div>
+    </div>
+
+    <!-- Session type override -->
+    <div class="card">
+      <div class="card-body">
+        <h2>Today's Session</h2>
+        <p class="note" style="border:none;padding:0;margin:0 0 10px 0;" id="sessionTypeNote">Your coach will generate a session based on your shift cycle and lift history.</p>
+        <div class="grid2" style="margin-bottom:8px;">
+          <button id="dayFireA">🏋️ Firehouse — Upper</button>
+          <button id="dayHomeA">🏠 Home — Full Body KB</button>
+        </div>
+        <button id="generateSession" class="primary" style="width:100%;">Generate My Session</button>
+        <div class="note" style="margin-top:8px;">Your coach reads your last lifts, your Big 3 goals, and what kind of day it is — then builds the session around you, not a template.</div>
+      </div>
+    </div>
+
+    <div id="sessionContainer"></div>
+  </section>
+
+  <!-- ===================== NUTRITION ===================== -->
+  <section id="tab-nutrition" class="tabview">
+    <div class="card">
+      <div class="card-body">
+        <h2>Today's Macros <span class="pill" id="macroPill">—</span></h2>
+        <div id="macroBars"></div>
+        <div class="note">Estimated from what you log below — your coach reads the meal and estimates, no manual counting needed. Treat as a close estimate, not a lab measurement.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <h2>Targets <span id="targetsToggle" class="pill" style="cursor:pointer;">Edit</span></h2>
+        <div id="targetsForm" style="display:none;">
+          <div class="grid2">
+            <div class="field"><label>Calories</label><input type="number" id="tgCal"></div>
+            <div class="field"><label>Protein (g)</label><input type="number" id="tgProtein"></div>
+          </div>
+          <div class="grid2">
+            <div class="field"><label>Carbs (g)</label><input type="number" id="tgCarb"></div>
+            <div class="field"><label>Fat (g)</label><input type="number" id="tgFat"></div>
+          </div>
+          <button id="tgSave" style="width:100%;">Save Targets</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <h2>Log What You Ate</h2>
+        <p class="note" style="border:none;padding:0;margin:0 0 10px 0;">
+          Describe a meal in plain language — your coach checks it against your Type-A framework and recent inflammation pattern, estimates the macros, and tells you whether to keep it, adjust it, or watch how you feel.
+        </p>
+        <div class="field">
+          <textarea id="foodInput" style="height:64px;" placeholder="e.g. grilled salmon, sauteed spinach, quinoa, olive oil"></textarea>
+        </div>
+        <button class="primary" id="foodSend" style="width:100%;">Get Direction</button>
+        <div id="foodResult" style="margin-top:12px;"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <h2>Recent Meals <span id="foodHistoryToggle" class="pill" style="cursor:pointer;">Show</span></h2>
+        <div id="foodHistory" style="display:none;"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <h2>Reference Guide <span id="foodGuideToggle" class="pill" style="cursor:pointer;">Show</span></h2>
+        <div id="foodGuide" style="display:none;"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CHECK-IN ===================== -->
+  <section id="tab-checkin" class="tabview">
+    <div class="card">
+      <div class="card-body">
+        <h2>Weekly Check-In</h2>
+        <div class="field">
+          <label>Weight (lbs)</label>
+          <input type="number" id="ciWeight" placeholder="215">
+        </div>
+        <div class="grid2">
+          <div class="field"><label>Waist (in)</label><input type="number" id="ciWaist"></div>
+          <div class="field"><label>Hips (in)</label><input type="number" id="ciHips"></div>
+        </div>
+        <div class="field">
+          <label>Energy this week (1–5)</label>
+          <div class="toggle-group" id="ciEnergy"></div>
+        </div>
+        <div class="field">
+          <label>Gut / inflammation symptoms (1=none, 5=severe)</label>
+          <div class="toggle-group" id="ciInflame"></div>
+        </div>
+        <div class="field">
+          <label>Notes (sleep, stress, irregular heartbeat episodes, anything off)</label>
+          <textarea id="ciNotes" style="height:70px;"></textarea>
+        </div>
+        <button class="primary" id="saveCheckin" style="width:100%;">Save Check-In</button>
+        <div class="check-history" id="checkHistory"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== COACH ===================== -->
+  <section id="tab-coach" class="tabview">
+    <div class="card">
+      <div class="card-body">
+        <h2>Setup <span class="pill" id="apiKeyStatus">Not set</span></h2>
+        <div class="field">
+          <label>Anthropic API key</label>
+          <input type="password" id="apiKeyInput" placeholder="sk-ant-...">
+        </div>
+        <button id="apiKeySave" style="width:100%;">Save Key</button>
+        <div class="note">
+          Required when running this app outside Claude.ai (saved to your home screen, etc). Get a key at
+          <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> — it's stored only on this device, never sent anywhere but Anthropic's API.
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <h2>Your Coach <span class="pill on">Live</span></h2>
+        <div class="chat-log" id="chatLog"></div>
+        <div class="chat-input-row">
+          <textarea id="chatInput" placeholder="Ask your coach anything — adjust today's lift, review this week, talk through nutrition..."></textarea>
+          <button class="primary" id="chatSend">Send</button>
+        </div>
+        <div class="note">Your coach reads your recent lifts, check-ins, and goal before responding.</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<nav class="tabs">
+  <button data-tab="dashboard" class="active"><span class="ic">⌂</span>Today</button>
+  <button data-tab="train"><span class="ic">▲</span>Train</button>
+  <button data-tab="nutrition"><span class="ic">●</span>Fuel</button>
+  <button data-tab="checkin"><span class="ic">◆</span>Check-In</button>
+  <button data-tab="coach"><span class="ic">▶</span>Coach</button>
+</nav>
+
+<script>
+/* ============================================================
+   STATE & STORAGE
+============================================================ */
+const STORAGE_KEYS = {
+  profile:'profile',
+  liftHistory:'lift-history',
+  checkins:'checkins',
+  waterLog:'water-log',
+  fastState:'fast-state',
+  chatHistory:'chat-history'
+};
+
+let state = {
+  profile:{
+    goal:'Strength, hypertrophy & muscular endurance — fireground-functional',
+    bloodType:'A',
+    weight:215,
+    bodyFatStart:20,
+    bodyFatTarget:'15-17',
+    lastShiftDate:null, // ISO date string (YYYY-MM-DD) of most recent worked 24hr shift
+    calorieTarget:2600,
+    proteinTarget:190,
+    carbTarget:290,
+    fatTarget:75
+  },
+  liftHistory: {}, // { exerciseKey: [{date,weight,reps,sets,rpe}] }
+  checkins: [],
+  macroLog: {}, // { 'YYYY-MM-DD': {calories,protein,carbs,fat, items:[...]} }
+  waterLog: { date:null, cups:0 },
+  fastState: { lastAteTime:null, savedDate:null },
+  chatHistory: [],
+  foodLog: [],
+  apiKey: null
+};
+
+/* ============================================================
+   STORAGE ADAPTER — works inside Claude.ai (window.storage) AND
+   as a standalone hosted/home-screen app (falls back to localStorage)
+============================================================ */
+const STORAGE_PREFIX = 'firecoach:';
+const hasClaudeStorage = (typeof window !== 'undefined' && !!window.storage);
+
+const storageAdapter = {
+  async get(key){
+    if(hasClaudeStorage){
+      return await window.storage.get(key, false); // {value} or throws
+    }
+    const raw = localStorage.getItem(STORAGE_PREFIX + key);
+    if(raw === null) throw new Error('not found');
+    return {value: raw};
+  },
+  async set(key, value){
+    if(hasClaudeStorage){
+      return await window.storage.set(key, value, false);
+    }
+    localStorage.setItem(STORAGE_PREFIX + key, value);
+    return {key, value};
+  }
+};
+
+async function loadAll(){
+  try{
+    const p = await storageAdapter.get('profile');
+    if(p) state.profile = JSON.parse(p.value);
+  }catch(e){}
+  try{
+    const l = await storageAdapter.get('lift-history');
+    if(l) state.liftHistory = JSON.parse(l.value);
+  }catch(e){}
+  try{
+    const c = await storageAdapter.get('checkins');
+    if(c) state.checkins = JSON.parse(c.value);
+  }catch(e){}
+  try{
+    const w = await storageAdapter.get('water-log');
+    if(w) state.waterLog = JSON.parse(w.value);
+  }catch(e){}
+  try{
+    const f = await storageAdapter.get('fast-state');
+    if(f) state.fastState = JSON.parse(f.value);
+  }catch(e){}
+  try{
+    const ch = await storageAdapter.get('chat-history');
+    if(ch) state.chatHistory = JSON.parse(ch.value);
+  }catch(e){}
+  try{
+    const fl = await storageAdapter.get('food-log');
+    if(fl) state.foodLog = JSON.parse(fl.value);
+  }catch(e){}
+  try{
+    const k = await storageAdapter.get('api-key');
+    if(k) state.apiKey = JSON.parse(k.value);
+  }catch(e){}
+  try{
+    const ml = await storageAdapter.get('macro-log');
+    if(ml) state.macroLog = JSON.parse(ml.value);
+  }catch(e){}
+}
+
+function getApiHeaders(){
+  const headers = {"Content-Type":"application/json"};
+  if(state.apiKey){
+    headers["x-api-key"] = state.apiKey;
+    headers["anthropic-version"] = "2023-06-01";
+    headers["anthropic-dangerous-direct-browser-access"] = "true";
+  }
+  return headers;
+}
+
+function refreshApiKeyStatus(){
+  const el = document.getElementById('apiKeyStatus');
+  if(!el) return;
+  if(state.apiKey){
+    el.textContent = 'Saved';
+    el.className = 'pill on';
+  } else {
+    el.textContent = 'Not set';
+    el.className = 'pill warn';
+  }
+}
+
+async function save(key, value, attempt=1){
+  try{
+    const result = await storageAdapter.set(key, JSON.stringify(value));
+    if(!result) throw new Error('No result returned');
+    return true;
+  }catch(e){
+    if(attempt < 3){
+      await new Promise(r=>setTimeout(r, 300*attempt));
+      return save(key, value, attempt+1);
+    }
+    console.warn('Storage save did not persist for key:', key, '— data still works locally this session.');
+    return false;
+  }
+}
+
+const todayStr = () => {
+  const d = new Date();
+  return d.getFullYear() + '-' +
+    String(d.getMonth()+1).padStart(2,'0') + '-' +
+    String(d.getDate()).padStart(2,'0');
+};
+
+/* ============================================================
+   EXERCISE PROGRAM DEFINITIONS
+============================================================ */
+/* ============================================================
+   BIG 3 GOALS & ESTIMATED 1RM
+============================================================ */
+const BIG3 = {
+  bench: {label:'Bench Press', goal:225, color:'#C8362A'},
+  squat: {label:'Back Squat', goal:225, color:'#F2A93B'},
+  deadlift: {label:'Deadlift', goal:225, color:'#4C9A6A'}
+};
+
+function epley1RM(weight, reps){
+  if(reps === 1) return weight;
+  return Math.round(weight * (1 + reps / 30));
+}
+
+function getBig3Estimates(){
+  const out = {};
+  for(const key of Object.keys(BIG3)){
+    const hist = (state.liftHistory[key] || []).filter(s => s.reps && s.weight);
+    if(!hist.length){ out[key] = null; continue; }
+    const best = hist.reduce((best, s) => {
+      const e = epley1RM(s.weight, s.reps);
+      return e > best ? e : best;
+    }, 0);
+    out[key] = best;
+  }
+  return out;
+}
+
+function renderBig3Bars(){
+  const el = document.getElementById('big3bars');
+  if(!el) return;
+  const ests = getBig3Estimates();
+  el.innerHTML = Object.entries(BIG3).map(([key, meta])=>{
+    const est = ests[key];
+    const pct = est ? Math.min(100, Math.round((est / meta.goal) * 100)) : 0;
+    const label = est ? `${est} lbs est. 1RM` : 'No data yet';
+    return `
+      <div class="macro-row">
+        <div class="row"><span>${meta.label}</span><span style="font-family:var(--font-mono);font-size:12px;">${label} / ${meta.goal} lbs</span></div>
+        <div class="macro-track"><div class="macro-fill" style="width:${pct}%;background:${meta.color};"></div></div>
+      </div>`;
+  }).join('');
+}
+
+/* ============================================================
+   AI SESSION GENERATOR
+============================================================ */
+let currentDayType = 'firehouse'; // 'firehouse' or 'home'
+let generatedSession = null;
+
+function buildLiftHistorySummary(){
+  const lines = [];
+  for(const [key, hist] of Object.entries(state.liftHistory)){
+    if(key === '_homeSessions') continue;
+    const last3 = hist.slice(-3);
+    if(!last3.length) continue;
+    const last = last3[last3.length-1];
+    const est1rm = epley1RM(last.weight, last.reps);
+    const setsDetail = last.sets
+      ? 'all sets: ' + last.sets.map(s => s.weight+'x'+s.reps+'@RPE'+s.rpe).join(', ')
+      : last.weight+'lbs x'+last.reps+' @RPE'+last.rpe;
+    lines.push(key+': '+setsDetail+' ('+last.date+'); est 1RM='+est1rm+'lbs');
+  }
+  return lines.join('\n') || 'No lift history yet — this is the first session.';
+}
+
+async function generateAISession(dayType){
+  const container = document.getElementById('sessionContainer');
+
+  if(!state.apiKey){
+    container.innerHTML = `<div class="card"><div class="card-body">
+      <p class="note" style="border:none;padding:0;margin:0 0 8px 0;color:var(--red);">No API key saved.</p>
+      <p class="note" style="border:none;padding:0;">Go to the <strong>Coach</strong> tab, paste your Anthropic API key in the Setup section, and tap Save Key. Then come back and generate your session.</p>
+    </div></div>`;
+    return;
+  }
+
+  container.innerHTML = `<div class="card"><div class="card-body"><div style="text-align:center;padding:20px 0;"><span class="loading"></span><p class="note" style="border:none;margin-top:12px;text-align:center;">Your coach is building your session...</p></div></div></div>`;
+
+  const liftSummary = buildLiftHistorySummary();
+  const ests = getBig3Estimates();
+  const big3Status = Object.entries(BIG3).map(([k,m])=>
+    `${m.label}: est 1RM = ${ests[k] ? ests[k]+'lbs' : 'unknown'}, goal = ${m.goal}lbs`
+  ).join('; ');
+
+  const recent = state.checkins.slice(-2);
+  const readiness = recent.length ? `Last check-in: energy ${recent[recent.length-1].energy}/5, inflammation ${recent[recent.length-1].inflame}/5` : 'No recent check-ins';
+
+  const sessionPrompt = dayType === 'firehouse'
+    ? `Design an UPPER BODY ONLY firehouse session. Equipment: bench press, barbell, dumbbells, cable machine. STRICT RULE: No squats, no deadlifts, no lower body work of any kind today — lower body is reserved for home days. Main lift: Bench Press (5 working sets, this is the primary strength goal). Supporting lifts: bent-over rows and lat pulldowns for back balance. Accessories: bicep curls and tricep work. That is the complete exercise list — do not add anything else. This is a 24hr shift day so the athlete may be fatigued, but the session still runs as programmed.`
+    : `Design a full body kettlebell home session. Equipment: kettlebells only. Structure the session in this exact order: (1) 30 min hard cardio — stair session or run, athlete chooses based on feel; (2) Full body kettlebell flow 20-25 min — include a mix of swings, goblet squats, single-arm clean and press, bent-over rows, Turkish get-ups, and farmer carries. Rotate the focus each session based on what the athlete needs. 3 sets of 8-12 reps per exercise. This is conditioning and movement quality, not max effort — keep RPE around 7; (3) Yoga/pilates via YouTube 15-20 min — hip mobility, shoulder stability, core; (4) Cooldown walk 30 min easy pace. This is the second day off a 24hr shift so the athlete is recovered but home days are about work capacity and staying loose, not grinding. The barbell Big 3 lifts are reserved for firehouse days with proper equipment.`;
+
+  const systemPrompt = `You are a strength and conditioning coach for a firefighter/EMT. The athlete wants to reach 225lbs on bench press, back squat, and deadlift. They follow a 1-on/2-off shift rotation. They are 215lbs, ~20% body fat, and follow a Blood Type A anti-inflammatory diet.
+
+You must respond ONLY with a valid JSON object in this exact shape and nothing else — no markdown fences, no preamble:
+{
+  "sessionTitle": "string",
+  "coachNote": "2-3 sentence coaching context for this specific session based on their data",
+  "isHome": false,
+  "exercises": [
+    {
+      "key": "unique_snake_case_key",
+      "name": "Exercise Name",
+      "sets": 3,
+      "repsPerSet": 5,
+      "targetWeight": 135,
+      "warmupSets": [
+        {"weight": 45, "reps": 10, "note": "bar only, groove the movement"},
+        {"weight": 95, "reps": 5, "note": "50% — start feeling the weight"},
+        {"weight": 115, "reps": 3, "note": "75% — one more ramp, then work"}
+      ],
+      "cue": "one specific coaching cue for this athlete — direct and specific to the lift and their data"
+    }
+  ],
+  "youtubeLink": null
+}
+
+warmupSets should be 2-3 sets with specific weights calculated from targetWeight (roughly 40-50%, 60-70%, 80% for heavy compound lifts; just 1 light set for accessory work; empty array for home/bodyweight exercises). The transition from warmup to working sets must be completely clear from the structure. sets = number of working sets only, never counting warmup sets. repsPerSet = a single integer for working sets. targetWeight in lbs. For home sessions set isHome to true and youtubeLink to "https://www.youtube.com/results?search_query=yoga+pilates+mobility+core+20+minutes". Omit targetWeight and warmupSets for home bodyweight exercises (set both to null and empty array). Keep exercises to 4-6 items.
+
+CRITICAL STRENGTH PROGRAMMING RULE: For the Big 3 compound lifts (bench press, squat, deadlift) always program 5 working sets of 3-5 reps at 85-90% of estimated 1RM. This is the proven approach for strength development — high sets, low reps, heavy weight. For accessory lifts (rows, pulldowns, curls, triceps, kettlebell) use 3 working sets of 8-12 reps. Never program fewer than 5 sets for the Big 3 regardless of other factors. Rest periods between Big 3 sets should be 2-3 minutes minimum — include this in the coaching cue.
+
+For home sessions set isHome to true and include a youtubeLink value of "https://www.youtube.com/results?search_query=yoga+pilates+mobility+core+20+minutes". For home sessions exercises should be kettlebell-based or bodyweight. Omit targetWeight for home exercises if not applicable (set to null). Keep exercises to 4-6 items. Make the coachNote specific to their actual data, not generic.`;
+
+  const userMsg = `LIFT HISTORY:\n${liftSummary}\n\nBIG 3 STATUS:\n${big3Status}\n\nREADINESS: ${readiness}\n\nSESSION REQUEST: ${sessionPrompt}`;
+
+  try{
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method:"POST",
+      headers: getApiHeaders(),
+      body: JSON.stringify({
+        model:"claude-sonnet-4-6",
+        max_tokens:1200,
+        system: systemPrompt,
+        messages:[{role:"user", content: userMsg}]
+      })
+    });
+
+    if(!response.ok){
+      const errData = await response.json().catch(()=>({}));
+      const errMsg = errData.error?.message || `HTTP ${response.status}`;
+      container.innerHTML = `<div class="card"><div class="card-body">
+        <p class="note" style="border:none;padding:0;margin:0 0 8px 0;color:var(--red);">API error: ${errMsg}</p>
+        <p class="note" style="border:none;padding:0;">Check your API key in the Coach tab and make sure your Anthropic account has credit.</p>
+      </div></div>`;
+      return;
+    }
+
+    const data = await response.json();
+    const raw = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    const clean = raw.replace(/```json|```/g,'').trim();
+    generatedSession = JSON.parse(clean);
+    renderGeneratedSession(generatedSession);
+  }catch(e){
+    const noKey = !state.apiKey;
+    container.innerHTML = `<div class="card"><div class="card-body">
+      <p class="note" style="border:none;padding:0;margin:0 0 8px 0;color:var(--red);">${noKey ? 'No API key saved.' : 'Session generation failed.'}</p>
+      <p class="note" style="border:none;padding:0;margin:0 0 6px 0;">${noKey ? 'Go to the Coach tab and save your Anthropic API key first.' : 'Error: '+e.message}</p>
+      ${!noKey ? `<p class="note" style="border:none;padding:0;">If your key looks correct, make sure your Anthropic account has a positive credit balance at console.anthropic.com</p>` : ''}
+    </div></div>`;
+  }
+}
+
+function renderGeneratedSession(session){
+  const container = document.getElementById('sessionContainer');
+
+  if(session.isHome){
+    container.innerHTML = `<div class="card"><div class="card-body">
+      <h2>${session.sessionTitle}</h2>
+      <p class="note" style="border:none;padding:0;margin:0 0 12px 0;">${session.coachNote}</p>
+      ${session.exercises.map(ex=>`
+        <div class="exercise">
+          <h3>${ex.name}</h3>
+          ${ex.sets ? `<div class="suggest">${ex.sets} sets of ${ex.repsPerSet} reps</div>` : ''}
+          <div class="note" style="border:none;padding:0;margin:4px 0;">${ex.cue}</div>
+        </div>`).join('')}
+      ${session.youtubeLink ? `<a href="${session.youtubeLink}" target="_blank"><button style="width:100%;margin-top:8px;">Open YouTube - Yoga / Pilates</button></a>` : ''}
+      <button class="primary" id="finishHomeSession" style="width:100%;margin-top:8px;">Mark Complete</button>
+    </div></div>`;
+    document.getElementById('finishHomeSession').onclick = ()=>{
+      if(!state.liftHistory['_homeSessions']) state.liftHistory['_homeSessions'] = [];
+      state.liftHistory['_homeSessions'].push({date:todayStr(), type:'home'});
+      save(STORAGE_KEYS.liftHistory, state.liftHistory);
+      container.innerHTML = `<div class="card"><div class="card-body"><p style="font-family:var(--font-display);font-size:18px;text-align:center;padding:10px 0;">Session logged. Good work.</p></div></div>`;
+    };
+    return;
+  }
+
+  // Build lift cards imperatively so each working set gets its own log row
+  const card = document.createElement('div');
+  card.className = 'card';
+  const body = document.createElement('div');
+  body.className = 'card-body';
+
+  const title = document.createElement('h2');
+  title.textContent = session.sessionTitle;
+  body.appendChild(title);
+
+  const note = document.createElement('p');
+  note.className = 'note';
+  note.style.cssText = 'border:none;padding:0;margin:0 0 14px 0;';
+  note.textContent = session.coachNote;
+  body.appendChild(note);
+
+  session.exercises.forEach((ex, exIdx) => {
+    const block = document.createElement('div');
+    block.className = 'exercise';
+    block.dataset.exkey = ex.key;
+    block.dataset.exidx = exIdx;
+
+    // Header
+    block.innerHTML = `<h3>${ex.name}</h3>
+      <div class="suggest">${ex.sets} working sets of ${ex.repsPerSet} reps${ex.targetWeight ? ' at ' + ex.targetWeight + ' lbs' : ''}</div>
+      <div class="note" style="border:none;padding:0;margin:4px 0 12px 0;">${ex.cue}</div>`;
+
+    // Warmup sets
+    if(ex.warmupSets && ex.warmupSets.length){
+      const wLabel = document.createElement('div');
+      wLabel.className = 'set-section-label';
+      wLabel.textContent = 'WARM-UP — do not log these';
+      block.appendChild(wLabel);
+
+      ex.warmupSets.forEach((ws, wi) => {
+        const row = document.createElement('div');
+        row.className = 'warmup-row';
+        row.innerHTML = `<span class="set-badge warm">W${wi+1}</span>
+          <span class="set-detail">${ws.weight} lbs x ${ws.reps} reps</span>
+          <span class="set-note">${ws.note || ''}</span>`;
+        block.appendChild(row);
+      });
+
+      const wkLabel = document.createElement('div');
+      wkLabel.className = 'set-section-label working-label';
+      wkLabel.textContent = 'WORKING SETS — log each one';
+      block.appendChild(wkLabel);
+    }
+
+    // Working set log rows
+    for(let s = 0; s < ex.sets; s++){
+      const row = document.createElement('div');
+      row.className = 'working-row';
+      row.dataset.ex = exIdx;
+      row.dataset.set = s;
+      row.innerHTML = `<span class="set-badge work">Set ${s+1}</span>
+        <div class="set-inputs">
+          <div class="set-field"><label>lbs</label><input type="number" class="inWeight" value="${ex.targetWeight || ''}"></div>
+          <div class="set-field"><label>reps</label><input type="number" class="inReps" placeholder="${ex.repsPerSet}"></div>
+          <div class="set-field"><label>RPE</label><input type="number" class="inRpe" min="1" max="10" placeholder="8"></div>
+        </div>`;
+      block.appendChild(row);
+    }
+    body.appendChild(block);
+  });
+
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'primary';
+  saveBtn.style.cssText = 'width:100%;margin-top:10px;';
+  saveBtn.textContent = 'Save Session';
+  saveBtn.onclick = () => {
+    let saved = 0;
+    session.exercises.forEach((ex, exIdx) => {
+      const rows = card.querySelectorAll(`.working-row[data-ex="${exIdx}"]`);
+      const sets = [];
+      rows.forEach(row => {
+        const w = parseFloat(row.querySelector('.inWeight').value);
+        const r = parseInt(row.querySelector('.inReps').value);
+        const rpe = parseInt(row.querySelector('.inRpe').value) || 8;
+        if(!isNaN(w) && !isNaN(r)){ sets.push({weight:w, reps:r, rpe}); saved++; }
+      });
+      if(sets.length){
+        if(!state.liftHistory[ex.key]) state.liftHistory[ex.key] = [];
+        // Store best set for 1RM calc + all sets for coach context
+        const best = sets.reduce((b,s) => epley1RM(s.weight,s.reps) > epley1RM(b.weight,b.reps) ? s : b);
+        state.liftHistory[ex.key].push({date:todayStr(), weight:best.weight, reps:best.reps, rpe:best.rpe, sets});
+      }
+    });
+    if(!saved){ alert('Fill in at least one working set before saving.'); return; }
+    save(STORAGE_KEYS.liftHistory, state.liftHistory);
+    renderBig3Bars();
+    container.innerHTML = `<div class="card"><div class="card-body"><p style="font-family:var(--font-display);font-size:18px;text-align:center;padding:10px 0;">Session saved. Your next session builds on this.</p></div></div>`;
+  };
+  body.appendChild(saveBtn);
+  card.appendChild(body);
+  container.innerHTML = '';
+  container.appendChild(card);
+}
+
+/* Day type selector wiring */
+document.getElementById('dayFireA').onclick = ()=>{
+  currentDayType = 'firehouse';
+  document.getElementById('dayFireA').style.background='var(--amber)';
+  document.getElementById('dayFireA').style.color='#14171A';
+  document.getElementById('dayFireA').style.borderColor='var(--amber)';
+  document.getElementById('dayHomeA').style.cssText='';
+  document.getElementById('sessionTypeNote').textContent='Firehouse session — upper body only: bench, rows, pulldowns, arms.';
+};
+document.getElementById('dayHomeA').onclick = ()=>{
+  currentDayType = 'home';
+  document.getElementById('dayHomeA').style.background='var(--amber)';
+  document.getElementById('dayHomeA').style.color='#14171A';
+  document.getElementById('dayHomeA').style.borderColor='var(--amber)';
+  document.getElementById('dayFireA').style.cssText='';
+  document.getElementById('sessionTypeNote').textContent='Home session — cardio, full body kettlebell, yoga/pilates, cooldown walk.';
+};
+document.getElementById('generateSession').onclick = ()=>generateAISession(currentDayType);
+
+function selectDay(sessionKey){
+  // legacy compatibility called from dashboard "Start This Session" button
+  if(sessionKey && (sessionKey.startsWith('fire'))){ currentDayType='firehouse'; }
+  else if(sessionKey && sessionKey.startsWith('home')){ currentDayType='home'; }
+  document.querySelector('nav.tabs button[data-tab="train"]').click();
+  generateAISession(currentDayType);
+}
+
+/* ============================================================
+   RENDER: DASHBOARD
+============================================================ */
+function getReadiness(){
+  const recent = state.checkins.slice(-1)[0];
+  let score = 'green', label='Ready', note='No flags in recent data — train as planned.';
+  if(recent){
+    if(recent.inflame >= 4){
+      score='red'; label='Caution'; note='Recent gut/inflammation symptoms logged high. Consider a home day or lighter session, and watch your heart rhythm.';
+    } else if(recent.inflame === 3 || recent.energy <= 2){
+      score='amber'; label='Moderate'; note="Energy or symptoms mid-range. Train, but autoregulate — if something feels off, tell your coach.";
+    }
+  }
+  return {score, label, note};
+}
+
+/* ============================================================
+   SHIFT CYCLE LOGIC (1-on / 2-off rotation)
+============================================================ */
+function dateOnly(d){
+  // returns a Date at local midnight for clean day-diff math
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+function daysBetween(a,b){
+  return Math.round((dateOnly(b) - dateOnly(a)) / 86400000);
+}
+
+// Returns {type:'shift'|'off1'|'off2', cycleIndex} for a given Date, or null if no anchor set
+function cycleInfoFor(date){
+  if(!state.profile.lastShiftDate) return null;
+  const anchor = new Date(state.profile.lastShiftDate + 'T00:00:00');
+  const diff = daysBetween(anchor, date);
+  const mod = ((diff % 3) + 3) % 3;
+  const cycleIndex = Math.floor((diff - mod) / 3); // which 3-day cycle, used to alternate A/B
+  const type = mod===0 ? 'shift' : (mod===1 ? 'off1' : 'off2');
+  return {type, cycleIndex, diff};
+}
+
+function planForCycleInfo(info){
+  if(!info) return {sessionKey:null, label:'Set your last shift date above to get a plan', detail:''};
+  const alt = (((info.cycleIndex % 2) + 2) % 2) === 0; // even/odd alternation
+  if(info.type === 'shift'){
+    return {sessionKey: alt?'fireA':'fireB', label: alt?'Firehouse A — Push/Pull Upper':'Firehouse B — Lower/Posterior', detail:'Shift day — lift at the firehouse.'};
+  }
+  if(info.type === 'off1'){
+    return {sessionKey:null, label:'Rest & Recover', detail:'First day off a 24hr shift — recovery day. Walk if you feel like it, but no hard training.'};
+  }
+  return {sessionKey: alt?'homeA':'homeB', label: alt?'Home A — Cardio + Kettlebell + Mobility':'Home B — Cardio + Kettlebell + Mobility', detail:'Second day off, fully recovered — your hardest home session.'};
+}
+
+function renderShiftCard(){
+  const statusEl = document.getElementById('shiftStatus');
+  const previewEl = document.getElementById('cyclePreview');
+  const input = document.getElementById('lastShiftInput');
+  if(state.profile.lastShiftDate){
+    input.value = state.profile.lastShiftDate;
+    statusEl.textContent = 'Set';
+    statusEl.className = 'pill on';
+  } else {
+    statusEl.textContent = 'Not set';
+    statusEl.className = 'pill warn';
+  }
+
+  // 5-day forward preview
+  let html = '';
+  for(let i=0;i<5;i++){
+    const d = new Date();
+    d.setDate(d.getDate()+i);
+    const info = cycleInfoFor(d);
+    const plan = planForCycleInfo(info);
+    const dayLabel = i===0 ? 'Today' : d.toLocaleDateString('en-US',{weekday:'short', month:'short', day:'numeric'});
+    html += `<div class="cycle-day"><span>${dayLabel}</span><span>${plan.label}</span></div>`;
+  }
+  previewEl.innerHTML = html;
+}
+
+document.getElementById('lastShiftSave').onclick = () => {
+  const val = document.getElementById('lastShiftInput').value;
+  if(!val) return;
+  state.profile.lastShiftDate = val;
+  save(STORAGE_KEYS.profile, state.profile);
+  renderShiftCard();
+  renderDashboard();
+};
+
+function renderDashboard(){
+  const r = getReadiness();
+  document.getElementById('readinessStripe').style.setProperty('--stripe-color',
+    r.score==='green'?'#4C9A6A':r.score==='amber'?'#F2A93B':'#C8362A');
+  const pill = document.getElementById('readinessPill');
+  pill.textContent = r.label;
+  pill.className = 'pill ' + (r.score==='green'?'on':r.score==='amber'?'warn':'off');
+  document.getElementById('readinessNote').textContent = r.note;
+
+  // fasting clock
+  updateFastClock();
+
+  // water
+  if(state.waterLog.date !== todayStr()){
+    state.waterLog = {date:todayStr(), cups:0};
+  }
+  renderWaterGrid();
+
+  // shift schedule
+  renderShiftCard();
+
+  // today's session — driven by shift cycle
+  const info = cycleInfoFor(new Date());
+  const plan = planForCycleInfo(info);
+  const container = document.getElementById('todaySession');
+  if(!plan.sessionKey && info){
+    container.innerHTML = `
+      <h3 style="font-family:var(--font-display);font-size:18px;text-transform:uppercase;margin-bottom:4px;">${plan.label}</h3>
+      <p class="note" style="border:none;padding:0;">${plan.detail}</p>`;
+  } else if(plan.sessionKey){
+    container.innerHTML = `
+      <h3 style="font-family:var(--font-display);font-size:18px;text-transform:uppercase;margin-bottom:4px;">${plan.label}</h3>
+      <p class="note" style="border:none;padding:0;margin-bottom:10px;">${plan.detail}</p>
+      <button class="primary" id="startTodaySession" style="width:100%;">Start This Session</button>`;
+    document.getElementById('startTodaySession').onclick = ()=>{
+      document.querySelector('nav.tabs button[data-tab="train"]').click();
+      selectDay(plan.sessionKey);
+    };
+  } else {
+    container.innerHTML = `<p class="note" style="border:none;padding:0;">${plan.label}</p>`;
+  }
+
+  // macros
+  renderMacros();
+}
+
+function renderWaterGrid(){
+  const grid = document.getElementById('waterGrid');
+  grid.innerHTML = '';
+  for(let i=0;i<4;i++){
+    const cup = document.createElement('div');
+    cup.className = 'water-cup' + (i < state.waterLog.cups ? ' filled' : '');
+    cup.textContent = (i+1)+'L';
+    cup.style.fontFamily = 'var(--font-mono)';
+    cup.style.fontSize='12px';
+    cup.style.fontWeight='600';
+    cup.style.color = i < state.waterLog.cups ? '#cfe9f5' : 'var(--text-dim)';
+    cup.onclick = () => {
+      state.waterLog.cups = (i < state.waterLog.cups) ? i : i+1;
+      save(STORAGE_KEYS.waterLog, state.waterLog);
+      renderWaterGrid();
+      document.getElementById('waterCount').textContent = `${state.waterLog.cups.toFixed(1)} / 4.0L`;
+    };
+    grid.appendChild(cup);
+  }
+  document.getElementById('waterCount').textContent = `${state.waterLog.cups.toFixed(1)} / 4.0L`;
+}
+
+function updateFastClock(){
+  const noteEl = document.getElementById('fastNote');
+  const input = document.getElementById('lastAteInput');
+  if(state.fastState.lastAteTime){
+    input.value = state.fastState.lastAteTime;
+    const [h,m] = state.fastState.lastAteTime.split(':').map(Number);
+    const lastAte = new Date();
+    lastAte.setHours(h, m, 0, 0);
+    if(lastAte.getTime() > Date.now()) lastAte.setDate(lastAte.getDate()-1); // assume yesterday if time is in the future today
+    const elapsedMs = Date.now() - lastAte.getTime();
+    const elapsedH = (elapsedMs/3600000).toFixed(1);
+    noteEl.textContent = `Roughly ${elapsedH}hr since you stopped eating — target 12–16hr before your next meal.`;
+  } else {
+    noteEl.textContent = "Let your coach know when you last ate so it can reference your fasting window — no need to actively time it.";
+  }
+}
+
+document.getElementById('lastAteSave').onclick = () => {
+  const val = document.getElementById('lastAteInput').value;
+  if(!val) return;
+  state.fastState = {lastAteTime: val, savedDate: todayStr()};
+  save(STORAGE_KEYS.fastState, state.fastState);
+  updateFastClock();
+};
+
+setInterval(updateFastClock, 60000);
+
+/* ============================================================
+   RENDER: TRAIN
+============================================================ */
+
+/* ============================================================
+   RENDER: NUTRITION (Blood Type A)
+============================================================ */
+const FOOD_GUIDE = [
+  {cat:'Protein', beneficial:['Tofu / Tempeh','Wild Salmon','Sardines','Mackerel','Cod','Eggs (in moderation)'], avoid:['Beef','Pork','Lamb','Shellfish']},
+  {cat:'Legumes', beneficial:['Lentils','Black Beans','Adzuki Beans','Chickpeas'], avoid:['Kidney Beans (limit)']},
+  {cat:'Vegetables', beneficial:['Broccoli','Spinach','Kale','Carrots','Garlic','Onion','Beets'], avoid:['Tomatoes (limit)','Cabbage family in excess (gas-forming)']},
+  {cat:'Fruit', beneficial:['Berries','Pineapple','Plums','Figs','Lemon'], avoid:['Bananas (limit)','Oranges (limit)','Mango']},
+  {cat:'Grains', beneficial:['Oats','Quinoa','Brown Rice','Buckwheat','Rye'], avoid:['Wheat (limit)','Refined white flour']},
+  {cat:'Fats & Oils', beneficial:['Olive Oil','Flaxseed Oil','Walnuts','Almonds'], avoid:['Heavy cream','Butter in excess']},
+  {cat:'Beverages', beneficial:['Green Tea','Herbal Tea','Water + mineral salt'], avoid:['Excess caffeine','Soda']}
+];
+
+function renderFoodGuide(){
+  const el = document.getElementById('foodGuide');
+  el.innerHTML = FOOD_GUIDE.map(c=>`
+    <div class="food-cat">
+      <h4>${c.cat}</h4>
+      <div class="food-list">
+        ${c.beneficial.map(f=>`<span class="food-tag">${f}</span>`).join('')}
+        ${c.avoid.map(f=>`<span class="food-tag avoid">${f}</span>`).join('')}
+      </div>
+    </div>
+  `).join('') + `<div class="note">General Type-A starting framework, not exhaustive. Log actual meals above for direction specific to you.</div>`;
+}
+
+document.getElementById('foodGuideToggle').onclick = ()=>{
+  const el = document.getElementById('foodGuide');
+  const toggle = document.getElementById('foodGuideToggle');
+  const showing = el.style.display !== 'none';
+  el.style.display = showing ? 'none' : 'block';
+  toggle.textContent = showing ? 'Show' : 'Hide';
+};
+
+document.getElementById('foodHistoryToggle').onclick = ()=>{
+  const el = document.getElementById('foodHistory');
+  const toggle = document.getElementById('foodHistoryToggle');
+  const showing = el.style.display !== 'none';
+  el.style.display = showing ? 'none' : 'block';
+  toggle.textContent = showing ? 'Show' : 'Hide';
+  if(!showing) renderFoodHistory();
+};
+
+function renderFoodHistory(){
+  const el = document.getElementById('foodHistory');
+  const log = state.foodLog || [];
+  if(log.length===0){ el.innerHTML = '<div class="empty">No meals logged yet.</div>'; return; }
+  el.innerHTML = log.slice().reverse().slice(0,10).map(f=>`
+    <div class="exercise">
+      <div class="eyebrow">${f.date}</div>
+      <p style="font-size:13px;margin:4px 0;">${f.meal}</p>
+      <p class="suggest" style="margin:0 0 6px 0;">${f.verdict}</p>
+      ${f.calories!==undefined ? `<p style="font-family:var(--font-mono);font-size:11px;color:var(--text-dim);margin:0;">${f.calories} kcal · ${f.protein}p / ${f.carbs}c / ${f.fat}f</p>` : ''}
+    </div>
+  `).join('');
+}
+
+async function getFoodDirection(){
+  const input = document.getElementById('foodInput');
+  const meal = input.value.trim();
+  if(!meal) return;
+  const resultEl = document.getElementById('foodResult');
+  const btn = document.getElementById('foodSend');
+  btn.disabled = true;
+  resultEl.innerHTML = '<div class="exercise"><span class="loading"></span> Checking against your framework...</div>';
+
+  const recentCheckins = state.checkins.slice(-3);
+  const system = `
+You are the athlete's expert holistic nutritionist coach. They follow a strict Blood Type A diet as a non-negotiable framework that manages a real gut-inflammation condition previously linked to irregular heartbeat. Never suggest abandoning it. They are 215lbs, want body recomposition toward 15-17% body fat, sustainably, and need macro tracking since they don't like counting calories themselves — you do the estimating for them.
+
+Given a meal they describe, respond with ONLY a raw JSON object, no markdown fences, no preamble, in exactly this shape:
+{"verdict": "3-5 sentence conversational coach response covering: whether it fits Type-A, anything to watch given inflammation history, one concrete suggestion or 'good as-is'", "calories": <integer estimate>, "protein": <integer grams>, "carbs": <integer grams>, "fat": <integer grams>}
+
+Recent inflammation/energy check-ins for context: ${recentCheckins.length ? JSON.stringify(recentCheckins) : 'none logged yet'}
+
+Estimate macros as a knowledgeable nutritionist would from a plain-language meal description — reasonable portion assumptions, state nothing about the estimate being approximate inside the verdict text (that's handled in the UI already). Be direct and specific to the actual foods named, not generic.
+`.trim();
+
+  try{
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method:"POST",
+      headers: getApiHeaders(),
+      body: JSON.stringify({
+        model:"claude-sonnet-4-6",
+        max_tokens:500,
+        system: system,
+        messages:[{role:"user", content:`I ate: ${meal}`}]
+      })
+    });
+    const data = await response.json();
+    const raw = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n');
+    let parsed;
+    try{
+      const clean = raw.replace(/```json|```/g,'').trim();
+      parsed = JSON.parse(clean);
+    }catch(parseErr){
+      parsed = {verdict: raw || "Couldn't get a read on that — try rephrasing.", calories:0, protein:0, carbs:0, fat:0};
+    }
+
+    resultEl.innerHTML = `
+      <div class="exercise">
+        <p style="margin:0 0 10px 0;">${parsed.verdict}</p>
+        <div class="grid3" style="font-family:var(--font-mono);font-size:12px;color:var(--text-dim);">
+          <span>${parsed.calories} kcal</span><span>${parsed.protein}g protein</span><span>${parsed.carbs}g carb / ${parsed.fat}g fat</span>
+        </div>
+      </div>`;
+
+    // accumulate into today's macro totals
+    const dateKey = todayStr();
+    if(!state.macroLog[dateKey]) state.macroLog[dateKey] = {calories:0, protein:0, carbs:0, fat:0, items:[]};
+    state.macroLog[dateKey].calories += parsed.calories || 0;
+    state.macroLog[dateKey].protein += parsed.protein || 0;
+    state.macroLog[dateKey].carbs += parsed.carbs || 0;
+    state.macroLog[dateKey].fat += parsed.fat || 0;
+    state.macroLog[dateKey].items.push(meal);
+    save('macro-log', state.macroLog);
+    renderMacros();
+
+    if(!state.foodLog) state.foodLog = [];
+    state.foodLog.push({date:dateKey, meal, verdict:parsed.verdict, calories:parsed.calories, protein:parsed.protein, carbs:parsed.carbs, fat:parsed.fat});
+    save('food-log', state.foodLog);
+    input.value='';
+  }catch(e){
+    const hint = state.apiKey ? '' : ' (No API key saved — add one in the Coach tab.)';
+    resultEl.innerHTML = `<div class="exercise">Connection issue reaching the coach.${hint}</div>`;
+  }
+  btn.disabled = false;
+}
+
+document.getElementById('foodSend').onclick = getFoodDirection;
+
+/* ============================================================
+   RENDER: CHECK-IN
+============================================================ */
+function renderMacros(){
+  const today = todayStr();
+  // If the logged macros are from a prior day, show zeroes — new day, fresh start
+  const todayData = state.macroLog[today] || {calories:0, protein:0, carbs:0, fat:0};
+  const t = state.profile;
+  const pct = (val, target) => target > 0 ? Math.min(100, Math.round((val/target)*100)) : 0;
+  const pill = document.getElementById('macroPill');
+  if(pill){
+    pill.textContent = `${todayData.calories} / ${t.calorieTarget} kcal`;
+    pill.className = 'pill ' + (todayData.calories > t.calorieTarget*1.1 ? 'warn' : 'on');
+  }
+  const el = document.getElementById('macroBars');
+  if(!el) return;
+  const rows = [
+    {label:'Calories', val:todayData.calories, target:t.calorieTarget, unit:'kcal', color:'#F2A93B'},
+    {label:'Protein', val:todayData.protein, target:t.proteinTarget, unit:'g', color:'#C8362A'},
+    {label:'Carbs', val:todayData.carbs, target:t.carbTarget, unit:'g', color:'#4C9A6A'},
+    {label:'Fat', val:todayData.fat, target:t.fatTarget, unit:'g', color:'#5B6670'}
+  ];
+  el.innerHTML = rows.map(r=>`
+    <div class="macro-row">
+      <div class="row"><span>${r.label}</span><span>${Math.round(r.val)} / ${r.target}${r.unit}</span></div>
+      <div class="macro-track"><div class="macro-fill" style="width:${pct(r.val,r.target)}%;background:${r.color};"></div></div>
+    </div>
+  `).join('');
+}
+
+document.getElementById('targetsToggle').onclick = ()=>{
+  const el = document.getElementById('targetsForm');
+  const toggle = document.getElementById('targetsToggle');
+  const showing = el.style.display !== 'none';
+  el.style.display = showing ? 'none' : 'block';
+  toggle.textContent = showing ? 'Edit' : 'Hide';
+  if(!showing){
+    document.getElementById('tgCal').value = state.profile.calorieTarget;
+    document.getElementById('tgProtein').value = state.profile.proteinTarget;
+    document.getElementById('tgCarb').value = state.profile.carbTarget;
+    document.getElementById('tgFat').value = state.profile.fatTarget;
+  }
+};
+
+document.getElementById('tgSave').onclick = ()=>{
+  state.profile.calorieTarget = parseInt(document.getElementById('tgCal').value) || state.profile.calorieTarget;
+  state.profile.proteinTarget = parseInt(document.getElementById('tgProtein').value) || state.profile.proteinTarget;
+  state.profile.carbTarget = parseInt(document.getElementById('tgCarb').value) || state.profile.carbTarget;
+  state.profile.fatTarget = parseInt(document.getElementById('tgFat').value) || state.profile.fatTarget;
+  save(STORAGE_KEYS.profile, state.profile);
+  renderMacros();
+};
+
+function renderToggleGroup(containerId, count, selectedVal, onSelect){
+  const el = document.getElementById(containerId);
+  el.innerHTML='';
+  for(let i=1;i<=count;i++){
+    const b = document.createElement('button');
+    b.textContent = i;
+    if(i===selectedVal) b.classList.add('sel');
+    b.onclick = ()=>{
+      [...el.children].forEach(c=>c.classList.remove('sel'));
+      b.classList.add('sel');
+      onSelect(i);
+    };
+    el.appendChild(b);
+  }
+}
+
+let ciEnergyVal = 3, ciInflameVal = 1;
+renderToggleGroup('ciEnergy', 5, ciEnergyVal, v=>ciEnergyVal=v);
+renderToggleGroup('ciInflame', 5, ciInflameVal, v=>ciInflameVal=v);
+
+document.getElementById('saveCheckin').onclick = ()=>{
+  const entry = {
+    date: todayStr(),
+    weight: parseFloat(document.getElementById('ciWeight').value) || null,
+    waist: parseFloat(document.getElementById('ciWaist').value) || null,
+    hips: parseFloat(document.getElementById('ciHips').value) || null,
+    energy: ciEnergyVal,
+    inflame: ciInflameVal,
+    notes: document.getElementById('ciNotes').value
+  };
+  state.checkins.push(entry);
+  save(STORAGE_KEYS.checkins, state.checkins);
+  renderCheckHistory();
+  renderDashboard();
+  document.getElementById('ciNotes').value='';
+  alert('Check-in saved.');
+};
+
+function renderCheckHistory(){
+  const el = document.getElementById('checkHistory');
+  if(state.checkins.length===0){ el.innerHTML = '<div class="empty">No check-ins yet.</div>'; return; }
+  el.innerHTML = '<div class="eyebrow" style="margin-top:14px;">History</div>' +
+    state.checkins.slice().reverse().slice(0,8).map(c=>`
+      <div class="entry">
+        <span>${c.date}</span>
+        <span>${c.weight ?? '—'}lbs · E${c.energy} · I${c.inflame}</span>
+      </div>
+    `).join('');
+}
+
+/* ============================================================
+   COACH CHAT (Claude API)
+============================================================ */
+function buildCoachContext(){
+  const recentCheckins = state.checkins.slice(-4);
+  const liftSummary = Object.entries(state.liftHistory).map(([k,arr])=>{
+    const last = arr[arr.length-1];
+    return last ? `${k}: ${last.weight}lbs x${last.reps} @RPE${last.rpe} (${last.date})` : null;
+  }).filter(Boolean).join('; ');
+
+  const todayMacros = state.macroLog[todayStr()] || {calories:0, protein:0, carbs:0, fat:0};
+  const cycleInfo = cycleInfoFor(new Date());
+  const todayPlan = planForCycleInfo(cycleInfo);
+
+  return `
+You are an expert holistic nutritionist and physical trainer, acting as a dedicated personal coach for a firefighter/EMT on a Chicago hazmat team.
+
+ATHLETE PROFILE:
+- 215 lbs, ~20% body fat, target 15-17% body fat, sustainable approach (not aggressive cutting)
+- Follows a strict Blood Type A diet — this is non-negotiable. It manages a real gut-inflammation condition that has previously triggered irregular heartbeat (arrhythmia). Never suggest abandoning or "testing" this diet.
+- Practices intermittent fasting, 12-16hr daily window
+- Drinks 4L water/day with mineral salt
+- Works a 1-on/2-off rotating shift: lifts at the firehouse on shift days, full rest the day immediately after a 24hr shift, home training (cardio + kettlebell + yoga/pilates) on the second day off when recovered
+- Goal: strength, hypertrophy, muscular endurance, fireground-functional. Not prioritizing speed/power work right now.
+- Tracks macros via meal descriptions you estimate for them — they don't want to manually count, so be the accountability layer
+- Daily targets: ${state.profile.calorieTarget} kcal, ${state.profile.proteinTarget}g protein, ${state.profile.carbTarget}g carbs, ${state.profile.fatTarget}g fat
+- Wants real coaching, not generic tips — be direct, specific, and reference their actual logged data when present.
+
+TODAY'S PLAN: ${todayPlan.label} — ${todayPlan.detail}
+TODAY'S MACROS SO FAR: ${todayMacros.calories} kcal, ${todayMacros.protein}g protein, ${todayMacros.carbs}g carbs, ${todayMacros.fat}g fat
+
+RECENT LIFT DATA: ${liftSummary || 'No lifts logged yet.'}
+
+RECENT CHECK-INS: ${recentCheckins.length ? JSON.stringify(recentCheckins) : 'None yet.'}
+
+Respond as their coach: warm but direct, no filler, grounded in their actual data. Flag any inflammation/arrhythmia-relevant patterns gently but clearly and suggest they loop in their cardiologist/GI doctor if something looks concerning. Keep responses focused and conversational — this is a chat, not a report. Avoid markdown headers or bullet-heavy formatting; talk like a coach would.
+`.trim();
+}
+
+function renderChat(){
+  const log = document.getElementById('chatLog');
+  if(state.chatHistory.length===0){
+    log.innerHTML = "<div class=\"empty\">Ask your coach about today's session, your nutrition, or how this week went.</div>";
+    return;
+  }
+  log.innerHTML = state.chatHistory.map(m=>`<div class="msg ${m.role}">${m.text}</div>`).join('');
+  log.scrollTop = log.scrollHeight;
+}
+
+async function sendChat(){
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if(!text) return;
+  input.value='';
+  state.chatHistory.push({role:'user', text});
+  renderChat();
+  save(STORAGE_KEYS.chatHistory, state.chatHistory);
+
+  const log = document.getElementById('chatLog');
+  const loadingMsg = document.createElement('div');
+  loadingMsg.className='msg coach';
+  loadingMsg.innerHTML='<span class="loading"></span>';
+  log.appendChild(loadingMsg);
+  log.scrollTop = log.scrollHeight;
+
+  try{
+    const apiMessages = state.chatHistory.slice(-10).map(m=>({
+      role: m.role==='user' ? 'user' : 'assistant',
+      content: m.text
+    }));
+
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method:"POST",
+      headers: getApiHeaders(),
+      body: JSON.stringify({
+        model:"claude-sonnet-4-6",
+        max_tokens:1000,
+        system: buildCoachContext(),
+        messages: apiMessages
+      })
+    });
+    const data = await response.json();
+    const textBlocks = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\\n');
+    state.chatHistory.push({role:'coach', text: textBlocks || "Couldn't get a response — try again."});
+  }catch(e){
+    const hint = state.apiKey ? 'Try again in a moment.' : 'No API key saved — add one at the top of this tab.';
+    state.chatHistory.push({role:'coach', text:'Connection issue reaching the coach. '+hint});
+  }
+  save(STORAGE_KEYS.chatHistory, state.chatHistory);
+  renderChat();
+}
+
+document.getElementById('apiKeySave').onclick = () => {
+  const val = document.getElementById('apiKeyInput').value.trim();
+  if(!val) return;
+  state.apiKey = val;
+  save('api-key', val);
+  document.getElementById('apiKeyInput').value = '';
+  refreshApiKeyStatus();
+};
+
+document.getElementById('chatSend').onclick = sendChat;
+document.getElementById('chatInput').addEventListener('keydown', e=>{
+  if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendChat(); }
+});
+
+/* ============================================================
+   TAB NAV
+============================================================ */
+document.querySelectorAll('nav.tabs button').forEach(btn=>{
+  btn.onclick = ()=>{
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.tabview').forEach(v=>v.classList.remove('active'));
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+  };
+});
+
+/* ============================================================
+   INIT
+============================================================ */
+async function init(){
+  document.getElementById('todayLabel').textContent = new Date().toLocaleDateString('en-US',{weekday:'short', month:'short', day:'numeric'});
+  await loadAll();
+  refreshApiKeyStatus();
+  renderDashboard();
+  renderFoodGuide();
+  renderCheckHistory();
+  renderChat();
+  renderBig3Bars();
+}
+init();
+</script>
+</body>
+</html>
